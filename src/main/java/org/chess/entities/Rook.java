@@ -20,9 +20,8 @@ public class Rook extends Piece {
 	public boolean canMove(int targetCol, int targetRow, BoardPanel board) {
 	    if(isWithinBoard(targetCol, targetRow) && !isSameSquare(targetCol, targetRow)) {
 	        if(targetCol == getPreCol() || targetRow == getPreRow()) {
-	        	if(isValidSquare(targetCol, targetRow, board) && isPieceOnTheWay(targetCol, targetRow)) {
-	        		return true;
-	        	}
+                return isValidSquare(targetCol, targetRow, board)
+                        && !isPieceOnTheWay(targetCol, targetRow, board);
 	        }
 	    }
 	    return false;

@@ -18,7 +18,8 @@ public class Bishop extends Piece {
 
 	@Override
 	public boolean canMove(int targetCol, int targetRow, BoardPanel board) {
-		if (!isWithinBoard(targetCol, targetRow) || isSameSquare(targetCol, targetRow)) {
+		if (!isWithinBoard(targetCol, targetRow)
+				|| isSameSquare(targetCol, targetRow)) {
 			return false;
 		}
 		int colDiff = targetCol - getPreCol();

@@ -36,7 +36,8 @@ public class Pawn extends Piece {
 
 			if(targetCol == getPreCol() && targetRow == getPreRow() + moveValue * 2 
 					&& getOtherPiece() == null
-					&& hasMoved() && isPieceOnTheWay(targetCol, targetRow)) {
+					&& hasMoved() && !isPieceOnTheWay(targetCol, targetRow,
+					board)) {
 				return true;
 			}
 
@@ -47,7 +48,8 @@ public class Pawn extends Piece {
 			
 			if(Math.abs(targetCol - getPreCol()) == 1 && targetRow == getPreRow() + moveValue) {
 				for (Piece p : board.getPieces()) {
-					if(p.getCol() == targetCol && p.getRow() == getPreRow() && p.isTwoStepsAhead()) {
+					if(p.getCol() == targetCol && p.getRow() == getPreRow()
+							&& p.isTwoStepsAhead()) {
 						setOtherPiece(p);
 						return true;
 					}

@@ -19,17 +19,17 @@ public class Queen extends Piece {
 	@Override
 	public boolean canMove(int targetCol, int targetRow, BoardPanel board) {
 	    if(isWithinBoard(targetCol, targetRow) && !isSameSquare(targetCol, targetRow)) {
-	    	 if(targetCol == getPreCol() || targetRow == getPreRow()) {
-	    		 if(isValidSquare(targetCol, targetRow, board) && isPieceOnTheWay(targetCol, targetRow)) {
+	    	 if(targetCol == getCol() || targetRow == getRow()) {
+	    		 if(isValidSquare(targetCol, targetRow, board)
+						 && !isPieceOnTheWay(targetCol, targetRow, board)) {
 	    			 return true;
 	    		 }
 	    	 }
-	    	 if(Math.abs(targetCol - getPreCol()) == Math.abs(targetRow - getPreRow())) {
-	    		 if(isValidSquare(targetCol, targetRow, board)) {
-	    			 return true;
-	    		 }
-		     }
-	    }
+			if(Math.abs(targetCol - getCol()) == Math.abs(targetRow - getRow())) {
+                return isValidSquare(targetCol, targetRow, board)
+						&& !isPieceOnTheWay(targetCol, targetRow, board);
+			}
+		}
 	    return false;
 	}
 }

@@ -210,49 +210,26 @@ public abstract class Piece {
 	    return true;
 	}
 
-	public boolean isPieceOnTheWay(int targetCol, int targetRow) {
-		BoardPanel board = new BoardPanel();
-		if(getRow() == targetRow) {
-			int start = Math.min(getCol(), targetCol) + 1;
-			int end = Math.max(getCol(), targetCol);
-			for(int c = start; c < end; c++) {
-				for(Piece piece : board.getPieces()) {
-					if(piece.getCol() == c && piece.getRow() == targetRow) {
-						otherPiece = piece;
-						return false;
-					}
-				}
-			}
-		} else if(getCol() == targetCol) {
-			int start = Math.min(getRow(), targetRow) + 1;
-			int end = Math.max(getRow(), targetRow);
-			for(int r = start; r < end; r++) {
-				for(Piece piece : board.getPieces()) {
-					if(piece.getCol() == targetCol && piece.getRow() == r) {
-						otherPiece = piece;
-						return false;
-					}
-				}
-			}
-		} else if(Math.abs(targetCol - getCol()) == Math.abs(targetRow - getRow())) {
-			int colStep = (targetCol > getCol()) ? 1 : -1;
-			int rowStep = (targetRow > getRow()) ? 1 : -1;
-			int c = getCol() + colStep;
-			int r = getRow() + rowStep;
+	public boolean isPieceOnTheWay(int targetCol, int targetRow,
+								   BoardPanel board) {
+		int colStep = Integer.compare(targetCol, getCol());
+		int rowStep = Integer.compare(targetRow, getRow());
 
-			while (c != targetCol && r != targetRow) {
-				for(Piece piece : board.getPieces()) {
-					if(piece.getCol() == c && piece.getRow() == r) {
-						otherPiece = piece;
-						return false;
-					}
+		int c = getCol() + colStep;
+		int r = getRow() + rowStep;
+
+		while(c != targetCol || r != targetRow) {
+			for(Piece p : board.getPieces()) {
+				if(p.getCol() == c && p.getRow() == r) {
+					otherPiece = p;
+					return true;
 				}
-				c += colStep;
-				r += rowStep;
 			}
+			c += (c != targetCol) ? colStep : 0;
+			r += (r != targetRow) ? rowStep : 0;
 		}
-		return true;
-	}
+        return false;
+    }
 
 	public BufferedImage getImage(String path) {
 	    BufferedImage img = null;
@@ -260,7 +237,7 @@ public abstract class Piece {
 			img = ImageIO.read(Objects.requireNonNull(
 					getClass().getResourceAsStream(path + ".png")));
 		} catch (IOException e) {
-	        e.printStackTrace();
+	        System.err.println(e.getMessage());
 	    }
 	    return img;
 	}
