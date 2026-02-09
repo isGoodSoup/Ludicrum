@@ -106,6 +106,12 @@ public class BoardService {
 
     public void getGame() {
         Piece currentPiece = PieceService.getPiece();
+        int hoverCol = mouse.getX() / Board.getSquare();
+        int hoverRow = mouse.getY() / Board.getSquare();
+        checkPiece(currentPiece, hoverCol, hoverRow);
+    }
+
+    private void checkPiece(Piece currentPiece, int hoverCol, int hoverRow) {
         if(GameService.getState() != GameState.BOARD) {
             return;
         }
@@ -115,31 +121,14 @@ public class BoardService {
             return;
         }
 
-        int hoverCol = mouse.getX() / Board.getSquare();
-        int hoverRow = mouse.getY() / Board.getSquare();
-
         if(BooleanService.isPromotionPending) {
             promotionService.promotion();
             mouse.setClicked(false);
         }
+        currentPiece = pickUpPiece(currentPiece, hoverCol, hoverRow);
+    }
 
-        if(mouse.isClicked() && !BooleanService.isDragging && currentPiece == null) {
-            for(Piece p : PieceService.getPieces()) {
-                if(p.getColor() == GameService.getCurrentTurn() &&
-                        p.getCol() == hoverCol &&
-                        p.getRow() == hoverRow) {
-                    currentPiece = p;
-                    currentPiece.setScale(currentPiece.getDEFAULT_SCALE()
-                            + currentPiece.getMORE_SCALE());
-                    PieceService.getPiece().setDragOffsetX(mouse.getX() - p.getX());
-                    PieceService.getPiece().setDragOffsetY(mouse.getY() - p.getY());
-                    currentPiece.setPreCol(p.getCol());
-                    currentPiece.setPreRow(p.getRow());
-                    break;
-                }
-            }
-        }
-
+    private Piece pickUpPiece(Piece currentPiece, int hoverCol, int hoverRow) {
         if(mouse.isHeld() && !BooleanService.isDragging && currentPiece == null) {
             for(Piece p : PieceService.getPieces()) {
                 if(p.getColor() == GameService.getCurrentTurn() &&
@@ -158,7 +147,11 @@ public class BoardService {
                 }
             }
         }
+        dragPiece(currentPiece);
+        return currentPiece;
+    }
 
+    private Piece dragPiece(Piece currentPiece) {
         if(BooleanService.isDragging && mouse.isHeld() && currentPiece != null) {
             currentPiece.setX(mouse.getX() - PieceService.getPiece().getDragOffsetX());
             currentPiece.setY(mouse.getY() - PieceService.getPiece().getDragOffsetY());
@@ -170,7 +163,11 @@ public class BoardService {
                     !pieceService.wouldLeaveKingInCheck(currentPiece,
                             targetCol, targetRow);
         }
+        dropPiece(currentPiece);
+        return currentPiece;
+    }
 
+    private Piece dropPiece(Piece currentPiece) {
         if(BooleanService.isDragging && mouse.isClicked() && currentPiece != null) {
             BooleanService.isDragging = false;
             int targetCol = mouse.getX() / Board.getSquare();
@@ -235,6 +232,7 @@ public class BoardService {
                 currentPiece = null;
             }
         }
+        return currentPiece;
     }
 
     private void executeCastling(Piece currentPiece, int targetCol) {

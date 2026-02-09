@@ -68,6 +68,10 @@ public class BoardPanel extends JPanel implements Runnable {
     }
 
     private void update() {
+        if(BooleanService.isChaosActive) {
+
+        }
+
         switch(GameService.getState()) {
             case MENU -> {
                 service.getGuiService().handleMenuInput();
