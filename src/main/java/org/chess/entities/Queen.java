@@ -2,6 +2,7 @@ package org.chess.entities;
 
 import org.chess.enums.Tint;
 import org.chess.enums.Type;
+import org.chess.service.PieceService;
 
 import java.util.List;
 import java.util.Objects;
@@ -12,30 +13,32 @@ public class Queen extends Piece {
 		super(color, col, row);
 		this.id = Type.QUEEN;
 		if(color == Tint.WHITE) {
-			image = getImage("/pieces/queen");
+			image = PieceService.getImage("/pieces/queen");
 		} else {
-			image = getImage("/pieces/queen-b");
+			image = PieceService.getImage("/pieces/queen-b");
 		}
 	}
 
 	@Override
 	public boolean canMove(int targetCol, int targetRow, List<Piece> board) {
-		if(isWithinBoard(targetCol, targetRow) && !isSameSquare(targetCol, targetRow)) {
+		if(isWithinBoard(targetCol, targetRow) && !isSameSquare(this, targetCol,
+				targetRow)) {
 			if(targetCol == getCol() || targetRow == getRow()) {
-				if(isPathClear(targetCol, targetRow, board)) {
+				if(isPathClear(this, targetCol, targetRow, board)) {
 					return true;
 				}
 			}
 
 			if(Math.abs(targetCol - getCol()) == Math.abs(targetRow - getRow())) {
-                return isPathClear(targetCol, targetRow, board);
+                return isPathClear(this, targetCol, targetRow, board);
 			}
 		}
 		return false;
 	}
 
 	@Override
-	public boolean isPathClear(int targetCol, int targetRow, List<Piece> board) {
+	public boolean isPathClear(Piece piece, int targetCol, int targetRow,
+							   List<Piece> board) {
 		int colDiff = targetCol - getCol();
 		int rowDiff = targetRow - getRow();
 
@@ -47,7 +50,7 @@ public class Queen extends Piece {
 			int r = getRow() + rowStep;
 
 			while (c != targetCol || r != targetRow) {
-				if(getPieceAt(c, r, board) != null) {
+				if(PieceService.getPieceAt(c, r, board) != null) {
 					return false;
 				}
 				c += colStep;
@@ -61,7 +64,7 @@ public class Queen extends Piece {
 			int r = getRow() + rowStep;
 
 			while (c != targetCol && r != targetRow) {
-				if(getPieceAt(c, r, board) != null) {
+				if(PieceService.getPieceAt(c, r, board) != null) {
 					return false;
 				}
 				c += colStep;
@@ -69,8 +72,8 @@ public class Queen extends Piece {
 			}
 		}
 
-		if(getPieceAt(targetCol, targetRow, board) != null &&
-				Objects.requireNonNull(getPieceAt(targetCol, targetRow, board))
+		if(PieceService.getPieceAt(targetCol, targetRow, board) != null &&
+				Objects.requireNonNull(PieceService.getPieceAt(targetCol, targetRow, board))
 						.getColor() == this.getColor()) {
 			return false;
 		}

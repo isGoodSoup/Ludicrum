@@ -1,5 +1,7 @@
 package org.chess.gui;
 
+import org.chess.service.ServiceFactory;
+
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -7,7 +9,9 @@ public class Mouse extends MouseAdapter {
 	private int x, y;
 	private boolean isHeld;
 	private boolean isClicked;
-	
+
+	public Mouse() {}
+
 	public int getX() {
 		return x;
 	}

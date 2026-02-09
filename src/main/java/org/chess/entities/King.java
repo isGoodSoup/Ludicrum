@@ -2,7 +2,7 @@ package org.chess.entities;
 
 import org.chess.enums.Tint;
 import org.chess.enums.Type;
-import org.chess.gui.BoardPanel;
+import org.chess.service.PieceService;
 
 import java.util.List;
 
@@ -12,9 +12,9 @@ public class King extends Piece {
 		super(color, col, row);
 		this.id = Type.KING;
 		if(color == Tint.WHITE) {
-			image = getImage("/pieces/king");
+			image = PieceService.getImage("/pieces/king");
 		} else {
-			image = getImage("/pieces/king-b");
+			image = PieceService.getImage("/pieces/king-b");
 		}
 	}
 

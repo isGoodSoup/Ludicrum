@@ -1,23 +1,18 @@
 package org.chess.entities;
 
-import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.util.List;
-import java.util.Objects;
-
-import javax.imageio.ImageIO;
-
 import org.chess.enums.Tint;
 import org.chess.enums.Type;
-import org.chess.gui.BoardPanel;
+import org.chess.service.PieceService;
 
 public abstract class Piece {
 	protected Type id;
 	protected BufferedImage image;
 	private int x, y;
 	private int col, row, preCol, preRow;
-    private static final double DEFAULT_SCALE = 1.0;
+    private int dragOffsetX, dragOffsetY;
+	private static final double DEFAULT_SCALE = 1.0;
 	private static final float MORE_SCALE = 0.5f;
 	private double scale = DEFAULT_SCALE;
 	private Tint color;
@@ -138,6 +133,22 @@ public abstract class Piece {
 		this.row = row;
 	}
 
+	public int getDragOffsetX() {
+		return dragOffsetX;
+	}
+
+	public int getDragOffsetY() {
+		return dragOffsetY;
+	}
+
+	public void setDragOffsetX(int dragOffsetX) {
+		this.dragOffsetX = dragOffsetX;
+	}
+
+	public void setDragOffsetY(int dragOffsetY) {
+		this.dragOffsetY = dragOffsetY;
+	}
+
 	public Piece getOtherPiece() {
 		return otherPiece;
 	}
@@ -166,151 +177,30 @@ public abstract class Piece {
 		isTwoStepsAhead = false;
 	}
 
-	public static Piece getPieceAt(int col, int row, List<Piece> board) {
-		for (Piece p : board) {
-			if (p.getCol() == col && p.getRow() == row) {
-				return p;
-			}
-		}
-		return null;
-	}
-
-	public void addPiece(Piece p) {
-		BoardPanel.getPieces().add(p);
-		BoardPanel.getBoardState()[p.getCol()][p.getRow()] = p;
-	}
-
-	public void removePiece(Piece p) {
-		BoardPanel.getPieces().remove(p);
-		BoardPanel.getBoardState()[p.getCol()][p.getRow()] = null;
-	}
-
-	public void movePiece(Piece p, int newCol, int newRow) {
-		String oldPos = Board.getSquareName(p.getPreCol(), p.getPreRow());
-		String newPos = Board.getSquareName(newCol, newRow);
-
-		BoardPanel.getBoardState()[p.getCol()][p.getRow()] = null;
-		p.setCol(newCol);
-		p.setRow(newRow);
-		p.updatePos();
-
-		System.out.println(p.getColor().toString() + " "
-				+ p.getId().toString() + ": " + oldPos + " -> " + newPos);
-		BoardPanel.getBoardState()[newCol][newRow] = p;
-	}
-
-	public void updatePos() {
-		if(id == Type.PAWN) {
-			if(Math.abs(row - preRow) == 2) {
-				isTwoStepsAhead = true;
-			}
-		}
-		x = getX(col);
-		y = getY(row);
-		preCol = getCol(x);
-		preRow = getRow(y);
-		hasMoved = true;
-	}
-
-	public void resetPos() {
-		col = preCol;
-		row = preRow;
-		x = getX(col);
-		y = getY(row);
-	}
-
 	public abstract boolean canMove(int targetCol, int targetRow,
 									List<Piece> board);
 
 	public abstract Piece copy();
 
 	public boolean isWithinBoard(int targetCol, int targetRow) {
-        return targetCol >= 0 && targetCol <= 7 && targetRow >= 0 && targetRow <= 7;
+        return PieceService.isWithinBoard(targetCol, targetRow);
     }
 
-	public boolean isSameSquare(int targetCol, int targetRow) {
-        return targetCol == preCol && targetRow == preRow;
+	public boolean isSameSquare(Piece piece, int targetCol, int targetRow) {
+        return PieceService.isSameSquare(piece, targetCol, targetRow);
     }
 
 	public Piece isColliding(int col, int row, List<Piece> board) {
-	    for (Piece p : board) {
-	        if (p.getCol() == col && p.getRow() == row) {
-	        	return p;
-	        }
-	    }
-	    return null;
+	    return PieceService.isColliding(col, row, board);
 	}
 
-	public boolean isPathClear(int targetCol, int targetRow, List<Piece> board) {
-		int colDiff = targetCol - getCol();
-		int rowDiff = targetRow - getRow();
-
-		if (Math.abs(colDiff) != Math.abs(rowDiff)) {
-			return false;
-		}
-
-		int colStep = Integer.signum(colDiff);
-		int rowStep = Integer.signum(rowDiff);
-
-		int c = getCol() + colStep;
-		int r = getRow() + rowStep;
-
-		while (c != targetCol && r != targetRow) {
-			for (Piece p : board) {
-				if (p == this) { continue; }
-				if (p.getCol() == c && p.getRow() == r) {
-					return false;
-				}
-			}
-			c += colStep;
-			r += rowStep;
-		}
-		return true;
+	public boolean isPathClear(Piece piece, int targetCol, int targetRow,
+							   List<Piece> board) {
+		return PieceService.isPathClear(piece, targetCol, targetRow, board);
 	}
 
 	public boolean isValidSquare(int targetCol, int targetRow,
 							   List<Piece> board) {
-		for(Piece p : board) {
-			if(p.getCol() == targetCol && p.getRow() == targetRow) {
-				return p.getColor() != this.getColor();
-			}
-		}
-		return true;
-	}
-
-	public boolean isValidSquare(int targetCol, int targetRow, BoardPanel board) {
-	    for (Piece p : BoardPanel.getPieces()) {
-	        if (p.getCol() == targetCol && p.getRow() == targetRow) {
-	            return p.getColor() != this.getColor();
-	        }
-	    }
-	    return true;
-	}
-
-	public BufferedImage getImage(String path) {
-	    BufferedImage img = null;
-	    try {
-			img = ImageIO.read(Objects.requireNonNull(
-					getClass().getResourceAsStream(path + ".png")));
-		} catch (IOException e) {
-	        System.err.println(e.getMessage());
-	    }
-	    return img;
-	}
-
-	public void draw(Graphics2D g2) {
-		int square = Board.getSquare();
-
-		int drawSize = (int) (square * scale);
-		int offset = (square - drawSize) / 2;
-
-		g2.drawImage(
-				image,
-				x + offset,
-				y + offset,
-				drawSize,
-				drawSize,
-				null
-		);
+		return PieceService.isValidSquare(targetCol, targetRow, board);
 	}
 }

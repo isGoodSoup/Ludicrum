@@ -2,7 +2,7 @@ package org.chess.entities;
 
 import org.chess.enums.Tint;
 import org.chess.enums.Type;
-import org.chess.gui.BoardPanel;
+import org.chess.service.PieceService;
 
 import java.util.List;
 
@@ -12,16 +12,16 @@ public class Bishop extends Piece {
 		super(color, col, row);
 		this.id = Type.BISHOP;
 		if (color == Tint.WHITE) {
-			image = getImage("/pieces/bishop");
+			image = PieceService.getImage("/pieces/bishop");
 		} else {
-			image = getImage("/pieces/bishop-b");
+			image = PieceService.getImage("/pieces/bishop-b");
 		}
 	}
 
 	@Override
 	public boolean canMove(int targetCol, int targetRow, List<Piece> board) {
 		if (!isWithinBoard(targetCol, targetRow)
-				|| isSameSquare(targetCol, targetRow)) {
+				|| isSameSquare(this, targetCol, targetRow)) {
 			return false;
 		}
 
@@ -32,7 +32,7 @@ public class Bishop extends Piece {
 			return false;
 		}
 
-		if (!isPathClear(targetCol, targetRow, board)) {
+		if (!isPathClear(this, targetCol, targetRow, board)) {
 			return false;
 		}
 

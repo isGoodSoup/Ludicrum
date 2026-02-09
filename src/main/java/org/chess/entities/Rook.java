@@ -2,7 +2,7 @@ package org.chess.entities;
 
 import org.chess.enums.Tint;
 import org.chess.enums.Type;
-import org.chess.gui.BoardPanel;
+import org.chess.service.PieceService;
 
 import java.util.List;
 
@@ -12,25 +12,27 @@ public class Rook extends Piece {
 		super(color, col, row);
 		this.id = Type.ROOK;
 		if(color == Tint.WHITE) {
-			image = getImage("/pieces/rook");
+			image = PieceService.getImage("/pieces/rook");
 		} else {
-			image = getImage("/pieces/rook-b");
+			image = PieceService.getImage("/pieces/rook-b");
 		}
 	}
 
 	@Override
 	public boolean canMove(int targetCol, int targetRow, List<Piece> board) {
-		if(isWithinBoard(targetCol, targetRow) && !isSameSquare(targetCol, targetRow)) {
+		if(isWithinBoard(targetCol, targetRow) && !isSameSquare(this, targetCol,
+				targetRow)) {
 			if(targetCol == getPreCol() || targetRow == getPreRow()) {
 				return isValidSquare(targetCol, targetRow, board)
-						&& isPathClear(targetCol, targetRow, board);
+						&& isPathClear(this, targetCol, targetRow, board);
 			}
 		}
 		return false;
 	}
 
 	@Override
-	public boolean isPathClear(int targetCol, int targetRow, List<Piece> board) {
+	public boolean isPathClear(Piece piece, int targetCol, int targetRow,
+							   List<Piece> board) {
 		int colDiff = targetCol - getCol();
 		int rowDiff = targetRow - getRow();
 
@@ -39,7 +41,7 @@ public class Rook extends Piece {
 			int c = getCol() + colStep;
 
 			while(c != targetCol) {
-				if(getPieceAt(c, getRow(), board) != null) {
+				if(PieceService.getPieceAt(c, getRow(), board) != null) {
 					return false;
 				}
 				c += colStep;
@@ -49,7 +51,7 @@ public class Rook extends Piece {
 			int r = getRow() + rowStep;
 
 			while(r != targetRow) {
-				if(getPieceAt(getCol(), r, board) != null) {
+				if(PieceService.getPieceAt(getCol(), r, board) != null) {
 					return false;
 				}
 				r += rowStep;

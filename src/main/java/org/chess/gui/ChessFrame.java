@@ -21,6 +21,4 @@ public class ChessFrame extends JFrame {
 		setVisible(true);
 		panel.launch();
 	}
-	
-	
 }

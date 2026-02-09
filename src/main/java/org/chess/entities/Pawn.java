@@ -2,6 +2,7 @@ package org.chess.entities;
 
 import org.chess.enums.Tint;
 import org.chess.enums.Type;
+import org.chess.service.PieceService;
 
 import java.util.List;
 
@@ -11,15 +12,16 @@ public class Pawn extends Piece {
 		super(color, col, row);
 		this.id = Type.PAWN;
 		if(color == Tint.WHITE) {
-			image = getImage("/pieces/pawn");
+			image = PieceService.getImage("/pieces/pawn");
 		} else {
-			image = getImage("/pieces/pawn-b");
+			image = PieceService.getImage("/pieces/pawn-b");
 		}
 	}
 
 	@Override
 	public boolean canMove(int targetCol, int targetRow, List<Piece> board) {
-		if (isWithinBoard(targetCol, targetRow) && !isSameSquare(targetCol, targetRow)) {
+		if (isWithinBoard(targetCol, targetRow) && !isSameSquare(this,
+				targetCol, targetRow)) {
 			int moveValue = (getColor() == Tint.WHITE) ? -1 : 1;
 			setOtherPiece(isColliding(targetCol, targetRow, board));
 
@@ -31,7 +33,7 @@ public class Pawn extends Piece {
 			if (targetCol == getPreCol() && targetRow == getPreRow() +
 					moveValue * 2 &&
 					getOtherPiece() == null && !hasMoved()
-					&& isPathClear(targetCol, targetRow, board)) {
+					&& isPathClear(this, targetCol, targetRow, board)) {
 				return true;
 			}
 
@@ -57,7 +59,8 @@ public class Pawn extends Piece {
 	}
 
 	@Override
-	public boolean isPathClear(int targetCol, int targetRow, List<Piece> board) {
+	public boolean isPathClear(Piece piece, int targetCol, int targetRow,
+							   List<Piece> board) {
 		int colDiff = targetCol - getCol();
 		int rowDiff = targetRow - getRow();
 
@@ -66,7 +69,7 @@ public class Pawn extends Piece {
 			int r = getRow() + rowStep;
 
 			while (r != targetRow) {
-				if (getPieceAt(targetCol, r, board) != null) {
+				if (PieceService.getPieceAt(targetCol, r, board) != null) {
 					return false;
 				}
 				r += rowStep;
@@ -76,9 +79,8 @@ public class Pawn extends Piece {
 		return false;
 	}
 
-	@Override
 	public void movePiece(Piece p, int newCol, int newRow) {
-		super.movePiece(p, newCol, newRow);
+		PieceService.movePiece(p, newCol, newRow);
         setTwoStepsAhead(Math.abs(newRow - getPreRow()) == 2);
 		if (Math.abs(newRow - getPreRow()) == 2) {
 			setHasMoved(true);
