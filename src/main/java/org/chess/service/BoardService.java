@@ -8,6 +8,7 @@ import org.chess.gui.Sound;
 import org.chess.records.Move;
 
 import javax.swing.*;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -16,6 +17,7 @@ public class BoardService {
     private static Piece[][] boardState;
     private final Board board;
     private final Sound fx;
+    private final List<Move> moves;
 
     private final PieceService pieceService;
     private final Mouse mouse;
@@ -32,6 +34,7 @@ public class BoardService {
         this.promotionService = promotionService;
         this.modelService = modelService;
         boardState = new Piece[board.getROW()][board.getCOL()];
+        moves = new ArrayList<>();
         precomputeSquares();
     }
 
@@ -41,6 +44,10 @@ public class BoardService {
 
     public static Piece[][] getBoardState() {
         return boardState;
+    }
+
+    public List<Move> getMoves() {
+        return moves;
     }
 
     private void precomputeSquares() {
@@ -62,7 +69,7 @@ public class BoardService {
     }
 
     public void startBoard() {
-        PieceService.getPieces().clear();
+        pieceService.getPieces().clear();
         setPieces();
         GameService.setCurrentTurn(Tint.WHITE);
         BooleanService.isGameOver = false;
@@ -71,7 +78,7 @@ public class BoardService {
     }
 
     public void setPieces() {
-        List<Piece> pieces = PieceService.getPieces();
+        List<Piece> pieces = pieceService.getPieces();
         pieces.clear();
         clearBoardState();
 
@@ -139,7 +146,7 @@ public class BoardService {
 
     private Piece pickUpPiece(Piece currentPiece, int hoverCol, int hoverRow) {
         if (mouse.wasPressed() && !BooleanService.isDragging && currentPiece == null) {
-            for(Piece p : PieceService.getPieces()) {
+            for(Piece p : pieceService.getPieces()) {
                 if(p.getColor() == GameService.getCurrentTurn() &&
                         p.getCol() == hoverCol &&
                         p.getRow() == hoverRow) {
@@ -168,7 +175,7 @@ public class BoardService {
             int targetRow = mouse.getY() / Board.getSquare();
 
             BooleanService.isLegal = currentPiece.canMove(targetCol,
-                    targetRow, PieceService.getPieces()) &&
+                    targetRow, pieceService.getPieces()) &&
                     !pieceService.wouldLeaveKingInCheck(currentPiece,
                             targetCol, targetRow);
         }
@@ -185,7 +192,7 @@ public class BoardService {
 
             if(BooleanService.isLegal) {
                 Piece captured = PieceService.getPieceAt(targetCol, targetRow,
-                        PieceService.getPieces());
+                        pieceService.getPieces());
                 if(captured != null) {
                     pieceService.removePiece(captured);
                 }
@@ -194,6 +201,9 @@ public class BoardService {
                     executeCastling(currentPiece, targetCol);
                 }
 
+                moves.add(new Move(currentPiece, currentPiece.getCol(),
+                        currentPiece.getRow(), targetCol, targetRow,
+                        currentPiece.getColor()));
                 PieceService.movePiece(currentPiece, targetCol, targetRow);
                 currentPiece.setHasMoved(true);
                 fx.playFX(0);
@@ -202,7 +212,7 @@ public class BoardService {
                     executeEnPassant(currentPiece, captured, targetCol, targetRow);
                 }
 
-                for (Piece p : PieceService.getPieces()) {
+                for (Piece p : pieceService.getPieces()) {
                     if (p instanceof Pawn && p.getColor() != currentPiece.getColor()) {
                         p.resetEnPassant();
                     }
@@ -262,14 +272,14 @@ public class BoardService {
             boolean pathClear = true;
             for(int c = currentPiece.getCol() + step; c != rookStartCol; c += step) {
                 if(PieceService.getPieceAt(c, currentPiece.getRow(),
-                        PieceService.getPieces()) != null) {
+                        pieceService.getPieces()) != null) {
                     pathClear = false;
                     break;
                 }
             }
 
             if(pathClear) {
-                for(Piece p : PieceService.getPieces()) {
+                for(Piece p : pieceService.getPieces()) {
                     if(p instanceof Rook &&
                             p.getCol() == rookStartCol &&
                             p.getRow() == currentPiece.getRow() &&
@@ -293,13 +303,13 @@ public class BoardService {
         if (captured == null && Math.abs(targetCol - currentPiece.getPreCol()) == 1) {
             int dir = (currentPiece.getColor() == Tint.WHITE) ? -1 : 1;
             if (targetRow - oldRow == dir) {
-                for (Piece p : PieceService.getPieces()) {
+                for (Piece p : pieceService.getPieces()) {
                     if (p instanceof Pawn &&
                             p.getColor() != currentPiece.getColor() &&
                             p.getCol() == targetCol &&
                             p.getRow() == oldRow &&
                             p.isTwoStepsAhead()) {
-                        PieceService.getPieces().remove(p);
+                        pieceService.getPieces().remove(p);
                         break;
                     }
                 }

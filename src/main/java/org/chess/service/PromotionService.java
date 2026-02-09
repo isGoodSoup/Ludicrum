@@ -14,8 +14,9 @@ public class PromotionService {
     private static Mouse mouse;
     private final PieceService pieceService;
 
-    public PromotionService(PieceService pieceService) {
+    public PromotionService(PieceService pieceService, Mouse mouse) {
         this.pieceService = pieceService;
+        PromotionService.mouse = mouse;
     }
 
     public long getPromotionStartTime() {
@@ -85,7 +86,7 @@ public class PromotionService {
             selectedIndex = 0;
         }
 
-        PieceService.getPieces().remove(promotingPawn);
+        pieceService.getPieces().remove(promotingPawn);
 
         Piece promotedPiece = switch(options[selectedIndex]) {
             case QUEEN -> new Queen(promotingPawn.getColor(),
@@ -99,7 +100,7 @@ public class PromotionService {
             default -> throw new IllegalStateException("Unexpected promotion type");
         };
 
-        PieceService.getPieces().add(promotedPiece);
+        pieceService.getPieces().add(promotedPiece);
         BoardService.getBoardState()[promotedPiece.getCol()][promotedPiece.getRow()] =
                 promotedPiece;
         promotingPawn = null;

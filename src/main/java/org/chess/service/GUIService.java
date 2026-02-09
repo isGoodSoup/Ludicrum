@@ -5,6 +5,7 @@ import org.chess.enums.Tint;
 import org.chess.enums.Type;
 import org.chess.gui.Mouse;
 import org.chess.gui.Sound;
+import org.chess.records.Move;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -19,6 +20,9 @@ public class GUIService {
     private static final int MENU_SPACING = 40;
     private static final int MENU_START_Y = 80;
     private static final int MENU_FONT = 32;
+    private static final int EXTRA_WIDTH = 150;
+    private static final int GRAPHICS_OFFSET = EXTRA_WIDTH/2;
+    private static final int MOVES_CAP = 15;
     private int lastHoveredIndex = -1;
     private static Color background;
     private static Color foreground;
@@ -41,7 +45,7 @@ public class GUIService {
         this.gameService = gameService;
         this.mouse = mouse;
         this.fx = new Sound();
-        boardService.setPieces();
+        this.boardService.setPieces();
         logo = null;
 
         try {
@@ -69,12 +73,20 @@ public class GUIService {
         return Board.getSquare() * 8;
     }
 
+    public static int getEXTRA_WIDTH() {
+        return EXTRA_WIDTH;
+    }
+
     public static int getHEIGHT() {
         return Board.getSquare() * 8;
     }
 
     public static Font getFont(int size) {
         return font.deriveFont(Font.PLAIN, (float) size);
+    }
+
+    public static Font getFontBold(int size) {
+        return font.deriveFont(Font.BOLD, (float) size);
     }
 
     public static int getMENU_SPACING() {
@@ -108,7 +120,7 @@ public class GUIService {
     }
 
     private static void drawLogo(Graphics2D g2) {
-        g2.drawImage(logo,getWIDTH()/3 + 5,getHEIGHT()/7,
+        g2.drawImage(logo,getWIDTH()/3 + 5 + GRAPHICS_OFFSET,getHEIGHT()/7,
                 logo.getWidth()/3,logo.getHeight()/3, null);
     }
 
@@ -129,7 +141,7 @@ public class GUIService {
             boolean isHovered = getHitbox(y).contains(mouse.getX(),
                     mouse.getY());
             g2.setColor(isHovered ? Color.WHITE : getNewForeground());
-            g2.drawString(options[i], x, y);
+            g2.drawString(options[i], x + GRAPHICS_OFFSET, y);
 
             if (isHovered && lastHoveredIndex != i) {
                 fx.play(BooleanService.getRandom(1, 2));
@@ -148,6 +160,39 @@ public class GUIService {
         g2.drawImage(image, x, y, size, size, null);
     }
 
+    public void drawMoves(Graphics2D g2) {
+        g2.setColor(background);
+        g2.fillRect(getWIDTH(), 0, getEXTRA_WIDTH(), getHEIGHT());
+        g2.setFont(getFontBold(24));
+        g2.setColor(Color.BLACK);
+
+        int panelX = getWIDTH();
+        int panelWidth = getEXTRA_WIDTH();
+
+        int lineHeight = g2.getFontMetrics().getHeight() + 8;
+        int currentY = 40;
+        int textX = panelX + 15;
+
+        var moves = boardService.getMoves();
+        int startIndex = Math.max(0, moves.size() - MOVES_CAP);
+
+        for(int i = startIndex; i < moves.size(); i++) {
+            Move move = moves.get(i);
+
+            if (i == moves.size() - 1) {
+                g2.setColor(Color.YELLOW);
+            } else {
+                g2.setColor(Color.BLACK);
+            }
+
+            g2.drawString(
+                    BoardService.getSquareName(move.fromCol(), move.fromRow()) +
+                            " > " + BoardService.getSquareName(move.targetCol(),
+                                    move.targetRow()), textX, currentY);
+            currentY += lineHeight;
+        }
+    }
+
     public void drawBoard(Graphics2D g2) {
         Piece currentPiece = PieceService.getPiece();
         drawBaseBoard(g2);
@@ -157,7 +202,7 @@ public class GUIService {
                 RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR
         );
 
-        for (Piece p : PieceService.getPieces()) {
+        for (Piece p : pieceService.getPieces()) {
             if (p != currentPiece) {
                 BufferedImage img;
                 if (p == hovered) {
@@ -300,7 +345,7 @@ public class GUIService {
 
     public static Rectangle getHitbox(int y) {
         Rectangle hitbox = new Rectangle(
-                getWIDTH()/2 - 100,
+                getWIDTH()/2 - 100 + GRAPHICS_OFFSET,
                 y - 30,
                 200,
                 40

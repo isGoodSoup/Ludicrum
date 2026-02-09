@@ -16,7 +16,7 @@ import java.util.Objects;
 
 public class PieceService {
     private static Piece currentPiece;
-    private static List<Piece> pieces;
+    private final List<Piece> pieces;
     private Piece checkingPiece;
     private int dragOffsetX;
     private int dragOffsetY;
@@ -40,7 +40,7 @@ public class PieceService {
         currentPiece = null;
     }
 
-    public static List<Piece> getPieces() {
+    public List<Piece> getPieces() {
         return pieces;
     }
 
@@ -75,17 +75,17 @@ public class PieceService {
     }
 
     public boolean isPieceThreatened(Piece piece) {
-        for(Piece enemy : PieceService.getPieces()) {
+        for(Piece enemy : getPieces()) {
             if(enemy.getColor() == piece.getColor()) { continue; }
             if(enemy.canMove(piece.getCol(), piece.getRow(),
-                    PieceService.getPieces())) {
+                    getPieces())) {
                 return true;
             }
         }
         return false;
     }
 
-    private Piece getKing(Tint color) {
+    public Piece getKing(Tint color) {
         for(Piece p : pieces) {
             if(p instanceof King && p.getColor() == color) {
                 return p;
@@ -100,8 +100,20 @@ public class PieceService {
     }
 
     public void removePiece(Piece p) {
-        pieces.remove(p);
-        BoardService.getBoardState()[p.getCol()][p.getRow()] = null;
+        synchronized(pieces) {
+            pieces.remove(p);
+            BoardService.getBoardState()[p.getCol()][p.getRow()] = null;
+        }
+    }
+
+    public List<Piece> clonePieces() {
+        List<Piece> copy = new ArrayList<>();
+        synchronized(pieces) {
+            for (Piece p : pieces) {
+                copy.add(p.copy());
+            }
+        }
+        return copy;
     }
 
     public static void movePiece(Piece p, int newCol, int newRow) {
@@ -151,14 +163,6 @@ public class PieceService {
             }
         }
         return null;
-    }
-
-    public static List<Piece> clonePieces() {
-        List<Piece> copy = new ArrayList<>();
-        for (Piece p : pieces) {
-            copy.add(p.copy());
-        }
-        return copy;
     }
 
     public void switchTurns() {

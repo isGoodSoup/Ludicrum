@@ -14,9 +14,9 @@ public class ServiceFactory {
 
     public ServiceFactory() {
         this.mouse = new Mouse();
-        this.piece = new PieceService(mouse);
-        this.promotion = new PromotionService(piece);
         this.animation = new AnimationService();
+        this.piece = new PieceService(mouse);
+        this.promotion = new PromotionService(piece, mouse);
         this.model = new ModelService(piece, animation);
         this.board = new BoardService(piece, mouse, promotion, model);
         this.gs = new GameService(board, mouse);
@@ -51,7 +51,7 @@ public class ServiceFactory {
         return gs;
     }
 
-    public AnimationService getAnimation() {
+    public AnimationService getAnimationService() {
         return animation;
     }
 }

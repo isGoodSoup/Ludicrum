@@ -1,14 +1,13 @@
 package org.chess.service;
 
+import org.chess.entities.Pawn;
 import org.chess.entities.Piece;
 import org.chess.enums.Tint;
 import org.chess.records.Move;
 import org.chess.records.MoveScore;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 
 public class ModelService {
     private final PieceService pieceService;
@@ -31,17 +30,25 @@ public class ModelService {
             AnimationService.startMoveAnimation(p, bestMove.targetCol(),
                     bestMove.targetRow());
         }
+
+        if(p instanceof Pawn) {
+            boolean hasReachedEnd =
+                    (p.getColor() == Tint.WHITE && p.getRow() == 0)
+                            || (p.getColor() == Tint.BLACK && p.getCol() == 8);
+            if(hasReachedEnd) { autoPromote(p); }
+        }
         return bestMove;
     }
 
     private List<MoveScore> getAllLegalMoves(Tint color) {
         List<MoveScore> moves = new ArrayList<>();
-        for (Piece p : PieceService.getPieces()) {
-            if (p.getColor() != color) { continue; }
-            for (int col = 0; col < 8; col++) {
-                for (int row = 0; row < 8; row++) {
-                    if (!isLegalMove(p, col, row)) { continue; }
-                    Move move = new Move(p, col, row);
+        for(Piece p : pieceService.getPieces()) {
+            if(p.getColor() != color) { continue; }
+            for(int col = 0; col < 8; col++) {
+                for(int row = 0; row < 8; row++) {
+                    if(!isLegalMove(p, col, row)) { continue; }
+                    Move move = new Move(p, p.getCol(), p.getRow(), col, row,
+                            p.getColor());
                     moves.add(new MoveScore(move, evaluateMove(move)));
                 }
             }
@@ -51,8 +58,8 @@ public class ModelService {
 
     private boolean isLegalMove(Piece p, int col, int row) {
         Piece target = PieceService.getPieceAt(col, row,
-                PieceService.getPieces());
-        if (!p.canMove(col, row, PieceService.getPieces())) {
+                pieceService.getPieces());
+        if (!p.canMove(col, row, pieceService.getPieces())) {
             return false;
         }
 
@@ -66,7 +73,7 @@ public class ModelService {
         int score = 0;
         Piece p = move.piece();
 
-        for(Piece enemy : PieceService.getPieces()) {
+        for(Piece enemy : pieceService.getPieces()) {
             if(enemy.getCol() == move.targetCol() && enemy.getRow() == move.targetRow()) {
                 score += pieceService.getPieceValue(enemy);
                 break;
@@ -94,7 +101,7 @@ public class ModelService {
 
         Piece captured = PieceService.getPieceAt(move.targetCol(),
                 move.targetRow(),
-                PieceService.getPieces());
+                pieceService.getPieces());
         if (captured != null) {
             pieceService.removePiece(captured);
         }
@@ -112,5 +119,23 @@ public class ModelService {
         BooleanService.isDragging = false;
         BooleanService.isLegal = false;
         GameService.setCurrentTurn(Tint.WHITE);
+    }
+
+    public void autoPromote(Piece pawn) {
+        if(!(pawn instanceof Pawn)) { return; }
+        if(pawn == null) { return; }
+
+        Tint side = pawn.getColor();
+        Piece promotedPiece = BooleanService.getRandomPiece(pawn, pawn.getColor());
+        Piece promotingPawn = pawn;
+
+        pieceService.getPieces().remove(pawn);
+        pieceService.getPieces().add(promotedPiece);
+        BoardService.getBoardState()
+                [promotedPiece.getCol()][promotedPiece.getRow()] = promotedPiece;
+
+        if(promotingPawn == pawn) { promotingPawn = null; }
+        BooleanService.isPromotionPending = false;
+        pieceService.switchTurns();
     }
 }

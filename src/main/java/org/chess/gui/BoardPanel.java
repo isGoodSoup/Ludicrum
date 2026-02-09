@@ -23,8 +23,9 @@ public class BoardPanel extends JPanel implements Runnable {
         final int WIDTH = GUIService.getWIDTH();
         final int HEIGHT = GUIService.getHEIGHT();
         GUIService.drawRandomBackground(BooleanService.getBoolean());
-        setPreferredSize(new Dimension(WIDTH, HEIGHT));
-        setBackground(Color.BLACK);
+        setPreferredSize(new Dimension(WIDTH + GUIService.getEXTRA_WIDTH(),
+                HEIGHT));
+        setBackground(GUIService.getNewBackground());
         addMouseMotionListener(service.getMouseService());
         addMouseListener(service.getMouseService());
 	}
@@ -65,7 +66,10 @@ public class BoardPanel extends JPanel implements Runnable {
                     GUIService.optionsMenu);
             case MODE -> service.getGuiService().drawGraphics(g2,
                     GUIService.optionsMode);
-            case BOARD -> service.getGuiService().drawBoard(g2);
+            case BOARD -> {
+                service.getGuiService().drawBoard(g2);
+                service.getGuiService().drawMoves(g2);
+            }
         }
     }
 
