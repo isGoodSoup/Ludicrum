@@ -27,16 +27,16 @@ public class BoardPanel extends JPanel implements Runnable {
 	private final int FPS = 60;
 	private Thread thread;
 
-    private final Piece[][] boardState;
 	private final Board board;
 	private final Mouse mouse;
     private static final Random random = new Random();
-	private Tint turn = Tint.WHITE;
+	private Tint currentTurn = Tint.WHITE;
 
 	private GameState state;
 	private PlayState mode;
 
-	private final List<Piece> pieces;
+    private static final Piece[][] boardState = new Piece[8][8];
+	private static final List<Piece> pieces = new ArrayList<>();
 	private Piece currentPiece;
     private Piece castlingPiece;
 	private Piece promotingPawn;
@@ -50,14 +50,13 @@ public class BoardPanel extends JPanel implements Runnable {
     private final BufferedImage logo;
 	private final BufferedImage yes;
 	private final BufferedImage no;
-	private final BufferedImage whitePawn, blackPawn;
-	private final BufferedImage whiteRook, blackRook;
-	private final BufferedImage whiteKnight, blackKnight;
-	private final BufferedImage whiteBishop, blackBishop;
-	private final BufferedImage whiteQueen, blackQueen;
-	private final BufferedImage whiteKing, blackKing;
 
-	private boolean canMove;
+    private long moveStartTime;
+    private int moveStartX, moveStartY;
+    private int moveTargetX, moveTargetY;
+    private Piece animatingPiece;
+
+    private boolean canMove;
 	private boolean validSquare;
     private boolean isPromotionPending;
 	private boolean isDragging;
@@ -77,9 +76,7 @@ public class BoardPanel extends JPanel implements Runnable {
 	public BoardPanel() {
 		super();
 		this.board = new Board();
-        this.pieces = new ArrayList<>();
 		this.mouse = new Mouse();
-        this.boardState = new Piece[board.getCOL()][board.getROW()];
 		this.state = GameState.MENU;
         this.mode = null;
 		WIDTH = Board.getSquare() * 8;
@@ -95,18 +92,6 @@ public class BoardPanel extends JPanel implements Runnable {
             logo = getImage("/ui/logo");
 			yes = getImage("/ticks/tick_yes");
 			no = getImage("/ticks/tick_no");
-			whitePawn = getImage("/pieces/pawn-h");
-			blackPawn = getImage("/pieces/pawn-bh");
-			whiteRook = getImage("/pieces/rook-h");
-			blackRook = getImage("/pieces/rook-bh");
-			whiteKnight = getImage("/pieces/knight-h");
-			blackKnight = getImage("/pieces/knight-bh");
-			whiteBishop = getImage("/pieces/bishop-h");
-			blackBishop = getImage("/pieces/bishop-bh");
-			whiteQueen = getImage("/pieces/queen-h");
-			blackQueen = getImage("/pieces/queen-bh");
-			whiteKing = getImage("/pieces/king-h");
-			blackKing = getImage("/pieces/king-bh");
 		} catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -128,17 +113,21 @@ public class BoardPanel extends JPanel implements Runnable {
 		return FPS;
 	}
 
-	public Tint getTurn() {
-		return turn;
+	public Tint getCurrentTurn() {
+		return currentTurn;
 	}
 
-	public void setTurn(Tint turn) {
-		this.turn = turn;
+	public void setCurrentTurn(Tint currentTurn) {
+		this.currentTurn = currentTurn;
 	}
 
-	public List<Piece> getPieces() {
+	public static List<Piece> getPieces() {
 		return pieces;
 	}
+
+    public static Piece[][] getBoardState() {
+        return boardState;
+    }
 
 	public Board getBoard() {
 		return board;
@@ -195,7 +184,7 @@ public class BoardPanel extends JPanel implements Runnable {
     private void startBoard() {
         pieces.clear();
         setPieces();
-        turn = Tint.WHITE;
+        currentTurn = Tint.WHITE;
         isGameOver = false;
         currentPiece = null;
         state = GameState.BOARD;
@@ -242,37 +231,21 @@ public class BoardPanel extends JPanel implements Runnable {
 		pieces.add(new King(Tint.BLACK, 4, 0));
 	}
 
-	private Piece getHoveredPiece() {
-		int hoverCol = mouse.getX() / Board.getSquare();
-		int hoverRow = mouse.getY() / Board.getSquare();
+    private Piece getHoveredPiece() {
+        int hoverCol = mouse.getX() / Board.getSquare();
+        int hoverRow = mouse.getY() / Board.getSquare();
 
-		for(Piece p : pieces) {
-			if(p.getCol() == hoverCol && p.getRow() ==
-					hoverRow && p != currentPiece) {
-                if(isAIPlaying && p.getColor() != Tint.WHITE || isDragging) {
+        for (Piece p : pieces) {
+            if (p.getCol() == hoverCol && p.getRow() == hoverRow && p != currentPiece) {
+                if (isAIPlaying && p.getColor() != Tint.WHITE || isDragging) {
                     return null;
                 }
-				return p;
-			}
-		}
-		return null;
-	}
+                return p;
+            }
+        }
+        return null;
+    }
 
-	private BufferedImage getHoverSprite(Piece p) {
-		if(p instanceof Pawn) return (p.getColor() == Tint.WHITE) ?
-				whitePawn : blackPawn;
-		if(p instanceof Rook) return (p.getColor() == Tint.WHITE) ?
-				whiteRook : blackRook;
-		if(p instanceof Knight) return (p.getColor() == Tint.WHITE) ?
-				whiteKnight : blackKnight;
-		if(p instanceof Bishop) return (p.getColor() == Tint.WHITE) ?
-				whiteBishop : blackBishop;
-		if(p instanceof Queen) return (p.getColor() == Tint.WHITE) ?
-				whiteQueen : blackQueen;
-		if(p instanceof King) return (p.getColor() == Tint.WHITE) ?
-				whiteKing : blackKing;
-		return null;
-	}
 
     private void clearBoardState() {
         for(int c = 0; c < 8; c++) {
@@ -280,24 +253,6 @@ public class BoardPanel extends JPanel implements Runnable {
                 boardState[c][r] = null;
             }
         }
-    }
-
-    private void addPiece(Piece p) {
-        pieces.add(p);
-        boardState[p.getCol()][p.getRow()] = p;
-    }
-
-    private void removePiece(Piece p) {
-        pieces.remove(p);
-        boardState[p.getCol()][p.getRow()] = null;
-    }
-
-    private void movePiece(Piece p, int newCol, int newRow) {
-        boardState[p.getCol()][p.getRow()] = null;
-        p.setCol(newCol);
-        p.setRow(newRow);
-        p.updatePos();
-        boardState[newCol][newRow] = p;
     }
 
     @Override
@@ -353,7 +308,7 @@ public class BoardPanel extends JPanel implements Runnable {
             temp.setY(startY);
 
             if(i == hoverIndex) {
-                temp.setScale(temp.getScale() + 0.5f);
+                temp.setScale(temp.getScale() + temp.getMORE_SCALE());
             } else {
                 temp.setScale(temp.getDEFAULT_SCALE());
             }
@@ -418,15 +373,15 @@ public class BoardPanel extends JPanel implements Runnable {
                 RenderingHints.KEY_INTERPOLATION,
                 RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR
         );
-        for(Piece p : pieces) {
-            if(p != currentPiece) {
-                if(p == hovered) {
-                    BufferedImage hoverImage = getHoverSprite(p);
-                    int size = (int)(Board.getSquare() * p.getScale());
-                    g2.drawImage(hoverImage, p.getX(), p.getY(), size, size, null);
+
+        for (Piece p : pieces) {
+            if (p != currentPiece) {
+                if (p == hovered) {
+                    p.setScale(p.getDEFAULT_SCALE() + p.getMORE_SCALE()/2);
                 } else {
-                    p.draw(g2);
+                    p.setScale(p.getDEFAULT_SCALE());
                 }
+                p.draw(g2);
             }
         }
 
@@ -454,8 +409,9 @@ public class BoardPanel extends JPanel implements Runnable {
 
 			if(delta >= 1) {
 				update();
-                if(!isAIPlaying || turn == Tint.WHITE
+                if(!isAIPlaying || currentTurn == Tint.WHITE
                         || isPromotionPending) {
+                    animateMove();
                     repaint();
                 }
                 delta--;
@@ -483,12 +439,66 @@ public class BoardPanel extends JPanel implements Runnable {
         }
 	}
 
+    private void handleMenuInput() {
+        if(!mouse.isClicked()) {
+            return;
+        }
+        int startY = HEIGHT/2 + MENU_START_Y;
+        int spacing = MENU_SPACING;
+
+        for(int i = 0; i < optionsMenu.length; i++) {
+            int y = startY + i * spacing;
+            boolean isHovered = getHitbox(y).contains(mouse.getX(),
+                    mouse.getY());
+            if(isHovered) {
+                switch(i) {
+                    case 0 -> startNewGame();
+                    case 1 -> System.exit(0);
+                }
+                mouse.setClicked(false);
+                break;
+            }
+        }
+    }
+
+    private void startNewGame() {
+        this.state = GameState.MODE;
+    }
+
+    private void setPlayState() {
+        if(!mouse.isClicked()) {
+            return;
+        }
+
+        if(state != GameState.MODE) {
+            return;
+        }
+
+        int startY = HEIGHT/2 + MENU_START_Y;
+        int spacing = MENU_SPACING;
+
+        for(int i = 0; i < optionsMode.length; i++) {
+            int y = startY + i * spacing;
+            boolean isHovered = getHitbox(y).contains(mouse.getX(),
+                    mouse.getY());
+            if(isHovered) {
+                switch(i) {
+                    case 0 -> mode = PlayState.PLAYER;
+                    case 1 -> mode = PlayState.AI;
+                }
+                mouse.setClicked(false);
+                startBoard();
+                return;
+            }
+        }
+    }
+
     private void getGame() {
         if(state != GameState.BOARD) {
             return;
         }
 
-        if(isAIPlaying && turn == Tint.BLACK) {
+        if(isAIPlaying && currentTurn == Tint.BLACK) {
             return;
         }
 
@@ -500,13 +510,31 @@ public class BoardPanel extends JPanel implements Runnable {
             mouse.setClicked(false);
         }
 
-        if(mouse.isPressed() && !isDragging && currentPiece == null) {
+        if(mouse.isClicked() && !isDragging && currentPiece == null) {
             for(Piece p : pieces) {
-                if(p.getColor() == turn &&
+                if(p.getColor() == currentTurn &&
                         p.getCol() == hoverCol &&
                         p.getRow() == hoverRow) {
                     currentPiece = p;
-                    currentPiece.setScale(currentPiece.getDEFAULT_SCALE() + 0.5f);
+                    currentPiece.setScale(currentPiece.getDEFAULT_SCALE()
+                            + currentPiece.getMORE_SCALE());
+                    dragOffsetX = mouse.getX() - p.getX();
+                    dragOffsetY = mouse.getY() - p.getY();
+                    currentPiece.setPreCol(p.getCol());
+                    currentPiece.setPreRow(p.getRow());
+                    break;
+                }
+            }
+        }
+
+        if(mouse.isHeld() && !isDragging && currentPiece == null) {
+            for(Piece p : pieces) {
+                if(p.getColor() == currentTurn &&
+                        p.getCol() == hoverCol &&
+                        p.getRow() == hoverRow) {
+                    currentPiece = p;
+                    currentPiece.setScale(currentPiece.getDEFAULT_SCALE()
+                            + currentPiece.getMORE_SCALE());
                     isDragging = true;
                     dragOffsetX = mouse.getX() - p.getX();
                     dragOffsetY = mouse.getY() - p.getY();
@@ -517,12 +545,13 @@ public class BoardPanel extends JPanel implements Runnable {
             }
         }
 
-        if(isDragging && mouse.isPressed() && currentPiece != null) {
+        if(isDragging && mouse.isHeld() && currentPiece != null) {
             currentPiece.setX(mouse.getX() - dragOffsetX);
             currentPiece.setY(mouse.getY() - dragOffsetY);
             int targetCol = mouse.getX() / Board.getSquare();
             int targetRow = mouse.getY() / Board.getSquare();
-            isLegal = currentPiece.canMove(targetCol, targetRow, this) &&
+
+            isLegal = currentPiece.canMove(targetCol, targetRow, pieces) &&
                             !wouldLeaveKingInCheck(currentPiece, targetCol, targetRow);
         }
 
@@ -532,9 +561,9 @@ public class BoardPanel extends JPanel implements Runnable {
             int targetRow = mouse.getY() / Board.getSquare();
 
             if(isLegal) {
-                Piece captured = getPieceAt(targetCol, targetRow);
+                Piece captured = Piece.getPieceAt(targetCol, targetRow, pieces);
                 if(captured != null) {
-                    removePiece(captured);
+                    currentPiece.removePiece(captured);
                 }
 
                 if (currentPiece instanceof King) {
@@ -556,7 +585,8 @@ public class BoardPanel extends JPanel implements Runnable {
 
                         boolean pathClear = true;
                         for(int c = currentPiece.getCol() + step; c != rookStartCol; c += step) {
-                            if(getPieceAt(c, currentPiece.getRow()) != null) {
+                            if(Piece.getPieceAt(c, currentPiece.getRow(),
+                                    pieces) != null) {
                                 pathClear = false;
                                 break;
                             }
@@ -579,15 +609,14 @@ public class BoardPanel extends JPanel implements Runnable {
                     }
                 }
 
-                movePiece(currentPiece, targetCol, targetRow);
+                currentPiece.movePiece(currentPiece, targetCol, targetRow);
                 currentPiece.setHasMoved(true);
 
                 if (currentPiece instanceof Pawn) {
                     int oldRow = currentPiece.getPreRow();
                     int movedSquares = Math.abs(targetRow - oldRow);
 
-                    if (captured == null && Math.abs(targetCol -
-                            currentPiece.getPreCol()) == 1) {
+                    if (captured == null && Math.abs(targetCol - currentPiece.getPreCol()) == 1) {
                         int dir = (currentPiece.getColor() == Tint.WHITE) ? -1 : 1;
                         if (targetRow - oldRow == dir) {
                             for (Piece p : pieces) {
@@ -615,7 +644,7 @@ public class BoardPanel extends JPanel implements Runnable {
                     isPromotionPending = true;
                     promotionColor = currentPiece.getColor();
                 } else {
-                    turn = (turn == Tint.WHITE)
+                    currentTurn = (currentTurn == Tint.WHITE)
                             ? Tint.BLACK : Tint.WHITE;
 
                     if (currentPiece != null) {
@@ -630,7 +659,7 @@ public class BoardPanel extends JPanel implements Runnable {
                         }
                     }
 
-                    if (isKingInCheck(turn) && getAiTurn() == null) {
+                    if (isKingInCheck(currentTurn) && getAiTurn() == null) {
                         isGameOver = true;
                     }
 
@@ -707,7 +736,7 @@ public class BoardPanel extends JPanel implements Runnable {
         boardState[promotedPiece.getCol()][promotedPiece.getRow()] = promotedPiece;
         promotingPawn = null;
         isPromotionPending = false;
-        turn = (turn == Tint.WHITE) ? Tint.BLACK : Tint.WHITE;
+        currentTurn = (currentTurn == Tint.WHITE) ? Tint.BLACK : Tint.WHITE;
         mouse.setClicked(false);
     }
 
@@ -724,7 +753,7 @@ public class BoardPanel extends JPanel implements Runnable {
 
 		for(Piece p : pieces) {
 			if(p.getColor() != kingColor) {
-				if(p.canMove(king.getCol(), king.getRow(), this)) {
+				if(p.canMove(king.getCol(), king.getRow(), pieces)) {
 					checkingPiece = p;
 					return true;
 				}
@@ -785,7 +814,7 @@ public class BoardPanel extends JPanel implements Runnable {
     private boolean isPieceThreatened(Piece piece) {
         for(Piece enemy : pieces) {
             if(enemy.getColor() == piece.getColor()) { continue; }
-            if(enemy.canMove(piece.getCol(), piece.getRow(), this)) {
+            if(enemy.canMove(piece.getCol(), piece.getRow(), pieces)) {
                 return true;
             }
         }
@@ -793,10 +822,16 @@ public class BoardPanel extends JPanel implements Runnable {
     }
 
     private Move getAiTurn() {
-        List<MoveScore> moves = getAllLegalMoves(turn);
-        if(moves.isEmpty()) return null;
+        List<MoveScore> moves = getAllLegalMoves(currentTurn);
+        if(moves.isEmpty()) { return null; }
         moves.sort((a,b) -> Integer.compare(b.score(), a.score()));
-        return moves.getFirst().move();
+        Move bestMove = moves.getFirst().move();
+
+        Piece p = bestMove.piece();
+        if (p.getColor() == Tint.BLACK) {
+            startMoveAnimation(p, bestMove.targetCol(), bestMove.targetRow());
+        }
+        return bestMove;
     }
 
     private List<MoveScore> getAllLegalMoves(Tint color) {
@@ -815,8 +850,8 @@ public class BoardPanel extends JPanel implements Runnable {
     }
 
     private boolean isLegalMove(Piece p, int col, int row) {
-        Piece target = getPieceAt(col, row);
-        if (!p.canMove(col, row, this)) {
+        Piece target = Piece.getPieceAt(col, row, pieces);
+        if (!p.canMove(col, row, pieces)) {
             return false;
         }
 
@@ -824,14 +859,6 @@ public class BoardPanel extends JPanel implements Runnable {
             return false;
         }
         return !wouldLeaveKingInCheck(p, col, row);
-    }
-
-
-    public Piece getPieceAt(int col, int row) {
-        if(col < 0 || col > 7 || row < 0 || row > 7) {
-            return null;
-        }
-        return boardState[col][row];
     }
 
     private int evaluateMove(Move move) {
@@ -874,71 +901,54 @@ public class BoardPanel extends JPanel implements Runnable {
         p.setPreCol(p.getCol());
         p.setPreRow(p.getRow());
 
-        Piece captured = getPieceAt(move.targetCol(), move.targetRow());
+        Piece captured = Piece.getPieceAt(move.targetCol(), move.targetRow(),
+                pieces);
         if (captured != null) {
-            removePiece(captured);
+            p.removePiece(captured);
         }
 
-        movePiece(p, move.targetCol(), move.targetRow());
+        if (p.getColor() == Tint.BLACK) {
+            startMoveAnimation(p, move.targetCol(), move.targetRow());
+        }
+
+        p.movePiece(p, move.targetCol(), move.targetRow());
         p.setHasMoved(true);
 
         currentPiece = null;
         isDragging = false;
         isLegal = false;
-        turn = Tint.WHITE;
+        currentTurn = Tint.WHITE;
     }
 
-    private void handleMenuInput() {
-		if(!mouse.isClicked()) {
-			return;
-		}
-		int startY = HEIGHT/2 + MENU_START_Y;
-		int spacing = MENU_SPACING;
+    private void startMoveAnimation(Piece p, int targetCol, int targetRow) {
+        moveStartTime = System.currentTimeMillis();
+        moveStartX = p.getX();
+        moveStartY = p.getY();
+        moveTargetX = targetCol * Board.getSquare();
+        moveTargetY = targetRow * Board.getSquare();
+        animatingPiece = p;
+    }
 
-        for(int i = 0; i < optionsMenu.length; i++) {
-            int y = startY + i * spacing;
-            boolean isHovered = getHitbox(y).contains(mouse.getX(),
-                    mouse.getY());
-            if(isHovered) {
-                switch(i) {
-                    case 0 -> startNewGame();
-                    case 1 -> System.exit(0);
-                }
-                mouse.setClicked(false);
-                break;
+    private void animateMove() {
+        if (animatingPiece != null) {
+            long elapsedTime = System.currentTimeMillis() - moveStartTime;
+            double moveDuration = 500; // Duration of the animation
+            double progress = Math.min(elapsedTime / moveDuration, 1.0); // 0 to 1 range
+
+            // Interpolate the position
+            int currentX = (int) (moveStartX + (moveTargetX - moveStartX) * progress);
+            int currentY = (int) (moveStartY + (moveTargetY - moveStartY) * progress);
+
+            animatingPiece.setX(currentX);
+            animatingPiece.setY(currentY);
+
+            // If the move is complete, finalize it
+            if (progress >= 1.0) {
+                animatingPiece.setCol(moveTargetX / Board.getSquare());
+                animatingPiece.setRow(moveTargetY / Board.getSquare());
+                animatingPiece.updatePos();
+                animatingPiece = null;  // End the animation
             }
         }
-	}
-
-	private void startNewGame() {
-		this.state = GameState.MODE;
-	}
-
-	private void setPlayState() {
-        if(!mouse.isClicked()) {
-            return;
-        }
-
-		if(state != GameState.MODE) {
-			return;
-		}
-
-		int startY = HEIGHT/2 + MENU_START_Y;
-		int spacing = MENU_SPACING;
-
-		for(int i = 0; i < optionsMode.length; i++) {
-			int y = startY + i * spacing;
-            boolean isHovered = getHitbox(y).contains(mouse.getX(),
-                    mouse.getY());
-            if(isHovered) {
-				switch(i) {
-					case 0 -> mode = PlayState.PLAYER;
-					case 1 -> mode = PlayState.AI;
-				}
-				mouse.setClicked(false);
-                startBoard();
-				return;
-			}
-		}
-	}
+    }
 }

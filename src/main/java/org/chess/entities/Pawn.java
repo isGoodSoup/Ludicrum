@@ -2,7 +2,6 @@ package org.chess.entities;
 
 import org.chess.enums.Tint;
 import org.chess.enums.Type;
-import org.chess.gui.BoardPanel;
 
 import java.util.List;
 
@@ -19,40 +18,34 @@ public class Pawn extends Piece {
 	}
 
 	@Override
-	public boolean canMove(int targetCol, int targetRow, BoardPanel board) {
-		if(isWithinBoard(targetCol, targetRow) && !isSameSquare(targetCol, targetRow)) {
-			int moveValue = 0;
-			if(getColor() == Tint.WHITE) {
-				moveValue = -1;
-			}
-			
-			if(getColor() == Tint.BLACK) {
-				moveValue = 1;
-			}
-
+	public boolean canMove(int targetCol, int targetRow, List<Piece> board) {
+		if (isWithinBoard(targetCol, targetRow) && !isSameSquare(targetCol, targetRow)) {
+			int moveValue = (getColor() == Tint.WHITE) ? -1 : 1;
 			setOtherPiece(isColliding(targetCol, targetRow, board));
-			if(targetCol == getPreCol() && targetRow == getPreRow() + moveValue 
-					&& getOtherPiece() == null) {
+
+			if (targetCol == getPreCol() && targetRow == getPreRow() +
+					moveValue && getOtherPiece() == null) {
 				return true;
 			}
 
-			if(targetCol == getPreCol() && targetRow == getPreRow() + moveValue * 2 
-					&& getOtherPiece() == null
-					&& hasMoved() && isPathClear(targetCol, targetRow,
-					board.getPieces())) {
+			if (targetCol == getPreCol() && targetRow == getPreRow() +
+					moveValue * 2 &&
+					getOtherPiece() == null && !hasMoved()
+					&& isPathClear(targetCol, targetRow, board)) {
 				return true;
 			}
 
-			if(Math.abs(targetCol - getPreCol()) == 1
-					&& targetRow == getPreRow() + moveValue
-					&& getOtherPiece() != null
-					&& getOtherPiece().getColor() != this.getColor()) {
+			if (Math.abs(targetCol - getPreCol()) == 1 && targetRow == getPreRow()
+					+ moveValue && getOtherPiece() != null &&
+					getOtherPiece().getColor() != this.getColor()) {
 				return true;
 			}
-			
-			if(Math.abs(targetCol - getPreCol()) == 1 && targetRow == getPreRow() + moveValue) {
-				for (Piece p : board.getPieces()) {
-					if(p.getCol() == targetCol && p.getRow() == getPreRow()
+
+			if (Math.abs(targetCol - getPreCol()) == 1 &&
+					targetRow == getPreRow() + moveValue) {
+				for (Piece p : board) {
+					if (p instanceof Pawn && p.getColor() != this.getColor()
+							&& p.getCol() == targetCol && p.getRow() == getPreRow()
 							&& p.isTwoStepsAhead()) {
 						setOtherPiece(p);
 						return true;
@@ -64,27 +57,32 @@ public class Pawn extends Piece {
 	}
 
 	@Override
-	public boolean canMove(int targetCol, int targetRow, List<Piece> board) {
-		if (!isWithinBoard(targetCol, targetRow)) { return false; }
-		int direction = (getColor() == Tint.WHITE) ? -1 : 1;
-		int startRow = (getColor() == Tint.WHITE) ? 6 : 1;
+	public boolean isPathClear(int targetCol, int targetRow, List<Piece> board) {
+		int colDiff = targetCol - getCol();
+		int rowDiff = targetRow - getRow();
 
-		if (targetCol == getCol() && targetRow == getRow() + direction) {
-			return isValidSquare(targetCol, targetRow, board);
-		}
+		if (colDiff == 0) {
+			int rowStep = Integer.signum(rowDiff);
+			int r = getRow() + rowStep;
 
-		if (getRow() == startRow && targetCol == getCol()
-				&& targetRow == getRow() + 2 * direction) {
-			if (isPathClear(targetCol, targetRow, board)) {
-				return true;
+			while (r != targetRow) {
+				if (getPieceAt(targetCol, r, board) != null) {
+					return false;
+				}
+				r += rowStep;
 			}
-		}
-
-		if (Math.abs(targetCol - getCol()) == 1
-				&& targetRow == getRow() + direction) {
-			return isValidSquare(targetCol, targetRow, board);
+			return true;
 		}
 		return false;
+	}
+
+	@Override
+	public void movePiece(Piece p, int newCol, int newRow) {
+		super.movePiece(p, newCol, newRow);
+        setTwoStepsAhead(Math.abs(newRow - getPreRow()) == 2);
+		if (Math.abs(newRow - getPreRow()) == 2) {
+			setHasMoved(true);
+		}
 	}
 
 	@Override

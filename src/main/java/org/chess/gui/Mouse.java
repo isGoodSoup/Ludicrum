@@ -5,7 +5,7 @@ import java.awt.event.MouseEvent;
 
 public class Mouse extends MouseAdapter {
 	private int x, y;
-	private boolean isPressed;
+	private boolean isHeld;
 	private boolean isClicked;
 	
 	public int getX() {
@@ -24,24 +24,24 @@ public class Mouse extends MouseAdapter {
 		this.y = y;
 	}
 
-	public boolean isPressed() {
-		return isPressed;
+	public boolean isHeld() {
+		return isHeld;
 	}
 
-	public void setPressed(boolean isPressed) {
-		this.isPressed = isPressed;
+	public void setHeld(boolean isPressed) {
+		this.isHeld = isPressed;
 	}
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		isPressed = true;
+		isHeld = true;
 		x = e.getX();
 		y = e.getY();
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		isPressed = false;
+		isHeld = false;
 		isClicked = true;
 	}
 

@@ -19,28 +19,48 @@ public class Rook extends Piece {
 	}
 
 	@Override
-	public boolean canMove(int targetCol, int targetRow, BoardPanel board) {
-	    if(isWithinBoard(targetCol, targetRow) && !isSameSquare(targetCol, targetRow)) {
-	        if(targetCol == getPreCol() || targetRow == getPreRow()) {
-                return isValidSquare(targetCol, targetRow, board)
-                        && isPathClear(targetCol, targetRow, board.getPieces());
-	        }
-	    }
-	    return false;
+	public boolean canMove(int targetCol, int targetRow, List<Piece> board) {
+		if(isWithinBoard(targetCol, targetRow) && !isSameSquare(targetCol, targetRow)) {
+			if(targetCol == getPreCol() || targetRow == getPreRow()) {
+				return isValidSquare(targetCol, targetRow, board)
+						&& isPathClear(targetCol, targetRow, board);
+			}
+		}
+		return false;
 	}
 
 	@Override
-	public boolean canMove(int targetCol, int targetRow, List<Piece> board) {
-		if(!isWithinBoard(targetCol, targetRow)) {
+	public boolean isPathClear(int targetCol, int targetRow, List<Piece> board) {
+		int colDiff = targetCol - getCol();
+		int rowDiff = targetRow - getRow();
+
+		if(rowDiff == 0) {
+			int colStep = Integer.signum(colDiff);
+			int c = getCol() + colStep;
+
+			while(c != targetCol) {
+				if(getPieceAt(c, getRow(), board) != null) {
+					return false;
+				}
+				c += colStep;
+			}
+		} else if(colDiff == 0) {
+			int rowStep = Integer.signum(rowDiff);
+			int r = getRow() + rowStep;
+
+			while(r != targetRow) {
+				if(getPieceAt(getCol(), r, board) != null) {
+					return false;
+				}
+				r += rowStep;
+			}
+		} else {
 			return false;
 		}
 
-		if(targetCol == getCol() || targetRow == getRow()) {
-			return isPathClear(targetCol, targetRow, board);
-		}
-
-		return false;
+		return true;  // Path is clear
 	}
+
 
 	@Override
 	public Piece copy() {

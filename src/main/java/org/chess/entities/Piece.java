@@ -18,6 +18,7 @@ public abstract class Piece {
 	private int x, y;
 	private int col, row, preCol, preRow;
     private static final double DEFAULT_SCALE = 1.0;
+	private static final float MORE_SCALE = 0.5f;
 	private double scale = DEFAULT_SCALE;
 	private Tint color;
 	private Piece otherPiece;
@@ -78,6 +79,8 @@ public abstract class Piece {
     public void setScale(double scale) {
         this.scale = scale;
     }
+
+	public float getMORE_SCALE() { return MORE_SCALE; }
 
 	public Tint getColor() {
 		return color;
@@ -144,7 +147,7 @@ public abstract class Piece {
 	}
 
 	public boolean hasMoved() {
-		return !hasMoved;
+		return hasMoved;
 	}
 
 	public void setHasMoved(boolean hasMoved) {
@@ -161,6 +164,33 @@ public abstract class Piece {
 
 	public void resetEnPassant() {
 		isTwoStepsAhead = false;
+	}
+
+	public static Piece getPieceAt(int col, int row, List<Piece> board) {
+		for (Piece p : board) {
+			if (p.getCol() == col && p.getRow() == row) {
+				return p;
+			}
+		}
+		return null;
+	}
+
+	public void addPiece(Piece p) {
+		BoardPanel.getPieces().add(p);
+		BoardPanel.getBoardState()[p.getCol()][p.getRow()] = p;
+	}
+
+	public void removePiece(Piece p) {
+		BoardPanel.getPieces().remove(p);
+		BoardPanel.getBoardState()[p.getCol()][p.getRow()] = null;
+	}
+
+	public void movePiece(Piece p, int newCol, int newRow) {
+		BoardPanel.getBoardState()[p.getCol()][p.getRow()] = null;
+		p.setCol(newCol);
+		p.setRow(newRow);
+		p.updatePos();
+		BoardPanel.getBoardState()[newCol][newRow] = p;
 	}
 
 	public void updatePos() {
@@ -183,8 +213,6 @@ public abstract class Piece {
 		y = getY(row);
 	}
 
-	public abstract boolean canMove(int targetCol, int targetRow, BoardPanel board);
-
 	public abstract boolean canMove(int targetCol, int targetRow,
 									List<Piece> board);
 
@@ -198,8 +226,8 @@ public abstract class Piece {
         return targetCol == preCol && targetRow == preRow;
     }
 
-	public Piece isColliding(int col, int row, BoardPanel board) {
-	    for (Piece p : board.getPieces()) {
+	public Piece isColliding(int col, int row, List<Piece> board) {
+	    for (Piece p : board) {
 	        if (p.getCol() == col && p.getRow() == row) {
 	        	return p;
 	        }
@@ -245,7 +273,7 @@ public abstract class Piece {
 	}
 
 	public boolean isValidSquare(int targetCol, int targetRow, BoardPanel board) {
-	    for (Piece p : board.getPieces()) {
+	    for (Piece p : BoardPanel.getPieces()) {
 	        if (p.getCol() == targetCol && p.getRow() == targetRow) {
 	            return p.getColor() != this.getColor();
 	        }

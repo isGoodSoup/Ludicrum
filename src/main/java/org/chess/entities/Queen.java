@@ -2,9 +2,9 @@ package org.chess.entities;
 
 import org.chess.enums.Tint;
 import org.chess.enums.Type;
-import org.chess.gui.BoardPanel;
 
 import java.util.List;
+import java.util.Objects;
 
 public class Queen extends Piece {
 
@@ -19,35 +19,64 @@ public class Queen extends Piece {
 	}
 
 	@Override
-	public boolean canMove(int targetCol, int targetRow, BoardPanel board) {
-	    if(isWithinBoard(targetCol, targetRow) && !isSameSquare(targetCol, targetRow)) {
-	    	 if(targetCol == getCol() || targetRow == getRow()) {
-	    		 if(isValidSquare(targetCol, targetRow, board)
-						 && isPathClear(targetCol, targetRow, board.getPieces())) {
-	    			 return true;
-	    		 }
-	    	 }
-			if(Math.abs(targetCol - getCol()) == Math.abs(targetRow - getRow())) {
-                return isValidSquare(targetCol, targetRow, board)
-						&& isPathClear(targetCol, targetRow, board.getPieces());
-			}
-		}
-	    return false;
-	}
-
-	@Override
 	public boolean canMove(int targetCol, int targetRow, List<Piece> board) {
-		if(!isWithinBoard(targetCol, targetRow)) {
-			return false;
-		}
+		if(isWithinBoard(targetCol, targetRow) && !isSameSquare(targetCol, targetRow)) {
+			if(targetCol == getCol() || targetRow == getRow()) {
+				if(isPathClear(targetCol, targetRow, board)) {
+					return true;
+				}
+			}
 
-		int colDiff = Math.abs(targetCol - getCol());
-		int rowDiff = Math.abs(targetRow - getRow());
-		if(colDiff == rowDiff || targetCol == getCol() || targetRow == getRow()) {
-			return isPathClear(targetCol, targetRow, board);
+			if(Math.abs(targetCol - getCol()) == Math.abs(targetRow - getRow())) {
+                return isPathClear(targetCol, targetRow, board);
+			}
 		}
 		return false;
 	}
+
+	@Override
+	public boolean isPathClear(int targetCol, int targetRow, List<Piece> board) {
+		int colDiff = targetCol - getCol();
+		int rowDiff = targetRow - getRow();
+
+		if(colDiff == 0 || rowDiff == 0) {
+			int colStep = Integer.signum(colDiff);
+			int rowStep = Integer.signum(rowDiff);
+
+			int c = getCol() + colStep;
+			int r = getRow() + rowStep;
+
+			while (c != targetCol || r != targetRow) {
+				if(getPieceAt(c, r, board) != null) {
+					return false;
+				}
+				c += colStep;
+				r += rowStep;
+			}
+		} else if(Math.abs(colDiff) == Math.abs(rowDiff)) {
+			int colStep = Integer.signum(colDiff);
+			int rowStep = Integer.signum(rowDiff);
+
+			int c = getCol() + colStep;
+			int r = getRow() + rowStep;
+
+			while (c != targetCol && r != targetRow) {
+				if(getPieceAt(c, r, board) != null) {
+					return false;
+				}
+				c += colStep;
+				r += rowStep;
+			}
+		}
+
+		if(getPieceAt(targetCol, targetRow, board) != null &&
+				Objects.requireNonNull(getPieceAt(targetCol, targetRow, board))
+						.getColor() == this.getColor()) {
+			return false;
+		}
+		return true;
+	}
+
 
 	@Override
 	public Piece copy() {

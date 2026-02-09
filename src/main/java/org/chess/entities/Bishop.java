@@ -19,11 +19,6 @@ public class Bishop extends Piece {
 	}
 
 	@Override
-	public boolean canMove(int targetCol, int targetRow, BoardPanel board) {
-		return canMove(targetCol, targetRow, board.getPieces());
-	}
-
-	@Override
 	public boolean canMove(int targetCol, int targetRow, List<Piece> board) {
 		if (!isWithinBoard(targetCol, targetRow)
 				|| isSameSquare(targetCol, targetRow)) {
