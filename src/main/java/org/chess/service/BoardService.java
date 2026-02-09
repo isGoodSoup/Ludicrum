@@ -183,47 +183,8 @@ public class BoardService {
                     pieceService.removePiece(captured);
                 }
 
-                if (currentPiece instanceof King) {
-                    int colDiff = targetCol - currentPiece.getCol();
-
-                    if (Math.abs(colDiff) == 2 && !currentPiece.hasMoved()) {
-                        int step = (colDiff > 0) ? 1 : -1;
-                        int rookStartCol = (colDiff > 0) ? 7 : 0;
-                        int rookTargetCol = (colDiff > 0) ? 5 : 3;
-
-                        if (pieceService.isKingInCheck(currentPiece.getColor()) ||
-                                pieceService.wouldLeaveKingInCheck(currentPiece,
-                                        currentPiece.getCol() + step,
-                                        currentPiece.getRow())) {
-                            PieceService.updatePos(currentPiece);
-                            currentPiece = null;
-                            return;
-                        }
-
-                        boolean pathClear = true;
-                        for(int c = currentPiece.getCol() + step; c != rookStartCol; c += step) {
-                            if(PieceService.getPieceAt(c, currentPiece.getRow(),
-                                    PieceService.getPieces()) != null) {
-                                pathClear = false;
-                                break;
-                            }
-                        }
-
-                        if(pathClear) {
-                            for(Piece p : PieceService.getPieces()) {
-                                if(p instanceof Rook &&
-                                        p.getCol() == rookStartCol &&
-                                        p.getRow() == currentPiece.getRow() &&
-                                        !p.hasMoved()) {
-
-                                    p.setCol(rookTargetCol);
-                                    PieceService.updatePos(p);
-                                    p.setHasMoved(true);
-                                    break;
-                                }
-                            }
-                        }
-                    }
+                if(currentPiece instanceof King) {
+                    executeCastling(currentPiece, targetCol);
                 }
 
                 PieceService.movePiece(currentPiece, targetCol, targetRow);
@@ -231,25 +192,7 @@ public class BoardService {
                 fx.playFX(0);
 
                 if (currentPiece instanceof Pawn) {
-                    int oldRow = currentPiece.getPreRow();
-                    int movedSquares = Math.abs(targetRow - oldRow);
-
-                    if (captured == null && Math.abs(targetCol - currentPiece.getPreCol()) == 1) {
-                        int dir = (currentPiece.getColor() == Tint.WHITE) ? -1 : 1;
-                        if (targetRow - oldRow == dir) {
-                            for (Piece p : PieceService.getPieces()) {
-                                if (p instanceof Pawn &&
-                                        p.getColor() != currentPiece.getColor() &&
-                                        p.getCol() == targetCol &&
-                                        p.getRow() == oldRow &&
-                                        p.isTwoStepsAhead()) {
-                                    PieceService.getPieces().remove(p);
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                    currentPiece.setTwoStepsAhead(movedSquares == 2);
+                    executeEmPassant(currentPiece, captured, targetCol, targetRow);
                 }
 
                 for (Piece p : PieceService.getPieces()) {
@@ -292,5 +235,71 @@ public class BoardService {
                 currentPiece = null;
             }
         }
+    }
+
+    private void executeCastling(Piece currentPiece, int targetCol) {
+        int colDiff = targetCol - currentPiece.getCol();
+
+        if (Math.abs(colDiff) == 2 && !currentPiece.hasMoved()) {
+            int step = (colDiff > 0) ? 1 : -1;
+            int rookStartCol = (colDiff > 0) ? 7 : 0;
+            int rookTargetCol = (colDiff > 0) ? 5 : 3;
+
+            if (pieceService.isKingInCheck(currentPiece.getColor()) ||
+                    pieceService.wouldLeaveKingInCheck(currentPiece,
+                            currentPiece.getCol() + step,
+                            currentPiece.getRow())) {
+                PieceService.updatePos(currentPiece);
+                currentPiece = null;
+                return;
+            }
+
+            boolean pathClear = true;
+            for(int c = currentPiece.getCol() + step; c != rookStartCol; c += step) {
+                if(PieceService.getPieceAt(c, currentPiece.getRow(),
+                        PieceService.getPieces()) != null) {
+                    pathClear = false;
+                    break;
+                }
+            }
+
+            if(pathClear) {
+                for(Piece p : PieceService.getPieces()) {
+                    if(p instanceof Rook &&
+                            p.getCol() == rookStartCol &&
+                            p.getRow() == currentPiece.getRow() &&
+                            !p.hasMoved()) {
+
+                        p.setCol(rookTargetCol);
+                        PieceService.updatePos(p);
+                        p.setHasMoved(true);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    private void executeEmPassant(Piece currentPiece, Piece captured,
+                                 int targetCol, int targetRow) {
+        int oldRow = currentPiece.getPreRow();
+        int movedSquares = Math.abs(targetRow - oldRow);
+
+        if (captured == null && Math.abs(targetCol - currentPiece.getPreCol()) == 1) {
+            int dir = (currentPiece.getColor() == Tint.WHITE) ? -1 : 1;
+            if (targetRow - oldRow == dir) {
+                for (Piece p : PieceService.getPieces()) {
+                    if (p instanceof Pawn &&
+                            p.getColor() != currentPiece.getColor() &&
+                            p.getCol() == targetCol &&
+                            p.getRow() == oldRow &&
+                            p.isTwoStepsAhead()) {
+                        PieceService.getPieces().remove(p);
+                        break;
+                    }
+                }
+            }
+        }
+        currentPiece.setTwoStepsAhead(movedSquares == 2);
     }
 }
