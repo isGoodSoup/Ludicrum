@@ -33,15 +33,16 @@ public class Keyboard implements KeyListener {
         return false;
     }
 
-    public boolean wasWPressed() { return wasKeyPressed(KeyEvent.VK_W); }
-    public boolean wasAPressed() { return wasKeyPressed(KeyEvent.VK_A); }
-    public boolean wasSPressed() { return wasKeyPressed(KeyEvent.VK_S); }
-    public boolean wasDPressed() { return wasKeyPressed(KeyEvent.VK_D); }
+    public boolean wasUpPressed() { return wasKeyPressed(KeyEvent.VK_UP); }
+    public boolean wasLeftPressed() { return wasKeyPressed(KeyEvent.VK_LEFT); }
+    public boolean wasDownPressed() { return wasKeyPressed(KeyEvent.VK_DOWN); }
+    public boolean wasRightPressed() { return wasKeyPressed(KeyEvent.VK_RIGHT); }
     public boolean wasEnterPressed() { return wasKeyPressed(KeyEvent.VK_ENTER); }
+    public boolean wasSpacePressed() { return wasKeyPressed(KeyEvent.VK_SPACE); }
     public boolean wasZPressed() { return wasKeyPressed(KeyEvent.VK_Z); }
     public boolean wasBPressed() { return wasKeyPressed(KeyEvent.VK_B); }
 
     public boolean wasSelectPressed() {
-        return wasEnterPressed() || wasZPressed();
+        return wasEnterPressed() || wasSpacePressed();
     }
 }

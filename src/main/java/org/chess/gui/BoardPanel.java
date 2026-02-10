@@ -70,7 +70,7 @@ public class BoardPanel extends JPanel implements Runnable {
                     MenuRender.optionsMenu);
             case MODE -> service.getGuiService().getMenuRender().drawGraphics(g2,
                     MenuRender.optionsMode);
-            case OPTIONS -> service.getGuiService().getMenuRender()
+            case RULES -> service.getGuiService().getMenuRender()
                     .drawOptionsMenu(g2, MenuRender.optionsTweaks);
             case BOARD -> {
                 service.getGuiService().getBoardRender().drawBoard(g2);
@@ -83,15 +83,15 @@ public class BoardPanel extends JPanel implements Runnable {
         checkKeyboard();
         switch(GameService.getState()) {
             case MENU -> {
-                service.getGuiService().getMenuRender().handleMenuInput();
+                service.getGuiService().getMenuRender().handleMenuInput(true);
                 return;
             }
             case MODE -> {
                 GameService.setMode();
                 return;
             }
-            case OPTIONS -> {
-                service.getGuiService().getMenuRender().handleOptionsInput();
+            case RULES -> {
+                service.getGuiService().getMenuRender().handleOptionsInput(true);
                 return;
             }
             default -> service.getBoardService().getGame();
@@ -107,14 +107,35 @@ public class BoardPanel extends JPanel implements Runnable {
     }
 
     private void checkKeyboard() {
-        if((GameService.getState() == GameState.OPTIONS
-                || GameService.getState() == GameState.MODE)
-                && service.getKeyboard().wasBPressed()) {
+        MenuRender menu = service.getGuiService().getMenuRender();
+        Keyboard keyboard = service.getKeyboard();
+        GameState state = GameService.getState();
+
+        // Global back button
+        if((state == GameState.RULES || state == GameState.MODE) && keyboard.wasBPressed()) {
             GameService.setState(GameState.MENU);
         }
 
-        if(service.getKeyboard().wasSelectPressed()) {
+        // Handle input per game state
+        switch(state) {
+            case MENU -> {
+                if(keyboard.wasUpPressed()) menu.moveUp(MenuRender.optionsMenu);
+                if(keyboard.wasDownPressed()) menu.moveDown(MenuRender.optionsMenu);
+                if(keyboard.wasSelectPressed()) menu.activate(GameState.MENU);
+            }
+            case MODE -> {
+                if(keyboard.wasUpPressed()) menu.moveUp(MenuRender.optionsMode);
+                if(keyboard.wasDownPressed()) menu.moveDown(MenuRender.optionsMode);
+                if(keyboard.wasSelectPressed()) menu.activate(GameState.MODE);
+            }
+            case RULES -> {
+                if(keyboard.wasUpPressed()) menu.moveUp(MenuRender.optionsTweaks);
+                if(keyboard.wasDownPressed()) menu.moveDown(MenuRender.optionsTweaks);
+                if(keyboard.wasSelectPressed()) menu.activate(GameState.RULES);
+            }
+            case BOARD -> {
 
+            }
         }
     }
 }

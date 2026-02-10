@@ -3,6 +3,7 @@ package org.chess.render;
 import org.chess.entities.Board;
 import org.chess.enums.GameState;
 import org.chess.gui.Mouse;
+import org.chess.service.BoardService;
 import org.chess.service.BooleanService;
 import org.chess.service.GUIService;
 import org.chess.service.GameService;
@@ -22,21 +23,29 @@ public class MenuRender {
     private static final String ENABLE = "Enable ";
     private final BufferedImage TOGGLE_ON;
     private final BufferedImage TOGGLE_OFF;
+    private final BufferedImage TOGGLE_ON_HIGHLIGHTED;
+    private final BufferedImage TOGGLE_OFF_HIGHLIGHTED;
     private int lastHoveredIndex = -1;
+    private int selectedIndex = 0;
     private FontMetrics fontMetrics;
 
     private final GUIService guiService;
     private final Mouse mouse;
     private final GameService gameService;
+    private final BoardService boardService;
 
-    public MenuRender(GUIService guiService, GameService gameService, Mouse mouse) {
+    public MenuRender(GUIService guiService, GameService gameService,
+                      BoardService boardService, Mouse mouse) {
         this.guiService = guiService;
         this.gameService = gameService;
+        this.boardService = boardService;
         this.mouse = mouse;
 
         try {
             TOGGLE_ON = guiService.getImage("/ui/toggle_on");
             TOGGLE_OFF = guiService.getImage("/ui/toggle_off");
+            TOGGLE_ON_HIGHLIGHTED = guiService.getImage("/ui/toggle_on-h");
+            TOGGLE_OFF_HIGHLIGHTED = guiService.getImage("/ui/toggle_off-h");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -109,8 +118,9 @@ public class MenuRender {
             int y = startY + i * spacing;
 
             boolean isHovered = GUIService.getHITBOX(y).contains(mouse.getX(), mouse.getY());
+            boolean isSelected = (i == selectedIndex);
 
-            g2.setColor(isHovered ? Color.WHITE : GUIService.getNewForeground());
+            g2.setColor(isSelected ? Color.YELLOW : isHovered ? Color.WHITE : GUIService.getNewForeground());
             g2.drawString(options[i], x + GUIService.getGRAPHICS_OFFSET(), y);
 
             if(isHovered && lastHoveredIndex != i) {
@@ -150,14 +160,20 @@ public class MenuRender {
             int x = 100;
 
             g2.setFont(GUIService.getFontBold(24));
-            g2.drawString(enabledOption, x, y);
-
             int toggleWidth = TOGGLE_ON.getWidth()/2;
             int toggleHeight = TOGGLE_ON.getHeight()/2;
             int toggleX = centerX + 200;
             int toggleY = y - toggleHeight + 16;
             boolean isEnabled = getOptionState(options[i]);
-            BufferedImage toggleImage = isEnabled ? TOGGLE_ON : TOGGLE_OFF;
+            boolean isSelected = (i == selectedIndex);
+
+            g2.setColor(isSelected ? Color.YELLOW : isHovered ? Color.WHITE
+                    : GUIService.getNewForeground());
+            g2.drawString(enabledOption, x, y);
+
+            BufferedImage toggleImage = isEnabled
+                    ? (isSelected ? TOGGLE_ON_HIGHLIGHTED : TOGGLE_ON)
+                    : (isSelected ? TOGGLE_OFF_HIGHLIGHTED : TOGGLE_OFF);
 
             drawToggle(g2, toggleImage, toggleX, toggleY,
                     toggleWidth, toggleHeight);
@@ -165,9 +181,8 @@ public class MenuRender {
         }
     }
 
-    public void handleOptionsInput() {
-        if (!mouse.wasPressed()) { return; }
-
+    public void handleOptionsInput(boolean isClicked) {
+        if(!isClicked) { return; }
         int y = 100 + GUIService.getFontBold(32).getSize() + 16;
         int lineHeight = GUIService.getFontBold(32).getSize() + 8;
 
@@ -205,8 +220,8 @@ public class MenuRender {
         }
     }
 
-    public void handleMenuInput() {
-        if(!mouse.wasPressed()) return;
+    public void handleMenuInput(boolean isClicked) {
+        if (!isClicked) return;
 
         int startY = GUIService.getHEIGHT()/2 + GUIService.getMENU_START_Y();
         int spacing = GUIService.getMENU_SPACING();
@@ -225,5 +240,68 @@ public class MenuRender {
                 break;
             }
         }
+    }
+
+    public void moveUp(String[] options) {
+        GameState state = GameService.getState();
+        if(state == GameState.MENU || state == GameState.MODE
+                || state == GameState.RULES) {
+            selectedIndex--;
+            guiService.getFx().play(BooleanService.getRandom(1, 2));
+            if (selectedIndex < 0) {
+                selectedIndex = options.length - 1;
+            }
+        }
+
+    }
+
+    public void moveLeft() {
+
+    }
+
+    public void moveDown(String[] options) {
+        GameState state = GameService.getState();
+        if(state == GameState.MENU || state == GameState.MODE
+                || state == GameState.RULES) {
+            selectedIndex++;
+            guiService.getFx().play(BooleanService.getRandom(1, 2));
+            if(selectedIndex >= options.length) {
+                selectedIndex = 0;
+            }
+        }
+
+    }
+
+    public void moveRight() {
+
+    }
+
+    public void activate(GameState state) {
+        guiService.getFx().play(0);
+        switch (state) {
+            case MENU -> {
+                switch (selectedIndex) {
+                    case 0 -> gameService.startNewGame();
+                    case 1 -> gameService.optionsMenu();
+                    case 2 -> System.exit(0);
+                }
+            }
+            case MODE -> {
+                switch (selectedIndex) {
+                    case 0 -> boardService.startBoard();
+                    case 1 -> {
+                        BooleanService.isAIPlaying = true;
+                        boardService.startBoard();
+                    }
+                }
+            }
+            case RULES -> {
+                String option = optionsTweaks[selectedIndex];
+                guiService.getFx().play(0);
+                toggleOption(option);
+            }
+            case BOARD -> {}
+        }
+
     }
 }

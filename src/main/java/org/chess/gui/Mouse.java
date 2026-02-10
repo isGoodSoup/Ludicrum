@@ -1,5 +1,6 @@
 package org.chess.gui;
 
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -44,6 +45,10 @@ public class Mouse extends MouseAdapter {
 
 	public boolean wasReleased() {
 		return !isHeld && prevHeld;
+	}
+
+	public Point getMousePosition() {
+		return new Point(getX(), getY());
 	}
 
 	@Override

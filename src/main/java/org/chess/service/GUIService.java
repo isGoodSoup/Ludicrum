@@ -52,7 +52,7 @@ public class GUIService {
         this.mouse = mouse;
         this.fx = new Sound();
         this.boardRender = new BoardRender(this, pieceService, boardService, promotionService);
-        this.menuRender  = new MenuRender(this, gameService, mouse);
+        this.menuRender  = new MenuRender(this, gameService, boardService, mouse);
         this.moveRender  = new MovesRender(this);
 
         this.boardService.setPieces();
