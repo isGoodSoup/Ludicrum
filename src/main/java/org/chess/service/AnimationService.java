@@ -18,10 +18,12 @@ public class AnimationService {
 
     public void update() {
         Iterator<MoveAnimation> it = animations.iterator();
-        while (it.hasNext()) {
+        while(it.hasNext()) {
             MoveAnimation anim = it.next();
-            anim.update(0.05); // progress per frame
-            if (anim.isFinished()) it.remove();
+            anim.update(0.05);
+            if(anim.isFinished()) {
+                it.remove();
+            }
         }
     }
 

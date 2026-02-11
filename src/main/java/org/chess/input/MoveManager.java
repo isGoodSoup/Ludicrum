@@ -337,7 +337,7 @@ public class MoveManager {
 
     public void moveLeft(String[] options) {
         selectedIndexX--;
-        service.getGuiService().getMenuRender().previousPage();
+        service.getGuiService().getMenuRender().getMenuInput().previousPage();
         getFx().playFX(4);
         if(selectedIndexX >= options.length) {
             selectedIndexX = 0;
@@ -371,7 +371,7 @@ public class MoveManager {
 
     public void moveRight(String[] options) {
         selectedIndexX++;
-        service.getGuiService().getMenuRender().nextPage();
+        service.getGuiService().getMenuRender().getMenuInput().nextPage();
         getFx().playFX(4);
         if(selectedIndexX >= options.length) {
             selectedIndexX = 0;

@@ -2,6 +2,7 @@ package org.chess.render;
 
 import org.chess.entities.Board;
 import org.chess.enums.ColorblindType;
+import org.chess.input.MenuInput;
 import org.chess.input.Mouse;
 import org.chess.input.MoveManager;
 import org.chess.service.*;
@@ -37,7 +38,10 @@ public class MenuRender {
     private final BufferedImage cbTOGGLE_ON_HIGHLIGHTED;
     private final BufferedImage cbTOGGLE_OFF_HIGHLIGHTED;
     private static ColorblindType cb;
+    private Rectangle yesButton;
+    private Rectangle noButton;
     private int lastHoveredIndex = -1;
+    private int exitSelection = 0;
     private final int OFFSET_X;
     private FontMetrics fontMetrics;
     private int currentPage = 1;
@@ -47,6 +51,7 @@ public class MenuRender {
     private final MoveManager moveManager;
     private final GUIService guiService;
     private final Mouse mouse;
+    private MenuInput menuInput;
 
     public MenuRender(GUIService guiService, GameService gameService,
                       BoardService boardService, MoveManager moveManager,
@@ -56,6 +61,8 @@ public class MenuRender {
         this.boardService = boardService;
         this.moveManager = moveManager;
         this.mouse = mouse;
+        this.menuInput = new MenuInput(this, guiService, gameService,
+                boardService, moveManager, mouse);
         cb = ColorblindType.PROTANOPIA;
 
         try {
@@ -84,6 +91,10 @@ public class MenuRender {
         cbTOGGLE_OFF_HIGHLIGHTED = ColorRender.getSprite(TOGGLE_OFF_HIGHLIGHTED, false);
     }
 
+    public MenuInput getMenuInput() {
+        return menuInput;
+    }
+
     public static ColorblindType getCb() {
         return cb;
     }
@@ -96,6 +107,42 @@ public class MenuRender {
         return OFFSET_X;
     }
 
+    public int getCurrentPage() {
+        return currentPage;
+    }
+
+    public void setCurrentPage(int currentPage) {
+        this.currentPage = currentPage;
+    }
+
+    public FontMetrics getFontMetrics() {
+        return fontMetrics;
+    }
+
+    public Rectangle getYesButton() {
+        return yesButton;
+    }
+
+    public Rectangle getNoButton() {
+        return noButton;
+    }
+
+    public int getExitSelection() {
+        return exitSelection;
+    }
+
+    public static int getOPTION_X() {
+        return OPTION_X;
+    }
+
+    public static int getOPTION_Y() {
+        return OPTION_Y;
+    }
+
+    public static String getENABLE() {
+        return ENABLE;
+    }
+    
     private int getOptionsStartY() {
         return 100 + GUIService.getFontBold(32).getSize() + 8;
     }
@@ -141,6 +188,28 @@ public class MenuRender {
             case "Reset Table" -> BooleanService.canResetTable ^= true;
             case "Colorblind" -> BooleanService.canBeColorblind ^= true;
         }
+    }
+
+    public BufferedImage getSprite(int i) {
+        return switch (i) {
+            case 0 -> DARK_MODE_ON;
+            case 1 -> DARK_MODE_OFF;
+            case 2 -> DARK_MODE_ON_HIGHLIGHTED;
+            case 3 -> DARK_MODE_OFF_HIGHLIGHTED;
+            case 4 -> cbDARK_MODE_ON;
+            case 5 -> cbDARK_MODE_OFF;
+            case 6 -> cbDARK_MODE_ON_HIGHLIGHTED;
+            case 7 -> cbDARK_MODE_OFF_HIGHLIGHTED;
+            case 8 -> TOGGLE_ON;
+            case 9 -> TOGGLE_OFF;
+            case 10 -> TOGGLE_ON_HIGHLIGHTED;
+            case 11 -> TOGGLE_OFF_HIGHLIGHTED;
+            case 12 -> cbTOGGLE_ON;
+            case 13 -> cbTOGGLE_OFF;
+            case 14 -> cbTOGGLE_ON_HIGHLIGHTED;
+            case 15 -> cbTOGGLE_OFF_HIGHLIGHTED;
+            default -> null;
+        };
     }
 
     private void drawToggle(Graphics2D g2, BufferedImage image, int x, int y,
@@ -213,7 +282,7 @@ public class MenuRender {
                 ? ColorRender.getColor(GUIService.getNewForeground(), true)
                 : GUIService.getNewForeground());
         g2.setFont(GUIService.getFont(32));
-        updatePage();
+        menuInput.updatePage();
         fontMetrics = g2.getFontMetrics();
 
         int textWidth = fontMetrics.stringWidth(options[0]);
@@ -285,94 +354,6 @@ public class MenuRender {
             drawToggle(g2, toggleImage, toggleX, toggleY,
                     toggleWidth, toggleHeight);
             y += lineHeight;
-        }
-    }
-
-    private boolean updatePage() {
-        int itemsPerPage = 8;
-        int selectedX = moveManager.getSelectedIndexX();
-        int totalPages = (optionsTweaks.length - 1 + itemsPerPage - 1) / itemsPerPage;
-        int newPage = Math.max(1, Math.min(selectedX, totalPages));
-        if(newPage != currentPage) {
-            currentPage = newPage;
-            moveManager.setSelectedIndexY(0);
-            return true;
-        }
-        return false;
-    }
-
-    public void previousPage() {
-        int selectedX = moveManager.getSelectedIndexX();
-        if(selectedX > 1) moveManager.setSelectedIndexX(selectedX - 1);
-        updatePage();
-    }
-
-    public void nextPage() {
-        int selectedX = moveManager.getSelectedIndexX();
-        int itemsPerPage = 8;
-        int totalPages = (optionsTweaks.length - 1 + itemsPerPage - 1) / itemsPerPage;
-
-        if(selectedX < totalPages) moveManager.setSelectedIndexX(selectedX + 1);
-        updatePage();
-    }
-
-    public void handleOptionsInput() {
-        if(!mouse.wasPressed()) { return; }
-
-        int lineHeight = fontMetrics.getHeight() + 4;
-        int y = OPTION_Y + lineHeight;
-
-        int boardWidth = Board.getSquare() * 8;
-        int totalWidth = boardWidth + 2 * GUIService.getEXTRA_WIDTH();
-        int centerX = totalWidth / 2;
-        int toggleWidth = TOGGLE_ON.getWidth() / 2;
-        int toggleHeight = TOGGLE_ON.getHeight() / 2;
-        int toggleX = centerX + 200;
-
-        for(int i = 1; i < optionsTweaks.length; i++) {
-            String option = optionsTweaks[i];
-            String enabledOption = ENABLE + option;
-            int textX = OPTION_X;
-            int textY = y;
-            int textWidth = fontMetrics.stringWidth(enabledOption);
-
-            Rectangle toggleHitbox = new Rectangle(
-                    toggleX,
-                    textY - toggleHeight + 16,
-                    toggleWidth,
-                    toggleHeight
-            );
-
-            if(toggleHitbox.contains(mouse.getX(), mouse.getY())) {
-                guiService.getFx().play(0);
-                toggleOption(option);
-                break;
-            }
-            y += lineHeight;
-        }
-    }
-
-    public void handleMenuInput() {
-        if(!mouse.wasPressed()) { return; }
-
-        int startY = GUIService.getHEIGHT()/2 + GUIService.getMENU_START_Y();
-        int spacing = GUIService.getMENU_SPACING();
-
-        for(int i = 0; i < optionsMenu.length; i++) {
-            int y = startY + i * spacing;
-            boolean isHovered =
-                    GUIService.getHITBOX(OFFSET_X, y, 200, 40).contains(mouse.getX(),
-                            mouse.getY());
-
-            if(isHovered) {
-                guiService.getFx().play(0);
-                switch (i) {
-                    case 0 -> gameService.startNewGame();
-                    case 1 -> gameService.optionsMenu();
-                    case 2 -> System.exit(0);
-                }
-                break;
-            }
         }
     }
 }

@@ -10,6 +10,7 @@ import org.chess.service.*;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.io.Serial;
 
 public class BoardPanel extends JPanel implements Runnable {
@@ -17,6 +18,12 @@ public class BoardPanel extends JPanel implements Runnable {
     private static final long serialVersionUID = -5189356863277669172L;
 	private final int FPS = 60;
 	private Thread thread;
+    private long lastUpTime = 0;
+    private long lastDownTime = 0;
+    private long lastLeftTime = 0;
+    private long lastRightTime = 0;
+    private final long repeatDelay = 150;
+
     private static ServiceFactory service;
 
 	public BoardPanel() {
@@ -92,9 +99,10 @@ public class BoardPanel extends JPanel implements Runnable {
         checkKeyboard();
         service.getTimerService().update();
         service.getBoardService().resetBoard();
+
         switch(GameService.getState()) {
             case MENU -> {
-                service.getGuiService().getMenuRender().handleMenuInput();
+                service.getGuiService().getMenuRender().getMenuInput().handleMenuInput();
                 return;
             }
             case MODE -> {
@@ -102,7 +110,7 @@ public class BoardPanel extends JPanel implements Runnable {
                 return;
             }
             case RULES -> {
-                service.getGuiService().getMenuRender().handleOptionsInput();
+                service.getGuiService().getMenuRender().getMenuInput().handleOptionsInput();
                 return;
             }
             default -> service.getBoardService().getGame();
@@ -118,6 +126,7 @@ public class BoardPanel extends JPanel implements Runnable {
     }
 
     private void checkKeyboard() {
+        long now = System.currentTimeMillis();
         MoveManager move = BoardService.getManager();
         Keyboard keyboard = service.getKeyboard();
         GameState state = GameService.getState();
@@ -136,30 +145,78 @@ public class BoardPanel extends JPanel implements Runnable {
 
         switch(state) {
             case MENU -> {
-                if(keyboard.wasUpPressed()) { move.moveUp(MenuRender.optionsMenu); }
-                if(keyboard.wasDownPressed()) { move.moveDown(MenuRender.optionsMenu); }
                 if(keyboard.wasSelectPressed()) { move.activate(GameState.MENU); }
+                if(keyboard.isUpDown() && now - lastUpTime >= repeatDelay) {
+                    move.moveUp(MenuRender.optionsMenu);
+                    lastUpTime = now;
+                }
+                if(keyboard.isDownDown() && now - lastDownTime >= repeatDelay) {
+                    move.moveDown(MenuRender.optionsMenu);
+                    lastDownTime = now;
+                }
             }
             case MODE -> {
-                if(keyboard.wasUpPressed()) { move.moveUp(MenuRender.optionsMode); }
-                if(keyboard.wasDownPressed()) { move.moveDown(MenuRender.optionsMode); }
                 if(keyboard.wasSelectPressed()) { move.activate(GameState.MODE); }
+                if(keyboard.isUpDown() && now - lastUpTime >= repeatDelay) {
+                    move.moveUp(MenuRender.optionsMode);
+                    lastUpTime = now;
+                }
+                if(keyboard.isDownDown() && now - lastDownTime >= repeatDelay) {
+                    move.moveDown(MenuRender.optionsMode);
+                    lastDownTime = now;
+                }
             }
             case RULES -> {
-                if(keyboard.wasUpPressed()) { move.moveUp(MenuRender.optionsTweaks); }
-                if(keyboard.wasLeftPressed()) { move.moveLeft(MenuRender.optionsTweaks); }
-                if(keyboard.wasDownPressed()) { move.moveDown(MenuRender.optionsTweaks); }
-                if(keyboard.wasRightPressed()) { move.moveRight(MenuRender.optionsTweaks); }
                 if(keyboard.wasSelectPressed()) { move.activate(GameState.RULES); }
+                if(keyboard.isUpDown() && now - lastUpTime >= repeatDelay) {
+                    move.moveUp(MenuRender.optionsTweaks);
+                    lastUpTime = now;
+                }
+                if(keyboard.isDownDown() && now - lastDownTime >= repeatDelay) {
+                    move.moveDown(MenuRender.optionsTweaks);
+                    lastDownTime = now;
+                }
+                if(keyboard.isLeftDown() && now - lastDownTime >= repeatDelay) {
+                    move.moveLeft(MenuRender.optionsTweaks);
+                    lastDownTime = now;
+                }
+                if(keyboard.isRightDown() && now - lastDownTime >= repeatDelay) {
+                    move.moveRight(MenuRender.optionsTweaks);
+                    lastDownTime = now;
+                }
             }
             case BOARD -> {
-                if(keyboard.wasUpPressed()) { move.moveUp(); move.updateKeyboardHover(); }
-                if(keyboard.wasLeftPressed()) { move.moveLeft(); move.updateKeyboardHover(); }
-                if(keyboard.wasDownPressed()) { move.moveDown(); move.updateKeyboardHover(); }
-                if(keyboard.wasRightPressed()) { move.moveRight(); move.updateKeyboardHover(); }
                 if(keyboard.wasSelectPressed()) { move.activate(GameState.BOARD); }
-                if(keyboard.wasZPressed()) { move.undoLastMove(move.getSelectedPiece()); }
+                if(keyboard.isUpDown() && now - lastUpTime >= repeatDelay) {
+                    move.moveUp();
+                    move.updateKeyboardHover();
+                    lastUpTime = now;
+                }
+                if(keyboard.isDownDown() && now - lastDownTime >= repeatDelay) {
+                    move.moveDown();
+                    move.updateKeyboardHover();
+                    lastDownTime = now;
+                }
+                if(keyboard.isLeftDown() && now - lastLeftTime >= repeatDelay) {
+                    move.moveLeft();
+                    move.updateKeyboardHover();
+                    lastLeftTime = now;
+                }
+                if(keyboard.isRightDown() && now - lastRightTime >= repeatDelay) {
+                    move.moveRight();
+                    move.updateKeyboardHover();
+                    lastRightTime = now;
+                }
+                if(keyboard.isComboPressed(KeyEvent.VK_CONTROL,
+                        KeyEvent.VK_Z) && BooleanService.canUndoMoves) {
+                    move.undoLastMove(move.getSelectedPiece());
+                    lastRightTime = now;
+                }
             }
+        }
+
+        if(keyboard.isComboPressed(KeyEvent.VK_CONTROL, KeyEvent.VK_Q)) {
+            System.exit(0);
         }
     }
 }

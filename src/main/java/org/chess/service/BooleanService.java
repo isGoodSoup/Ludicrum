@@ -15,6 +15,7 @@ public class BooleanService {
     public static boolean isPromotionPending;
     public static boolean isTurn;
     public static boolean isDarkMode;
+    public static boolean isExitActive;
 
     public static boolean canUndoMoves;
     public static boolean canPromote;
@@ -40,6 +41,7 @@ public class BooleanService {
         canResetTable = true;
         canStopwatch = true;
         isGameOver = false;
+        isExitActive = false;
         canDoChaos = false;
     }
 
