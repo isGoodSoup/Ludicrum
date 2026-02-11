@@ -18,6 +18,7 @@ public class Sound {
         setSound(1, "menu");
         setSound(2, "menu-select_1");
         setSound(3, "menu-select_2");
+        setSound(4, "pages");
         preload();
     }
 
