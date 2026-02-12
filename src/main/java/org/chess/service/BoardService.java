@@ -79,7 +79,7 @@ public class BoardService {
     }
 
     public static String getSquareName(int col, int row) {
-        char file = (char) ('A' + col);
+        char file = (char) ('a' + col);
         int rank = 8 - row;
         return "" + file + rank;
     }

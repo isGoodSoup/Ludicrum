@@ -4,8 +4,8 @@ public class Board {
 	private final int COL = 8;
 	private final int ROW = 8;
 	private static final int SQUARE = 64;
-	private static final int HALF_SQUARE = SQUARE / 2;
-	private static final int PADDING = 4;
+	private static final int HALF_SQUARE = SQUARE/2;
+	private static final int PADDING = 8;
 	private final String[][] squares = new String[ROW][COL];
 
 	public Board() {}

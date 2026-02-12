@@ -210,11 +210,12 @@ public class MenuRender {
         BufferedImage img = BooleanService.isDarkMode ?
                 GUIService.getLogo_v2() : Colorblindness.filter(GUIService.getLogo());
         int boardWidth = Board.getSquare() * 8;
-        int boardCenterX = GUIService.getEXTRA_WIDTH() + boardWidth/2;
-        int logoWidth = GUIService.getLogo().getWidth()/3;
-        int logoHeight = GUIService.getLogo().getHeight()/3;
-        int x = boardCenterX - logoWidth/2;
-        int y = render.scale(RenderContext.BASE_HEIGHT)/7;
+        int boardCenterX = render.getOffsetX() + render.scale(
+                GUIService.getEXTRA_WIDTH()) * 2 + boardWidth/2;
+        int logoWidth = GUIService.getLogo().getWidth()/2;
+        int logoHeight = GUIService.getLogo().getHeight()/2;
+        int x = boardCenterX - logoWidth / 2;
+        int y = render.getOffsetY() + render.scale(RenderContext.BASE_HEIGHT) / 7;
         g2.drawImage(img, x, y, logoWidth, logoHeight, null);
     }
 
@@ -225,7 +226,7 @@ public class MenuRender {
         g2.setColor(Colorblindness.filter(GUIService.getNewBackground()));
         g2.fillRect(0, 0, totalWidth, render.scale(RenderContext.BASE_HEIGHT));
 
-        g2.setFont(GUIService.getFont(GUIService.getMENU_FONT()));
+        g2.setFont(GUIService.getFontBold(GUIService.getMENU_FONT()));
         drawLogo(g2);
 
         int startY = render.scale(RenderContext.BASE_HEIGHT) / 2 + render.scale(GUIService.getMENU_START_Y());
@@ -236,8 +237,8 @@ public class MenuRender {
             FontMetrics fm = g2.getFontMetrics();
             int textWidth = fm.stringWidth(optionText);
 
-            int x = (totalWidth - textWidth) / 2 + render.scale(GUIService.getGRAPHICS_OFFSET());
-            int y = startY + i * spacing;
+            int x = render.getOffsetX() + (totalWidth - textWidth) / 2 + render.scale(GUIService.getGRAPHICS_OFFSET());
+            int y = render.getOffsetY() + startY + i * spacing;
 
             Rectangle hitbox = new Rectangle(
                     render.unscaleX(OFFSET_X),
@@ -270,7 +271,7 @@ public class MenuRender {
                 : GUIService.getNewBackground());
         g2.fillRect(0, 0, totalWidth, render.scale(RenderContext.BASE_HEIGHT));
         menuInput.updatePage();
-        g2.setFont(GUIService.getFont(32));
+        g2.setFont(GUIService.getFontBold(32));
         fontMetrics = g2.getFontMetrics();
 
         int startY = render.scale(OPTION_Y); // scaled Y
@@ -305,7 +306,8 @@ public class MenuRender {
             boolean isEnabled = getOptionState(options[i]);
 
             g2.setColor(Colorblindness.filter(GUIService.getNewForeground()));
-            g2.drawString(enabledOption, render.scale(OPTION_X), startY);
+            g2.drawString(enabledOption, render.getOffsetX()
+                    + render.scale(OPTION_X), render.getOffsetY() + startY);
 
             BufferedImage toggleImage;
             if (options[i].equals("Dark Mode")) {
@@ -317,7 +319,9 @@ public class MenuRender {
                         ? (isSelected || isHovered ? cbTOGGLE_ON_HIGHLIGHTED : cbTOGGLE_ON)
                         : (isSelected || isHovered ? cbTOGGLE_OFF_HIGHLIGHTED : cbTOGGLE_OFF);
             }
-            drawToggle(g2, toggleImage, toggleX, toggleY, toggleWidth, toggleHeight);
+            drawToggle(g2, toggleImage, render.getOffsetX()
+                    + toggleX, render.getOffsetY() + toggleY, toggleWidth,
+                    toggleHeight);
             startY += lineHeight;
         }
     }

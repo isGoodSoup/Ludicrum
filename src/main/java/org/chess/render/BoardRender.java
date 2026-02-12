@@ -40,11 +40,11 @@ public class BoardRender {
         );
 
         if (hoverX >= 0 && hoverY >= 0) {
-            g2.setColor(Colorblindness.filter(new Color(200, 155, 100, 180)));
+            g2.setColor(Colorblindness.filter(Colors.getODD()));
             int squareSize = render.scale(Board.getSquare());
             g2.fillRect(
-                    render.scale(GUIService.getEXTRA_WIDTH()) + hoverX * squareSize,
-                    hoverY * squareSize,
+                    render.getOffsetX() + render.scale(GUIService.getEXTRA_WIDTH()) + hoverX * squareSize,
+                    render.getOffsetY() + hoverY * squareSize,
                     squareSize,
                     squareSize
             );
@@ -79,18 +79,18 @@ public class BoardRender {
                 boolean isEven = (row + col) % 2 == 0;
                 g2.setColor(isEven ? Colors.getEVEN() : Colors.getODD());
                 g2.fillRect(
-                        render.scale(GUIService.getEXTRA_WIDTH()) + col * SQUARE,
-                        row * SQUARE,
+                        render.getOffsetX() + render.scale(GUIService.getEXTRA_WIDTH()) + col * SQUARE,
+                        render.getOffsetY() + row * SQUARE,
                         SQUARE,
                         SQUARE
                 );
 
-                g2.setFont(GUIService.getFont(14));
+                g2.setFont(GUIService.getFont(24));
                 g2.setColor(isEven ? Colors.getODD() : Colors.getEVEN());
                 g2.drawString(
                         BoardService.getSquareName(col, row),
-                        render.scale(GUIService.getEXTRA_WIDTH()) + col * SQUARE + PADDING,
-                        row * SQUARE + SQUARE - PADDING
+                        render.getOffsetX() + render.scale(GUIService.getEXTRA_WIDTH()) + col * SQUARE + PADDING,
+                        render.getOffsetY() + row * SQUARE + SQUARE - PADDING
                 );
             }
         }
@@ -107,8 +107,8 @@ public class BoardRender {
 
         g2.drawImage(
                 override != null ? override : piece.getFilteredSprite(piece.getImage()),
-                render.scale(piece.getX()) + offset + render.scale(GUIService.getEXTRA_WIDTH()),
-                render.scale(piece.getY()) + offset,
+                render.getOffsetX() + render.scale(piece.getX()) + offset + render.scale(GUIService.getEXTRA_WIDTH()),
+                render.getOffsetY() + render.scale(piece.getY()) + offset,
                 drawSize,
                 drawSize,
                 null

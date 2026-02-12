@@ -20,8 +20,8 @@ public class RenderContext {
     }
 
     public void updateScale(int windowWidth, int windowHeight) {
-        double scaleX = windowWidth / (double) BASE_WIDTH;
-        double scaleY = windowHeight / (double) BASE_HEIGHT;
+        double scaleX = windowWidth/(double) BASE_WIDTH;
+        double scaleY = windowHeight/(double) BASE_HEIGHT;
         scale = Math.min(scaleX, scaleY);
     }
 
