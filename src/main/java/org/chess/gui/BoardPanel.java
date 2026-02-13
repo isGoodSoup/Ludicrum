@@ -1,5 +1,6 @@
 package org.chess.gui;
 
+import org.chess.enums.Achievements;
 import org.chess.enums.ColorblindType;
 import org.chess.enums.GameState;
 import org.chess.enums.PlayState;
@@ -57,35 +58,24 @@ public class BoardPanel extends JPanel implements Runnable {
 
     @Override
     public void run() {
-        double drawInterval = (double) 1000000000 / FPS;
-        double delta = 0;
-        long lastTime = System.nanoTime();
-        long currentTime;
-
-        while(thread != null) {
-            currentTime = System.nanoTime();
-            delta += (currentTime - lastTime) / drawInterval;
-            lastTime = currentTime;
-
-            if(delta >= 1) {
-                try {
-                    update();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-                updateMouse();
-                updateAnimations((int) delta);
-                repaint();
-                delta--;
+        Timer timer = new Timer(1000 / FPS, e -> {
+            try {
+                update();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
             }
-        }
+            updateMouse();
+            updateAnimations(1.0 / FPS);
+            repaint();
+        });
+        timer.start();
     }
 
     public void updateMouse() {
         service.getMouseService().update();
     }
 
-    public void updateAnimations(int delta) {
+    public void updateAnimations(double delta) {
         service.getAnimationService().update(delta);
     }
 
@@ -96,11 +86,15 @@ public class BoardPanel extends JPanel implements Runnable {
         render.updateTransform(getWidth(), getHeight());
         g2.translate(render.getOffsetX(), render.getOffsetY());
         g2.scale(render.getScale(), render.getScale());
-        drawGame(g2);
+        try {
+            drawGame(g2);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         g2.dispose();
     }
 
-    public void drawGame(Graphics2D g2) {
+    public void drawGame(Graphics2D g2) throws InterruptedException {
         switch(GameService.getState()) {
             case MENU -> service.getRender().getMenuRender().drawGraphics(g2,
                     MenuRender.optionsMenu);
@@ -117,6 +111,11 @@ public class BoardPanel extends JPanel implements Runnable {
                     .drawOptionsMenu(g2, MenuRender.optionsTweaks);
             case ACHIEVEMENTS -> service.getRender().getMenuRender().drawAchievementsMenu(g2);
         }
+        render(g2);
+    }
+
+    public void render(Graphics2D g2) throws InterruptedException {
+        service.getAnimationService().render(g2);
     }
 
     private void update() throws IOException {
@@ -124,7 +123,7 @@ public class BoardPanel extends JPanel implements Runnable {
         checkMouseInput();
         service.getTimerService().update();
         service.getBoardService().resetBoard();
-
+        checkAchievements();
         PlayState mode = GameService.getMode();
         if(mode != null) {
             switch(mode) {
@@ -317,6 +316,26 @@ public class BoardPanel extends JPanel implements Runnable {
         if(keyboard.wasF11Pressed()) {
             frame.toggleFullscreen();
         }
+    }
+
+    private void checkAchievements() {
+        if(!BooleanService.canDoAchievements) { return; }
+        if(BooleanService.doFirstMove) {
+            service.getAchievementService().unlock(Achievements.FIRST_MOVE);
+            BooleanService.doFirstMove = false;
+            BooleanService.isThisAchievement = true;
+            playFX();
+        }
+        if(BooleanService.doRuleToggles) {
+            service.getAchievementService().unlock(Achievements.SECRET_TOGGLES);
+            BooleanService.doRuleToggles = false;
+            BooleanService.isThisAchievement = true;
+            playFX();
+        }
+    }
+
+    private void playFX() {
+        service.getGuiService().getFx().playFX(5);
     }
 
     public void refreshGraphics() {

@@ -43,7 +43,7 @@ public class AchievementSprites {
         }
     }
 
-    public BufferedImage getSprite(Achievement achievement) {
+    public static BufferedImage getSprite(Achievement achievement) {
         BufferedImage sprite = SPRITES.getOrDefault(achievement.getId(), defaultSprite);
         if (sprite == null) {
             sprite = defaultSprite;

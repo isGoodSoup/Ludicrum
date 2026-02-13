@@ -194,9 +194,9 @@ public class GUIService {
         g2.drawImage(image, tickX, tickY, size, size, null);
     }
 
-    public void drawBox(Graphics2D g2, int stroke, int x, int y, int width,
-                        int height, int arcWidth, int arcHeight,
-                        boolean hasBackground, boolean isHighlighted) {
+    public static void drawBox(Graphics2D g2, int stroke, int x, int y, int width,
+                               int height, int arcWidth, int arcHeight,
+                               boolean hasBackground, boolean isHighlighted) {
         if(hasBackground) {
             g2.setColor(new Color(0, 0, 0, 180));
             g2.fillRoundRect(x, y, width, height, arcWidth, arcHeight);

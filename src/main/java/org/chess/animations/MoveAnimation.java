@@ -3,67 +3,56 @@ package org.chess.animations;
 import org.chess.entities.Piece;
 import org.chess.interfaces.Animation;
 
-import java.awt.*;
-
 public class MoveAnimation implements Animation {
-    public Piece piece;
-    public int startX, startY;
-    public int targetX, targetY;
-    public double progress;
+    private final Piece piece;
+    private final int startX, startY;
+    private final int targetX, targetY;
+    private final double speed;
+    private double progress = 0.0;
+    private final double distance;
 
-    public MoveAnimation(Piece piece, int startX, int startY, int targetX, int targetY) {
+    public MoveAnimation(Piece piece, int startX, int startY, int targetX, int targetY, double speed) {
         this.piece = piece;
         this.startX = startX;
         this.startY = startY;
         this.targetX = targetX;
         this.targetY = targetY;
-        this.progress = 0.0;
-    }
+        this.speed = speed;
 
-    public Piece getPiece() {
-        return piece;
-    }
-
-    public int getStartX() {
-        return startX;
-    }
-
-    public int getStartY() {
-        return startY;
-    }
-
-    public int getTargetX() {
-        return targetX;
-    }
-
-    public int getTargetY() {
-        return targetY;
-    }
-
-    public double getProgress() {
-        return progress;
-    }
-
-    @Override
-    public boolean affects(Piece piece) {
-        return this.piece == piece;
+        double dx = targetX - startX;
+        double dy = targetY - startY;
+        distance = Math.sqrt(dx*dx + dy*dy);
     }
 
     @Override
     public void update(double delta) {
-        progress = Math.min(1.0, progress + delta);
-        piece.setX((int)(startX + (targetX - startX) * progress));
-        piece.setY((int)(startY + (targetY - startY) * progress));
+        if (isFinished()) {
+            return;
+        }
+
+        double moveAmount = speed * delta;
+        progress += moveAmount/distance;
+        if(progress > 1.0) {
+            progress = 1.0;
+        }
+
+        int newX = (int)(startX + (targetX - startX) * progress);
+        int newY = (int)(startY + (targetY - startY) * progress);
+        piece.setX(newX);
+        piece.setY(newY);
     }
 
     @Override
-    public void render(Graphics2D g2) {
-
+    public void render(java.awt.Graphics2D g2) {
     }
 
     @Override
     public boolean isFinished() {
         return progress >= 1.0;
     }
-}
 
+    @Override
+    public boolean affects(Object obj) {
+        return this.piece == obj;
+    }
+}

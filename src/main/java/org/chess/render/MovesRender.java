@@ -83,10 +83,10 @@ public class MovesRender {
         int leftY = boardY + innerPadding + fm.getAscent();
         int rightY = boardY + innerPadding + fm.getAscent();
 
-        guiService.drawBox(g2, stroke, boardX - boxWidth - padding,
+        GUIService.drawBox(g2, stroke, boardX - boxWidth - padding,
                 boardY, boxWidth, boxHeight, arcWidth, arcHeight,
                 hasBackground, false);
-        guiService.drawBox(g2, stroke, boardX + boardSize + padding,
+        GUIService.drawBox(g2, stroke, boardX + boardSize + padding,
                 boardY, boxWidth, boxHeight, arcWidth, arcHeight,
                 hasBackground, true);
 

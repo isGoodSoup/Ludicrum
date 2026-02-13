@@ -1,13 +1,18 @@
 package org.chess.service;
 
+import org.chess.animations.ToastAnimation;
 import org.chess.entities.Achievement;
 import org.chess.enums.Achievements;
+import org.chess.render.AchievementSprites;
+import org.chess.render.RenderContext;
 
 import java.util.*;
 
 public class AchievementService {
     private Map<Achievements, Achievement> achievements;
     private List<Achievement> achievementList;
+
+    private AnimationService animationService;
 
     public AchievementService() {
         achievements = new HashMap<>();
@@ -17,11 +22,30 @@ public class AchievementService {
         achievementList = new ArrayList<>(achievements.values());
     }
 
-    public void unlockAchievement(Achievements type) {
+    public AnimationService getAnimationService() {
+        return animationService;
+    }
+
+    public void setAnimationService(AnimationService animationService) {
+        this.animationService = animationService;
+    }
+
+    public void unlock(Achievements type) {
         Achievement achievement = achievements.get(type);
         if(achievement != null && !achievement.isUnlocked()) {
-            unlock(achievement);
-            System.out.println("Achievement Unlocked: " + type.getTitle());
+            achievement.setUnlocked(true);
+            animationService.add(new ToastAnimation
+                    (achievement.getId().getTitle(),
+                            achievement.getId().getDescription(),
+                            RenderContext.BASE_HEIGHT,
+                            AchievementSprites.getSprite(achievement)));
+        }
+    }
+
+    public void lock(Achievements type) {
+        Achievement achievement = achievements.get(type);
+        if(achievement != null && achievement.isUnlocked()) {
+            achievement.setUnlocked(false);
         }
     }
 
@@ -48,14 +72,10 @@ public class AchievementService {
         return achievementList;
     }
 
-    public Collection<Achievement> getUnlockedAchievements() {
+    public List<Achievement> getUnlockedAchievements() {
         return achievements.values()
                 .stream()
                 .filter(Achievement::isUnlocked)
                 .toList();
-    }
-
-    private void unlock(Achievement achievement) {
-        achievement.setUnlocked(true);
     }
 }

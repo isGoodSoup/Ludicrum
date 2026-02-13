@@ -1,58 +1,80 @@
 package org.chess.animations;
 
 import org.chess.interfaces.Animation;
+import org.chess.render.RenderContext;
+import org.chess.service.GUIService;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 
 public class ToastAnimation implements Animation {
-    private final String message;
+    private final String title;
+    private final String description;
+    private final BufferedImage icon;
     private double time = 0;
-    private final double duration = 3.0;
-    private float alpha = 0f;
-    private int baseY;
+    private static final double SLIDE_TIME = 0.5;
+    private static final double STAY_TIME = 3.0;
+    private static final int SLIDE_DISTANCE = 180;
+    private static final int WIDTH = 600;
+    private static final int HEIGHT = 125;
+    private static final int ARC = 25;
+    private final int baseY;
 
-    public ToastAnimation(String message, int panelHeight) {
-        this.message = message;
-        this.baseY = panelHeight - 80;
+    public ToastAnimation(String title, String description, int panelHeight, BufferedImage icon) {
+        this.title = title;
+        this.description = description;
+        this.icon = icon;
+        this.baseY = panelHeight - 140;
     }
 
     @Override
     public void update(double delta) {
         time += delta;
-
-        if (time < 0.4) {
-            alpha = (float)(time / 0.4);
-        } else if (time > duration - 0.4) {
-            alpha = (float)((duration - time) / 0.4);
-        } else {
-            alpha = 1f;
-        }
     }
 
     @Override
     public void render(Graphics2D g2) {
-        if (alpha <= 0f) return;
+        double totalTime = SLIDE_TIME + STAY_TIME + SLIDE_TIME;
+        if(time > totalTime) return;
 
-        Composite old = g2.getComposite();
-        g2.setComposite(AlphaComposite.getInstance(
-                AlphaComposite.SRC_OVER, alpha));
+        int panelWidth = RenderContext.BASE_WIDTH;
+        int x = (panelWidth - WIDTH) / 2;
+        int y = baseY;
 
-        int width = 300;
-        int height = 50;
-        int x = 250;
-        int y = baseY - (int)(time * 20);
-
-        g2.setColor(new Color(0, 0, 0, 220));
-        g2.fillRoundRect(x, y, width, height, 20, 20);
+        if(time < SLIDE_TIME) { // sliding in
+            y += (int)((1 - time / SLIDE_TIME) * SLIDE_DISTANCE);
+        } else if (time > SLIDE_TIME + STAY_TIME) { // sliding out
+            double t = (time - SLIDE_TIME - STAY_TIME) / SLIDE_TIME;
+            y += (int)(t * SLIDE_DISTANCE);
+        }
 
         g2.setColor(Color.WHITE);
-        g2.drawString(message, x + 20, y + 30);
+        g2.setStroke(new BasicStroke(8));
+        g2.drawRoundRect(x, y, WIDTH, HEIGHT, ARC, ARC);
+        g2.setColor(new Color(0, 0, 0, 180));
+        g2.fillRoundRect(x, y, WIDTH, HEIGHT, ARC, ARC);
 
-        g2.setComposite(old);
+        int iconSize = 64;
+        if (icon != null) {
+            g2.drawImage(icon, x + 20, y + (HEIGHT - iconSize) / 2, iconSize, iconSize, null);
+        }
+
+        g2.setFont(GUIService.getFont(GUIService.getMENU_FONT()));
+        g2.setColor(Color.WHITE);
+        FontMetrics fm = g2.getFontMetrics();
+        int textX = x + 20 + (icon != null ? iconSize + 16 : 0);
+        int textY = y + (HEIGHT + fm.getAscent()) / 2 - 24;
+        g2.drawString(title, textX, textY);
+        g2.drawString(description, textX, textY + 40);
     }
 
     @Override
     public boolean isFinished() {
-        return time >= duration;
+        return time >= (SLIDE_TIME + STAY_TIME + SLIDE_TIME);
+    }
+
+    @Override
+    public boolean affects(Object obj) {
+        return false;
     }
 }

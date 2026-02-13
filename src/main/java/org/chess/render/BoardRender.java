@@ -89,7 +89,7 @@ public class BoardRender {
 
         if (hoverX >= 0 && hoverY >= 0) {
             int squareSize = render.scale(Board.getSquare());
-            guiService.drawBox(g2, 4, getBoardOriginX() + hoverX * squareSize,
+            GUIService.drawBox(g2, 4, getBoardOriginX() + hoverX * squareSize,
                     getBoardOriginY() + hoverY * squareSize, squareSize,
                     squareSize, 16, 16, true, false);
         }

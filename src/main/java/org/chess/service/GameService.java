@@ -84,7 +84,8 @@ public class GameService {
             Save newSave = new Save(
                     LocalDate.now().toString(),
                     getCurrentTurn(),
-                    service.getPieceService().getPieces()
+                    service.getPieceService().getPieces(),
+                    service.getAchievementService().getUnlockedAchievements()
             );
             service.getSaveManager().setCurrentSave(newSave);
             service.getSaveManager().saveGame(newSave);

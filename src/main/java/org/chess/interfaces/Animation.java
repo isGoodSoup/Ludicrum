@@ -11,4 +11,6 @@ public interface Animation {
     default boolean affects(Piece piece) {
         return false;
     }
+
+    boolean affects(Object obj);
 }

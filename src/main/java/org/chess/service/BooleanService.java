@@ -16,6 +16,7 @@ public class BooleanService {
     public static boolean isFullscreen;
     public static boolean isExitActive;
     public static boolean isAchievementLocked;
+    public static boolean isThisAchievement;
 
     public static boolean canUndoMoves;
     public static boolean canDoAchievements;
@@ -50,6 +51,7 @@ public class BooleanService {
 
     public static void defaultToggles() {
         canAIPlay = true;
+        canDoAchievements = true;
         isFullscreen = true;
         isDarkMode = false;
         canDoCastling = true;

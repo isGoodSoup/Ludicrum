@@ -158,6 +158,12 @@ public class MovesManager {
                 && service.getModelService().getAiTurn() == null) {
             BooleanService.isGameOver = true;
         }
+
+        if(!BooleanService.isThisAchievement) {
+            if(!BooleanService.doFirstMove) {
+                BooleanService.doFirstMove = true;
+            }
+        }
     }
 
     public void keyboardMove() {
@@ -359,6 +365,11 @@ public class MovesManager {
     public void moveRight(String[] options) {
         service.getRender().getMenuRender().getMenuInput().nextPage(options);
         getFx().playFX(4);
+        if(!BooleanService.isThisAchievement) {
+            if(!BooleanService.doRuleToggles) {
+                BooleanService.doRuleToggles = true;
+            }
+        }
     }
 
     public void moveRight() {

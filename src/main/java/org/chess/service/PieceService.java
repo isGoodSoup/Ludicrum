@@ -286,7 +286,6 @@ public class PieceService {
                 }
             }
         }
-
         checkingPiece = null;
         return false;
     }

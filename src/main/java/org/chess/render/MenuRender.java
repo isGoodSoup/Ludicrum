@@ -415,17 +415,17 @@ public class MenuRender {
             g2.setColor(Colorblindness.filter(Color.WHITE));
 
             if(isHovered) {
-                guiService.drawBox(g2, stroke, x, startY,
+                GUIService.drawBox(g2, stroke, x, startY,
                         width, height, arcWidth, arcHeight, hasBackground, true);
                 g2.drawString(a.getId().getDescription(), textX, descY);
             } else {
-                guiService.drawBox(g2, stroke, x, startY,
+                GUIService.drawBox(g2, stroke, x, startY,
                         width, height, arcWidth, arcHeight, hasBackground, false);
                 g2.drawString(a.getId().getTitle(), textX, titleY);
             }
 
             BooleanService.isAchievementLocked = true;
-            img = sprites.getSprite(a);
+            img = AchievementSprites.getSprite(a);
 
             if (img != null && !a.isUnlocked()) {
                 img = AchievementLock.filter(img);
@@ -495,11 +495,11 @@ public class MenuRender {
             g2.setColor(Colorblindness.filter(Color.WHITE));
 
             if(isHovered) {
-                guiService.drawBox(g2, stroke, x, startY,
+                GUIService.drawBox(g2, stroke, x, startY,
                         width, height, arcWidth, arcHeight, hasBackground,
                         true);
             } else {
-                guiService.drawBox(g2, stroke, x, startY,
+                GUIService.drawBox(g2, stroke, x, startY,
                         width, height, arcWidth, arcHeight, hasBackground, false);
             }
 

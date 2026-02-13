@@ -2,7 +2,7 @@ package org.chess.enums;
 
 public enum Achievements {
     FIRST_MOVE("a01_first_move", "First Move", "Make your first move"),
-    RULES_TOGGLES("a02_rules", "Rules? What's That?", "Discover the rule toggles"),
+    SECRET_TOGGLES("a02_rules", "One Rule To Rule 'Em All", "Find the (secret) rule toggles"),
     CHECKMATE("a03_checkmate", "Checkmate!", "Win a game by checkmate"),
     CASTLING_MASTER("a04_castling_master", "Oh My King", "Castle at least 10 times"),
     KING_PROMOTER("a05_king_promoter", "King Promoter", "Promote the same pawn 5 times"),
