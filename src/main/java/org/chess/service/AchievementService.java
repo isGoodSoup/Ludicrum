@@ -11,10 +11,10 @@ public class AchievementService {
 
     public AchievementService() {
         achievements = new HashMap<>();
-        achievementList = new ArrayList<>(achievements.values());
         for(Achievements type : Achievements.values()) {
             achievements.put(type, new Achievement(type));
         }
+        achievementList = new ArrayList<>(achievements.values());
     }
 
     public void unlockAchievement(Achievements type) {

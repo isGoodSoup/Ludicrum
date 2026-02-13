@@ -74,7 +74,7 @@ public class BoardPanel extends JPanel implements Runnable {
                     throw new RuntimeException(e);
                 }
                 updateMouse();
-                service.getAnimationService().update();
+                updateAnimations((int) delta);
                 repaint();
                 delta--;
             }
@@ -83,6 +83,10 @@ public class BoardPanel extends JPanel implements Runnable {
 
     public void updateMouse() {
         service.getMouseService().update();
+    }
+
+    public void updateAnimations(int delta) {
+        service.getAnimationService().update(delta);
     }
 
     @Override
