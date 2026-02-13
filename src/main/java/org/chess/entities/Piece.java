@@ -8,7 +8,6 @@ import org.chess.enums.Tint;
 import org.chess.enums.Type;
 import org.chess.render.Colorblindness;
 import org.chess.service.GUIService;
-import org.chess.service.GameService;
 import org.chess.service.PieceService;
 
 public abstract class Piece {
@@ -38,7 +37,9 @@ public abstract class Piece {
 
 	public void loadSprite(GUIService guiService) {
 		try {
-			this.sprite =guiService.getImage("/pieces/" + getClass().getSimpleName().toLowerCase());
+			this.sprite =
+					guiService.getImage("/pieces/" +
+							getClass().getSimpleName().toLowerCase() + "_" + color.name());
 		} catch (IOException e) {
 			System.err.println(e.getMessage());
 		}

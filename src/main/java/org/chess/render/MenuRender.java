@@ -99,7 +99,6 @@ public class MenuRender {
         TOGGLE_OFF = Colorblindness.filter(TOGGLE_OFF);
         TOGGLE_ON_HIGHLIGHTED = Colorblindness.filter(TOGGLE_ON_HIGHLIGHTED);
         TOGGLE_OFF_HIGHLIGHTED = Colorblindness.filter(TOGGLE_OFF_HIGHLIGHTED);
-        AchievementService.lockAllAchievements();
     }
 
     public GameService getGameService() {
@@ -373,7 +372,7 @@ public class MenuRender {
 
     public void drawAchievementsMenu(Graphics2D g2) {
         Collection<Achievement> achievements =
-                AchievementService.getAllAchievements();
+                boardService.getServiceFactory().getAchievementService().getAchievementList();
         List<Achievement> list = new ArrayList<>(achievements);
         list.sort(Comparator.comparingInt(a -> a.getId().ordinal()));
 

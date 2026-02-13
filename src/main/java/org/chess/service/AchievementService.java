@@ -6,8 +6,8 @@ import org.chess.enums.Achievements;
 import java.util.*;
 
 public class AchievementService {
-    private static Map<Achievements, Achievement> achievements;
-    private static List<Achievement> achievementList;
+    private Map<Achievements, Achievement> achievements;
+    private List<Achievement> achievementList;
 
     public AchievementService() {
         achievements = new HashMap<>();
@@ -25,25 +25,25 @@ public class AchievementService {
         }
     }
 
-    public static void unlockAllAchievements() {
+    public void unlockAllAchievements() {
         for(Map.Entry<Achievements, Achievement> a
                 : achievements.entrySet()) {
             a.getValue().setUnlocked(true);
         }
     }
 
-    public static void lockAllAchievements() {
+    public void lockAllAchievements() {
         for(Map.Entry<Achievements, Achievement> a
                 : achievements.entrySet()) {
             a.getValue().setUnlocked(false);
         }
     }
 
-    public static Collection<Achievement> getAllAchievements() {
+    public Collection<Achievement> getAllAchievements() {
         return achievements.values();
     }
 
-    public static List<Achievement> getAchievementList() {
+    public List<Achievement> getAchievementList() {
         achievementList.sort(Comparator.comparingInt(a -> a.getId().ordinal()));
         return achievementList;
     }

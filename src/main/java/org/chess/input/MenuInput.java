@@ -43,7 +43,7 @@ public class MenuInput {
 
     public void nextPage() {
         int itemsPerPage = MovesManager.getITEMS_PER_PAGE();
-        int totalItems = AchievementService.getAllAchievements().size();
+        int totalItems = boardService.getServiceFactory().getAchievementService().getAllAchievements().size();
         int totalPages = (totalItems + itemsPerPage - 1) / itemsPerPage;
 
         int current = menuRender.getCurrentPage();
@@ -93,7 +93,7 @@ public class MenuInput {
             Save s = saves.get(i);
             Rectangle hitbox = new Rectangle(x, startY, width, height);
             if (hitbox.contains(mouse.getX(), mouse.getY())) {
-                guiService.getFx().playFX(0);
+                guiService.getFx().playFX(3);
                 gameService.continueGame(s.name());
                 break;
             }

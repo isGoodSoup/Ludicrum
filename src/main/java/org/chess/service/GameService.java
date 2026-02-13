@@ -100,6 +100,7 @@ public class GameService {
             service.getPieceService().getPieces().clear();
             service.getPieceService().getPieces().addAll(loaded.pieces());
             setCurrentTurn(loaded.player());
+            service.getTimerService().start();
             System.out.println("Loaded save: " + saveName);
         } else {
             System.err.println("Failed to load save: " + saveName);
