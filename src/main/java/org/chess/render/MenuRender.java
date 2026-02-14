@@ -29,6 +29,7 @@ public class MenuRender {
     private static final String ACHIEVEMENTS = "ACHIEVEMENTS";
     public static String ENABLE = "Enable ";
     private static final String CHECKMATE = "Checkmate!";
+    private static final String STALEMATE = "Stalemate";
     private static final int OPTION_X = 100;
     private static final int OPTION_Y = 160;
     private static final float SCALE = 1.5f;
@@ -460,7 +461,9 @@ public class MenuRender {
         g2.setColor(BooleanService.canBeColorblind ?
                 Colorblindness.filter(Colors.FOREGROUND)
                 : Colors.FOREGROUND);
-        g2.drawString(CHECKMATE, getCenterX(getTotalWidth(), headerWidth),headerY);
+        String text = GameService.getState() == GameState.CHECKMATE ?
+                CHECKMATE : STALEMATE;
+        g2.drawString(text, getCenterX(getTotalWidth(), headerWidth),headerY);
     }
 
     public BufferedImage getSprite(int i) {

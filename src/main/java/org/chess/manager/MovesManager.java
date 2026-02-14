@@ -104,6 +104,13 @@ public class MovesManager {
 
     public void attemptMove(Piece piece, int targetCol, int targetRow) {
         if(BooleanService.isCheckmate) { return; }
+
+        for(Piece p : service.getPieceService().getPieces()) {
+            if(p instanceof Pawn && p.getColor() == GameService.getCurrentTurn()) {
+                p.resetEnPassant();
+            }
+        }
+
         BooleanService.isLegal = piece.canMove(targetCol, targetRow,
                 service.getPieceService().getPieces())
                 && !service.getPieceService().wouldLeaveKingInCheck(
@@ -125,29 +132,21 @@ public class MovesManager {
             executeCastling(piece, targetCol);
         }
 
-        moves.add(new Move(
-                piece,
-                piece.getRow(),
-                piece.getCol(),
-                targetCol,
-                targetRow,
-                piece.getColor(),
-                captured
-        ));
+        if (piece instanceof Pawn && isEnPassantMove(piece, targetCol, targetRow, service.getPieceService().getPieces())) {
+            executeEnPassant(piece, captured, targetCol, targetRow);
+        } else {
+            moves.add(new Move(
+                    piece,
+                    piece.getRow(),
+                    piece.getCol(),
+                    targetCol, targetRow,
+                    piece.getColor(),
+                    captured));
+        }
 
         PieceService.movePiece(piece, targetCol, targetRow);
         piece.setHasMoved(true);
         fx.playFX(0);
-
-        if(piece instanceof Pawn) {
-            executeEnPassant(piece, captured, targetCol, targetRow);
-        }
-
-        for(Piece p : service.getPieceService().getPieces()) {
-            if(p instanceof Pawn && p.getColor() != piece.getColor()) {
-                p.resetEnPassant();
-            }
-        }
 
         if(service.getPromotionService().checkPromotion(piece)) {
             BooleanService.isPromotionActive = true;
@@ -264,6 +263,7 @@ public class MovesManager {
 
     private void executeCastling(Piece currentPiece, int targetCol) {
         if(!BooleanService.canDoMoves) { return; }
+        log.debug("Executing castling");
         int colDiff = targetCol - currentPiece.getCol();
 
         if(Math.abs(colDiff) == 2 && !currentPiece.hasMoved()) {
@@ -318,6 +318,7 @@ public class MovesManager {
     private void executeEnPassant(Piece currentPiece, Piece captured,
                                   int targetCol, int targetRow) {
         if(!BooleanService.canDoMoves) { return; }
+        log.debug("Executing En Passant");
         int oldRow = currentPiece.getPreRow();
         int movedSquares = Math.abs(targetRow - oldRow);
 
@@ -333,9 +334,17 @@ public class MovesManager {
                             p.isTwoStepsAhead()) {
                         captured = p;
                         service.getPieceService().removePiece(p);
-                        currentPiece.setRow(targetRow);
-                        currentPiece.setCol(targetCol);
-                        currentPiece.setTwoStepsAhead(false);
+                        Move lastMove = moves.getLast();
+                        Move newMove = new Move(
+                                lastMove.piece(),
+                                lastMove.fromRow(),
+                                lastMove.fromCol(),
+                                lastMove.targetCol(),
+                                lastMove.targetRow(),
+                                lastMove.color(),
+                                lastMove.captured()
+                        );
+                        moves.add(newMove);
                         break;
                     }
                 }
@@ -343,6 +352,24 @@ public class MovesManager {
         }
 
         currentPiece.setTwoStepsAhead(movedSquares == 2);
+    }
+
+    private boolean isEnPassantMove(Piece pawn, int targetCol, int targetRow,
+                              List<Piece> board) {
+        if(!(pawn instanceof Pawn)) return false;
+        if(Math.abs(targetCol - pawn.getCol()) == 1 &&
+                targetRow != pawn.getRow()) {
+            for(Piece p : board) {
+                if(p instanceof Pawn &&
+                        p.getColor() != pawn.getColor() &&
+                        p.getCol() == targetCol &&
+                        p.getRow() == pawn.getRow() &&
+                        p.isTwoStepsAhead()) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public void updateKeyboardHover() {

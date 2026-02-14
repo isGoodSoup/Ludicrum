@@ -61,14 +61,14 @@ public class BoardPanel extends JPanel implements Runnable {
 
     @Override
     public void run() {
-        Timer timer = new Timer(1000 / FPS, e -> {
+        Timer timer = new Timer(1000/FPS, e -> {
             try {
                 update();
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
             }
             updateMouse();
-            updateAnimations(1.0 / FPS);
+            updateAnimations(1.0/FPS);
             repaint();
         });
         timer.start();
