@@ -2,7 +2,7 @@
   <artifact type="jar" name="Chess:jar">
     <output-path>$PROJECT_DIR$/../../../usr/games/chess</output-path>
     <root id="archive" name="Chess.jar">
-      <element id="module-output" name="Chess" />
+      <element id="module-output" name="Vertex" />
     </root>
   </artifact>
 </component>

@@ -1,0 +1,77 @@
+package org.vertex.engine.service;
+
+import org.vertex.engine.entities.Pawn;
+import org.vertex.engine.entities.Piece;
+import org.vertex.engine.enums.Tint;
+import org.vertex.engine.input.Mouse;
+
+public class PromotionService {
+    private Tint promotionColor;
+    private Piece promotingPawn;
+
+    private static Mouse mouse;
+    private final PieceService pieceService;
+
+    public PromotionService(PieceService pieceService, Mouse mouse) {
+        this.pieceService = pieceService;
+        PromotionService.mouse = mouse;
+    }
+
+    public Tint getPromotionColor() {
+        return promotionColor;
+    }
+
+    public void setPromotionColor(Tint promotionColor) {
+        this.promotionColor = promotionColor;
+    }
+
+    public Piece getPromotingPawn() {
+        return promotingPawn;
+    }
+
+    public void setPromotingPawn(Piece promotingPawn) {
+        this.promotingPawn = promotingPawn;
+    }
+
+    public boolean checkPromotion(Piece p) {
+        if(p instanceof Pawn) {
+            if((p.getColor() == Tint.WHITE && p.getRow() == 0) ||
+                    (p.getColor() == Tint.BLACK && p.getRow() == 7)) {
+                BooleanService.isPromotionActive = true;
+                promotingPawn = p;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void autoPromote(Piece pawn) {
+        if(!BooleanService.canPromote) { return; }
+        if(!(pawn instanceof Pawn)) { return; }
+        if(pawn == null) { return; }
+
+        Tint side = pawn.getColor();
+        Piece promotedPiece = BooleanService.getRandomPiece(pawn, pawn.getColor());
+        Piece promotingPawn = pawn;
+
+        pieceService.getPieces().remove(pawn);
+        pieceService.getPieces().add(promotedPiece);
+        BoardService.getBoardState()
+                [promotedPiece.getCol()][promotedPiece.getRow()] = promotedPiece;
+        this.promotingPawn = null;
+
+        if (pieceService.getHeldPiece() == pawn) {
+            PieceService.nullThisPiece();
+        }
+
+        if(promotingPawn == pawn) { promotingPawn = null; }
+        BooleanService.isPromotionActive = false;
+        pieceService.switchTurns();
+
+        if(!BooleanService.doKingPromoterUnlock) {
+            if(!BooleanService.doKingPromoter) {
+                BooleanService.doKingPromoter = true;
+            }
+        }
+    }
+}

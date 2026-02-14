@@ -1,0 +1,119 @@
+package org.vertex.engine.service;
+
+import org.vertex.engine.input.Keyboard;
+import org.vertex.engine.input.Mouse;
+import org.vertex.engine.manager.MovesManager;
+import org.vertex.engine.manager.SaveManager;
+import org.vertex.engine.render.RenderContext;
+
+public class ServiceFactory {
+    private final RenderContext render;
+    private final PieceService piece;
+    private final BoardService board;
+    private final Mouse mouse;
+    private final Keyboard keyboard;
+    private final GUIService gui;
+    private final GameService gs;
+    private final PromotionService promotion;
+    private final MovesManager movesManager;
+    private final SaveManager saveManager;
+    private final ModelService model;
+    private final AnimationService animation;
+    private final TimerService timer;
+    private final AchievementService achievement;
+
+    public ServiceFactory(RenderContext render) {
+        this.render = render;
+        this.mouse = new Mouse(render);
+        this.keyboard = new Keyboard();
+        this.animation = new AnimationService();
+        this.piece = new PieceService(mouse);
+        this.promotion = new PromotionService(piece, mouse);
+        this.model = new ModelService(piece, animation, promotion);
+        this.movesManager = new MovesManager();
+        this.piece.setMoveManager(movesManager);
+        this.render.setMovesManager(movesManager);
+        this.board = new BoardService(piece, mouse, promotion,
+                model, movesManager);
+        this.piece.setBoardService(board);
+        this.board.setServiceFactory(this);
+        this.model.setBoardService(board);
+        this.gs = new GameService(render, board, mouse);
+        this.saveManager = new SaveManager();
+        this.gs.setServiceFactory(this);
+        this.gs.setSaveManager(saveManager);
+        this.timer = new TimerService();
+        this.gui = new GUIService(render, piece, board, gs, promotion,
+                model, movesManager, timer, mouse);
+        this.achievement = new AchievementService();
+        this.achievement.setAnimationService(animation);
+        this.render.getBoardRender().setBoardService(board);
+        this.render.getBoardRender().setPieceService(piece);
+        this.render.getBoardRender().setGuiService(gui);
+        this.render.getBoardRender().setPromotionService(promotion);
+        this.render.getMenuRender().setBoardService(board);
+        this.render.getMenuRender().setGuiService(gui);
+        this.render.getMenuRender().setGameService(gs);
+        this.render.getMenuRender().setMoveManager(movesManager);
+        this.render.getMenuRender().setMouse(mouse);
+        this.render.getMovesRender().setBoardService(board);
+        this.render.getMovesRender().setGuiService(gui);
+        this.render.getMovesRender().setMovesManager(movesManager);
+        this.movesManager.init(this);
+        this.render.getMenuRender().init();
+    }
+
+    public RenderContext getRender() {
+        return render;
+    }
+
+    public PieceService getPieceService() {
+        return piece;
+    }
+
+    public BoardService getBoardService() {
+        return board;
+    }
+
+    public Mouse getMouseService() {
+        return mouse;
+    }
+
+    public Keyboard getKeyboard() {
+        return keyboard;
+    }
+
+    public GUIService getGuiService() {
+        return gui;
+    }
+
+    public PromotionService getPromotionService() {
+        return promotion;
+    }
+
+    public MovesManager getMovesManager() {
+        return movesManager;
+    }
+
+    public SaveManager getSaveManager() {
+        return saveManager;
+    }
+
+    public ModelService getModelService() {
+        return model;
+    }
+
+    public GameService getGameService() {
+        return gs;
+    }
+
+    public AnimationService getAnimationService() {
+        return animation;
+    }
+
+    public TimerService getTimerService() { return timer; }
+
+    public AchievementService getAchievementService() {
+        return achievement;
+    }
+}

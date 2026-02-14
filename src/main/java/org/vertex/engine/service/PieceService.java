@@ -1,0 +1,325 @@
+package org.vertex.engine.service;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.vertex.engine.entities.*;
+import org.vertex.engine.enums.Tint;
+import org.vertex.engine.enums.Type;
+import org.vertex.engine.input.Mouse;
+import org.vertex.engine.manager.MovesManager;
+
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
+public class PieceService {
+    private static Piece currentPiece;
+    private final List<Piece> pieces;
+    private Piece checkingPiece;
+    private Piece hoveredPieceKeyboard;
+    private int dragOffsetX;
+    private int dragOffsetY;
+    private int hoveredSquareX = -1;
+    private int hoveredSquareY = -1;
+
+    private static MovesManager movesManager;
+    private static BoardService boardService;
+    private final Mouse mouse;
+
+    private static final Logger log = LoggerFactory.getLogger(PieceService.class);
+
+    public PieceService(Mouse mouse) {
+        this.mouse = mouse;
+        pieces = new ArrayList<>();
+    }
+
+    public BoardService getBoardService() {
+        return boardService;
+    }
+
+    public void setBoardService(BoardService boardService) {
+        PieceService.boardService = boardService;
+    }
+
+    public MovesManager getMoveManager() {
+        return movesManager;
+    }
+
+    public void setMoveManager(MovesManager movesManager) {
+        PieceService.movesManager = movesManager;
+    }
+
+    public Piece getHeldPiece() {
+        return movesManager.getSelectedPiece();
+    }
+
+    public Piece getHoveredPieceKeyboard() {
+        return hoveredPieceKeyboard;
+    }
+
+    public void setHoveredPieceKeyboard(Piece hpk) {
+        this.hoveredPieceKeyboard = hpk;
+    }
+
+    public void setHoveredSquare(int col, int row) {
+        this.hoveredSquareX = col;
+        this.hoveredSquareY = row;
+    }
+
+    public int getHoveredSquareX() {
+        return hoveredSquareX;
+    }
+
+    public int getHoveredSquareY() {
+        return hoveredSquareY;
+    }
+
+    public static void nullThisPiece() {
+        movesManager.setSelectedPiece(null);
+    }
+
+    public List<Piece> getPieces() {
+        return pieces;
+    }
+
+    public static BufferedImage getImage(String path) {
+        BufferedImage img = null;
+        try {
+            img = ImageIO.read(Objects.requireNonNull(
+                    PieceService.class.getResourceAsStream(path + ".png")));
+        } catch (IOException e) {
+            log.error(e.getMessage());
+        }
+        return img;
+    }
+
+    public int getPieceValue(Piece p) {
+        return switch(p.getId()) {
+            case PAWN -> 10;
+            case KNIGHT, BISHOP -> 30;
+            case ROOK -> 50;
+            case QUEEN -> 90;
+            case KING -> 900;
+        };
+    }
+
+    public static Piece getPieceAt(int col, int row, List<Piece> board) {
+        for (Piece p : board) {
+            if (p.getCol() == col && p.getRow() == row) {
+                return p;
+            }
+        }
+        return null;
+    }
+
+    public boolean isPieceThreatened(Piece piece) {
+        for(Piece enemy : getPieces()) {
+            if(enemy.getColor() == piece.getColor()) { continue; }
+            if(enemy.canMove(piece.getCol(), piece.getRow(),
+                    getPieces())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public Piece getRandomPiece(Tint color, int col, int row) {
+        int index = BooleanService.getRandom(1, 6);
+        return switch(index) {
+            case 1 -> new Pawn(color, col, row);
+            case 2 -> new Rook(color, col, row);
+            case 3 -> new Bishop(color, col, row);
+            case 4 -> new Knight(color, col, row);
+            case 5 -> new Queen(color, col, row);
+            case 6 -> new King(this, color, col, row);
+            default -> new Pawn(color, col, row);
+        };
+    }
+
+    public Piece getKing(Tint color) {
+        for(Piece p : pieces) {
+            if(p instanceof King && p.getColor() == color) {
+                return p;
+            }
+        }
+        throw new IllegalStateException("King not found for color: " + color);
+    }
+
+    public void addPiece(Piece p) {
+        pieces.add(p);
+        BoardService.getBoardState()[p.getCol()][p.getRow()] = p;
+    }
+
+    public void removePiece(Piece p) {
+        synchronized(pieces) {
+            pieces.remove(p);
+            BoardService.getBoardState()[p.getCol()][p.getRow()] = null;
+        }
+    }
+
+    public List<Piece> clonePieces() {
+        List<Piece> copy = new ArrayList<>();
+        synchronized(pieces) {
+            for (Piece p : pieces) {
+                copy.add(p.copy());
+            }
+        }
+        return copy;
+    }
+
+    public static void movePiece(Piece p, int newCol, int newRow) {
+        String oldPos = boardService.getSquareNameAt(p.getPreCol(),
+                p.getPreRow());
+        String newPos = boardService.getSquareNameAt(newCol, newRow);
+
+        BoardService.getBoardState()[p.getCol()][p.getRow()] = null;
+        p.setCol(newCol);
+        p.setRow(newRow);
+        updatePos(p);
+
+        log.debug("{} {}: {} -> {}", p.getColor().toString(), p.getId().toString(), oldPos, newPos);
+        BoardService.getBoardState()[newCol][newRow] = p;
+    }
+
+    public static void updatePos(Piece piece) {
+        if(piece.getId() == Type.PAWN) {
+            if(Math.abs(piece.getRow() - piece.getPreRow()) == 2) {
+                piece.setTwoStepsAhead(true);
+            }
+        }
+        int square = Board.getSquare();
+        piece.setX(piece.getCol() * square);
+        piece.setY(piece.getRow() * square);
+        piece.setHasMoved(true);
+
+        piece.setPreCol(piece.getCol());
+        piece.setPreRow(piece.getRow());
+    }
+
+    public void resetPos(Piece piece) {
+        piece.setCol(piece.getPreCol());
+        piece.setRow(piece.getPreRow());
+        updatePos(piece);
+    }
+
+    public void switchTurns() {
+        GameService.setCurrentTurn(
+                GameService.getCurrentTurn() == Tint.WHITE ? Tint.BLACK : Tint.WHITE
+        );
+    }
+
+    public static boolean isWithinBoard(int targetCol, int targetRow) {
+        return targetCol >= 0 && targetCol <= 7 && targetRow >= 0 && targetRow <= 7;
+    }
+
+    public static boolean isSameSquare(Piece piece, int targetCol,
+                                       int targetRow) {
+        if(piece == null) { return false; }
+        return targetCol == piece.getPreCol() && targetRow == piece.getPreRow();
+    }
+
+    public static Piece isColliding(int col, int row, List<Piece> board) {
+        for (Piece p : board) {
+            if (p.getCol() == col && p.getRow() == row) {
+                return p;
+            }
+        }
+        return null;
+    }
+
+    public static boolean isPathClear(Piece piece, int targetCol, int targetRow,
+                                List<Piece> board) {
+        int colDiff = targetCol - piece.getCol();
+        int rowDiff = targetRow - piece.getRow();
+
+        if (Math.abs(colDiff) != Math.abs(rowDiff)) {
+            return false;
+        }
+
+        int colStep = Integer.signum(colDiff);
+        int rowStep = Integer.signum(rowDiff);
+
+        int c = piece.getCol() + colStep;
+        int r = piece.getRow() + rowStep;
+
+        while (c != targetCol && r != targetRow) {
+            for (Piece p : board) {
+                if (p == currentPiece) { continue; }
+                if (p.getCol() == c && p.getRow() == r) {
+                    return false;
+                }
+            }
+            c += colStep;
+            r += rowStep;
+        }
+        return true;
+    }
+
+    public static boolean isValidSquare(Piece piece, int targetCol,
+                                        int targetRow,
+                                 List<Piece> board) {
+        for(Piece p : board) {
+            if(p.getCol() == targetCol && p.getRow() == targetRow) {
+                return p.getColor() != piece.getColor();
+            }
+        }
+        return true;
+    }
+
+    public boolean isKingInCheck(Tint kingColor) {
+        Piece king = getKing(kingColor);
+
+        for(Piece p : pieces) {
+            if(p.getColor() != kingColor) {
+                if(p.canMove(king.getCol(), king.getRow(), pieces)) {
+                    checkingPiece = p;
+                    return true;
+                }
+            }
+        }
+        checkingPiece = null;
+        return false;
+    }
+
+    public boolean wouldLeaveKingInCheck(Piece piece, int targetCol,
+                                     int targetRow) {
+        List<Piece> simPieces = clonePieces();
+
+        Piece simPiece = simPieces.stream()
+                .filter(p -> p.getCol() == piece.getCol()
+                        && p.getRow() == piece.getRow()
+                        && p.getColor() == piece.getColor()
+                        && p.getClass() == piece.getClass())
+                .findFirst()
+                .orElse(null);
+
+        if (simPiece == null) {
+            return true;
+        }
+
+        simPieces.removeIf(p -> p != simPiece
+                && p.getCol() == targetCol
+                && p.getRow() == targetRow
+                && !(p instanceof King));
+
+        simPiece.setCol(targetCol);
+        simPiece.setRow(targetRow);
+
+        Piece king = simPieces.stream()
+                .filter(p -> p instanceof King
+                        && p.getColor() == piece.getColor())
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("King must exist after cloning"));
+
+        for (Piece enemy : simPieces) {
+            if (enemy.getColor() != piece.getColor() &&
+                    enemy.canMove(king.getCol(), king.getRow(), simPieces)) {
+                return true;
+            }
+        }
+        return false;
+    }
+}
