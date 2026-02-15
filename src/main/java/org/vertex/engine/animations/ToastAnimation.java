@@ -1,6 +1,8 @@
 package org.vertex.engine.animations;
 
+import org.vertex.engine.gui.Colors;
 import org.vertex.engine.interfaces.Animation;
+import org.vertex.engine.render.Colorblindness;
 import org.vertex.engine.render.RenderContext;
 import org.vertex.engine.service.GUIService;
 
@@ -14,7 +16,7 @@ public class ToastAnimation implements Animation {
     private double time = 0;
     private static final double SLIDE_TIME = 0.5;
     private static final double STAY_TIME = 2.0;
-    private static final int SLIDE_DISTANCE = 210;
+    private static final int SLIDE_DISTANCE = 180;
     private static final int WIDTH = 800;
     private static final int HEIGHT = 125;
     private static final int ARC = 25;
@@ -24,7 +26,7 @@ public class ToastAnimation implements Animation {
         this.title = title;
         this.description = description;
         this.icon = icon;
-        this.baseY = panelHeight - 160;
+        this.baseY = panelHeight - 180;
     }
 
     @Override
@@ -48,10 +50,10 @@ public class ToastAnimation implements Animation {
             y += (int)(t * SLIDE_DISTANCE);
         }
 
-        g2.setColor(Color.WHITE);
-        g2.setStroke(new BasicStroke(8));
+        g2.setColor(Colorblindness.filter(Colors.FOREGROUND));
+        g2.setStroke(new BasicStroke(4));
         g2.drawRoundRect(x, y, WIDTH, HEIGHT, ARC, ARC);
-        g2.setColor(new Color(0, 0, 0, 180));
+        g2.setColor(Colorblindness.filter(Colors.SETTINGS));
         g2.fillRoundRect(x, y, WIDTH, HEIGHT, ARC, ARC);
 
         int iconSize = 64;
@@ -60,12 +62,12 @@ public class ToastAnimation implements Animation {
         }
 
         g2.setFont(GUIService.getFont(GUIService.getMENU_FONT()));
-        g2.setColor(Color.YELLOW);
+        g2.setColor(Colorblindness.filter(Colors.HIGHLIGHT));
         FontMetrics fm = g2.getFontMetrics();
         int textX = x + 20 + (icon != null ? iconSize + 32 : 0);
         int textY = y + (HEIGHT + fm.getAscent()) / 2 - 24;
         g2.drawString(title, textX, textY);
-        g2.setColor(Color.WHITE);
+        g2.setColor(Colorblindness.filter(Colors.WHITE_FOREGROUND));
         g2.drawString(description, textX, textY + 40);
     }
 

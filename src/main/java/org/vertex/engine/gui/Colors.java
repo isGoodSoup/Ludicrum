@@ -42,6 +42,11 @@ public class Colors {
     public static Color EDGE = LEGACY_EDGE;
     public static Color HIGHLIGHT = LEGACY_HIGHLIGHT;
 
+    public static Color prevBACKGROUND = BACKGROUND;
+    public static Color prevFOREGROUND = FOREGROUND;
+    public static Color prevEDGE = EDGE;
+    public static Color prevHIGHLIGHT = HIGHLIGHT;
+
     public static final List<Color[]> THEMES = List.of(
             new Color[]{DEFAULT_BACKGROUND, DEFAULT_FOREGROUND, DEFAULT_EDGE, DEFAULT_HIGHLIGHT},
             new Color[]{BLACK_BACKGROUND, WHITE_FOREGROUND, BLACK_EDGE, YELLOW_HIGHLIGHT},
@@ -68,12 +73,20 @@ public class Colors {
 
     public static void toggleDarkTheme() {
         if (BooleanService.isDarkMode) {
+            prevBACKGROUND = BACKGROUND;
+            prevFOREGROUND = FOREGROUND;
+            prevEDGE = EDGE;
+            prevHIGHLIGHT = HIGHLIGHT;
+
             BACKGROUND = DARK_MODE;
             FOREGROUND = WHITE_FOREGROUND;
             EDGE = Color.WHITE;
             HIGHLIGHT = YELLOW_HIGHLIGHT;
         } else {
-            setDefaultTheme();
+            BACKGROUND = prevBACKGROUND;
+            FOREGROUND = prevFOREGROUND;
+            EDGE = prevEDGE;
+            HIGHLIGHT = prevHIGHLIGHT;
         }
     }
 
