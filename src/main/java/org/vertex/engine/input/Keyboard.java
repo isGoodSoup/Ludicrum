@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Keyboard implements KeyListener {
-
     private final Map<Integer, Boolean> keyStates;
     private final Map<Integer, Boolean> keyProcessed;
 
@@ -43,6 +42,7 @@ public class Keyboard implements KeyListener {
 
     public boolean wasCancelPressed() { return wasKeyPressed(KeyEvent.VK_C); }
     public boolean wasSelectPressed() { return wasEnterPressed() || wasSpacePressed(); }
+    public boolean wasTabPressed() { return wasKeyPressed(KeyEvent.VK_TAB); }
     public boolean wasUpPressed() { return wasKeyPressed(KeyEvent.VK_UP); }
     public boolean wasLeftPressed() { return wasKeyPressed(KeyEvent.VK_LEFT); }
     public boolean wasDownPressed() { return wasKeyPressed(KeyEvent.VK_DOWN); }
@@ -63,6 +63,7 @@ public class Keyboard implements KeyListener {
         return keyStates.getOrDefault(keyCode, false);
     }
 
+    public boolean isShiftDown() { return isKeyDown(KeyEvent.VK_SHIFT); }
     public boolean isUpDown() { return isKeyDown(KeyEvent.VK_UP); }
     public boolean isLeftDown() { return isKeyDown(KeyEvent.VK_LEFT); }
     public boolean isDownDown() { return isKeyDown(KeyEvent.VK_DOWN); }

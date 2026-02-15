@@ -6,31 +6,43 @@ import org.vertex.engine.enums.Type;
 import java.util.List;
 
 public class Checker extends Piece {
+    private boolean isKing;
 
     public Checker(Tint color, int col, int row) {
         super(color, col, row);
         this.id = Type.CHECKER;
     }
 
+    public boolean isKing() {
+        return isKing;
+    }
+
+    public void promoteToKing() {
+        isKing = true;
+    }
+
     @Override
     public boolean canMove(int targetCol, int targetRow, List<Piece> board) {
         if(!isWithinBoard(targetCol, targetRow)) { return false; }
 
-        int colDiff = Math.abs(targetCol - getCol());
-        int rowDiff = Math.abs(targetRow - getRow());
+        int colDiff = targetCol - getCol();
+        int rowDiff = targetRow - getRow();
+        int absColDiff = Math.abs(colDiff);
+        int absRowDiff = Math.abs(rowDiff);
 
-        int direction = (getColor() == Tint.LIGHT) ? -1 : 1;
-        if(rowDiff == 1 && (targetRow - getRow()) == direction) {
-            return isColliding(targetCol, targetRow, board) == null;
+        Piece target = isColliding(targetCol, targetRow, board);
+        if (absColDiff == 1 && absRowDiff == 1) {
+            if (isKing() || (getColor() == Tint.LIGHT && rowDiff == -1)
+                    || (getColor() == Tint.DARK && rowDiff == 1)) {
+                return target == null;
+            }
         }
 
-        if(colDiff == 2 && rowDiff == 2) {
-            int midCol = (getCol() + targetCol) / 2;
-            int midRow = (getRow() + targetRow) / 2;
-            Piece middlePiece = isColliding(midCol, midRow, board);
-            if(middlePiece != null && middlePiece.getColor() != getColor()) {
-                return true;
-            }
+        if (absColDiff == 2 && absRowDiff == 2) {
+            int midCol = getCol() + colDiff / 2;
+            int midRow = getRow() + rowDiff / 2;
+            Piece midPiece = isColliding(midCol, midRow, board);
+            return midPiece != null && midPiece.getColor() != getColor() && target == null;
         }
         return false;
     }

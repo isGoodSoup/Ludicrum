@@ -9,7 +9,7 @@ import org.vertex.engine.service.PieceService;
 import java.util.List;
 
 public class King extends Piece {
-	private transient PieceService pieceService;
+	protected transient PieceService pieceService;
 
 	public King(PieceService pieceService, Tint color, int col, int row) {
 		super(color, col, row);

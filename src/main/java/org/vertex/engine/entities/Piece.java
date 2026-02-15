@@ -38,6 +38,7 @@ public abstract class Piece {
 		this.preCol = col;
 		this.preRow = row;
 		getSprite();
+		getKingSprites();
 	}
 
 	public BufferedImage getSprite() {
@@ -45,8 +46,18 @@ public abstract class Piece {
 		Games game = GameService.getGame();
 		String prefix = game.getSpritePrefix();
 		Theme theme = Colors.getTheme();
-		String colorName = theme.getColor(color);
-		String path ="/pieces/" + pieceName + "/" + pieceName + "_" + colorName;
+		String color = theme.getColor(this.color);
+		String suffix = "";
+		log.info("Loading sprite for: {}", pieceName);
+		String path ="/pieces/" + pieceName + "/" + pieceName + "_" + color;
+		return PieceService.getImage(path);
+	}
+
+	public BufferedImage getKingSprites() {
+		Theme theme = Colors.getTheme();
+		String color = theme.getColor(this.color);
+		String path = "/pieces/checker/checker_king_" + color;
+		log.info("Loading sprite for: checker_king");
 		return PieceService.getImage(path);
 	}
 

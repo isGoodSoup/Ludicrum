@@ -1,13 +1,12 @@
 package org.vertex.engine.render;
 
 import org.vertex.engine.entities.Board;
+import org.vertex.engine.entities.King;
 import org.vertex.engine.entities.Piece;
+import org.vertex.engine.enums.Games;
 import org.vertex.engine.gui.Colors;
 import org.vertex.engine.input.Mouse;
-import org.vertex.engine.service.BoardService;
-import org.vertex.engine.service.GUIService;
-import org.vertex.engine.service.PieceService;
-import org.vertex.engine.service.PromotionService;
+import org.vertex.engine.service.*;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -180,6 +179,10 @@ public class BoardRender {
         int size = (int) (square * piece.getScale());
         Mouse mouse = guiService.getMouse();
         int offset = (square - size)/2;
+
+        if(piece instanceof King && GameService.getGame() == Games.CHECKERS) {
+            override = piece.getKingSprites();
+        }
 
         g2.drawImage(
                 override != null ? override : piece.getSprite(),

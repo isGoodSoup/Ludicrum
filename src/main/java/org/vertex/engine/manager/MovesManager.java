@@ -153,7 +153,7 @@ public class MovesManager {
             BooleanService.isPromotionActive = true;
             service.getPromotionService().setPromotionColor(piece.getColor());
             Piece promoted = service.getPromotionService().autoPromote(piece);
-            log.info("Promoted Pawn to Queen");
+            log.info("Promoted piece");
             selectedPiece = promoted;
         } else {
             service.getPieceService().switchTurns();
@@ -368,6 +368,12 @@ public class MovesManager {
     }
 
     public void updateKeyboardHover() {
+        List<Piece> selectablePieces = service.getPieceService()
+                .getPieces()
+                .stream()
+                .filter(p -> p.getColor() == GameService.getCurrentTurn())
+                .toList();
+
         service.getPieceService().setHoveredSquare(moveX, moveY);
         if(selectedPiece == null) {
             Piece hoveredPiece =
@@ -391,6 +397,31 @@ public class MovesManager {
                         selectedPiece, moveX, moveY);
     }
 
+    private List<Piece> getSelectablePieces() {
+        return service.getPieceService()
+                .getPieces()
+                .stream()
+                .filter(p -> p.getColor() == GameService.getCurrentTurn())
+                .toList();
+    }
+
+    public void moveUp() {
+        GameState state = GameService.getState();
+        if(state == GameState.BOARD) {
+            moveY = Math.max(0, moveY - 1);
+            updateKeyboardHover();
+            getFx().playFX(BooleanService.getRandom(1, 2));
+        }
+    }
+
+    public void moveUp(Object[] options) {
+        selectedIndexY--;
+        getFx().playFX(BooleanService.getRandom(1, 2));
+        if(selectedIndexY < 0) {
+            selectedIndexY = options.length - 1;
+        }
+    }
+
     public void moveUp(List<Save> saves) {
         if(saves.isEmpty()) { return; }
 
@@ -408,26 +439,9 @@ public class MovesManager {
         getFx().playFX(BooleanService.getRandom(1, 2));
     }
 
-    public void moveUp(GameMenu[] options) {
-        selectedIndexY--;
-        getFx().playFX(BooleanService.getRandom(1, 2));
-        if(selectedIndexY < 0) {
-            selectedIndexY = options.length - 1;
-        }
-    }
-
-    public void moveUp(GameSettings[] options) {
-        selectedIndexY--;
-        getFx().playFX(BooleanService.getRandom(1, 2));
-        if(selectedIndexY < 0) {
-            selectedIndexY = options.length - 1;
-        }
-    }
-
-    public void moveUp() {
-        GameState state = GameService.getState();
-        if(state == GameState.BOARD) {
-            moveY = Math.max(0, moveY - 1);
+    public void moveLeft() {
+        if(GameService.getState() == GameState.BOARD) {
+            moveX = Math.max(0, moveX - 1);
             updateKeyboardHover();
             getFx().playFX(BooleanService.getRandom(1, 2));
         }
@@ -442,14 +456,6 @@ public class MovesManager {
         selectedIndexY = (newPage - 1) * itemsPerPage;
 
         getFx().playFX(4);
-    }
-
-    public void moveLeft() {
-        if(GameService.getState() == GameState.BOARD) {
-            moveX = Math.max(0, moveX - 1);
-            updateKeyboardHover();
-            getFx().playFX(BooleanService.getRandom(1, 2));
-        }
     }
 
     public void moveDown(List<Save> saves) {
@@ -469,26 +475,26 @@ public class MovesManager {
         getFx().playFX(BooleanService.getRandom(1, 2));
     }
 
-    public void moveDown(GameMenu[] options) {
-        selectedIndexY++;
-        getFx().playFX(BooleanService.getRandom(1, 2));
-        if(selectedIndexY < 0) {
-            selectedIndexY = 0;
-        }
-    }
-
-    public void moveDown(GameSettings[] options) {
-        selectedIndexY++;
-        getFx().playFX(BooleanService.getRandom(1, 2));
-        if(selectedIndexY < 0) {
-            selectedIndexY = 0;
-        }
-    }
-
     public void moveDown() {
         GameState state = GameService.getState();
         if(state == GameState.BOARD) {
             moveY = Math.min(7, moveY + 1);
+            updateKeyboardHover();
+            getFx().playFX(BooleanService.getRandom(1, 2));
+        }
+    }
+
+    public void moveDown(Object[] options) {
+        selectedIndexY++;
+        getFx().playFX(BooleanService.getRandom(1, 2));
+        if(selectedIndexY < 0) {
+            selectedIndexY = 0;
+        }
+    }
+
+    public void moveRight() {
+        if(GameService.getState() == GameState.BOARD) {
+            moveX = Math.min(7, moveX + 1);
             updateKeyboardHover();
             getFx().playFX(BooleanService.getRandom(1, 2));
         }
@@ -503,14 +509,6 @@ public class MovesManager {
         selectedIndexY = (newPage - 1) * itemsPerPage;
 
         getFx().playFX(4);
-    }
-
-    public void moveRight() {
-        if(GameService.getState() == GameState.BOARD) {
-            moveX = Math.min(7, moveX + 1);
-            updateKeyboardHover();
-            getFx().playFX(BooleanService.getRandom(1, 2));
-        }
     }
 
     public void activate(String saveName) {
