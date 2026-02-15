@@ -112,6 +112,9 @@ public class BoardRender {
     }
 
     public void drawBaseBoard(Graphics2D g2) {
+        g2.setColor(Colorblindness.filter(Colors.getBackground()));
+        g2.fillRect(0, 0, RenderContext.BASE_WIDTH, RenderContext.BASE_HEIGHT);
+
         final int ROW = boardService.getBoard().getROW();
         final int COL = boardService.getBoard().getCOL();
         final int SQUARE = render.scale(Board.getSquare());

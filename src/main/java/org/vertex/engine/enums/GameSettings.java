@@ -34,6 +34,7 @@ public enum GameSettings {
         }
         public void toggle() {
             BooleanService.canDoSandbox ^= true;
+            BooleanService.canType = true;
         }
     },
     CHAOS_MODE("Chaos Mode") {

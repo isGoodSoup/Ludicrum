@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vertex.engine.entities.*;
+import org.vertex.engine.enums.Tint;
 import org.vertex.engine.records.Save;
 import org.vertex.engine.service.BooleanService;
 import org.vertex.engine.service.GameService;
@@ -26,6 +27,8 @@ public class SaveManager {
     private Save currentSave;
     private static final Logger log = LoggerFactory.getLogger(SaveManager.class);
     private ServiceFactory service;
+    private int lastTurn = -1;
+    private static final long AUTO_SAVE_INTERVAL = 30000;
 
     public SaveManager() {
         this.saveFolder = Path.of(System.getProperty("user.home"), ".vertex", "chess", "saves");
@@ -84,7 +87,7 @@ public class SaveManager {
         Path saveFile = saveFolder.resolve(save.name() + ".json");
         try (FileWriter fw = new FileWriter(saveFile.toFile())) {
             gson.toJson(save, fw);
-            log.info("Game saved: {}", saveFile);
+            log.debug("Game saved: {}", saveFile);
         } catch (IOException e) {
             log.error("Failed to save game: {}", e.getMessage());
         }
@@ -141,15 +144,19 @@ public class SaveManager {
 
     public void autoSave() {
         if(currentSave != null) {
-            Save updated = new Save(
-                    GameService.getGame(),
-                    currentSave.name(),
-                    GameService.getCurrentTurn(),
-                    service.getPieceService().getPieces(),
-                    service.getAchievementService().getUnlockedAchievements()
-            );
-            currentSave = updated;
-            saveGame(updated);
+            Tint turn = GameService.getCurrentTurn();
+            if(turn.ordinal() != lastTurn) {
+                Save updated = new Save(
+                        GameService.getGame(),
+                        currentSave.name(),
+                        turn,
+                        service.getPieceService().getPieces(),
+                        service.getAchievementService().getUnlockedAchievements()
+                );
+                currentSave = updated;
+                saveGame(updated);
+                lastTurn = turn.ordinal();
+            }
         }
     }
 }

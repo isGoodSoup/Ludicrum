@@ -4,6 +4,7 @@ import org.vertex.engine.entities.Achievement;
 import org.vertex.engine.entities.Board;
 import org.vertex.engine.enums.*;
 import org.vertex.engine.gui.Colors;
+import org.vertex.engine.input.Keyboard;
 import org.vertex.engine.manager.MovesManager;
 import org.vertex.engine.records.Save;
 import org.vertex.engine.service.BoardService;
@@ -15,7 +16,6 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.List;
-import java.util.Scanner;
 
 public class MenuRender {
     public static final GameMenu[] MENU = GameMenu.values();
@@ -459,31 +459,39 @@ public class MenuRender {
     public void drawSandboxMenu(Graphics2D g2) {
         if(!BooleanService.canDoSandbox) { return; }
 
-        int stroke = 6;
+        int stroke = 6, arc = 32;
         int boardX = render.getBoardRender().getBoardOriginX();
         int boardY = render.getBoardRender().getBoardOriginY();
         int boardWidth = Board.getSquare() * boardService.getBoard().getCOL();
+        int boardHeight = Board.getSquare() * boardService.getBoard().getROW();
+        int boardBottom = boardY + boardHeight;
 
         g2.setFont(GUIService.getFont(GUIService.getMENU_FONT()));
         FontMetrics fm = g2.getFontMetrics();
-        String input = "";
+        Keyboard keyboard = boardService.getServiceFactory().getKeyboard();
+        String input = keyboard.getCurrentText();
         int textWidth = fm.stringWidth(input);
         int textHeight = fm.getAscent() + fm.getDescent();
 
         int innerPadding = render.scale(30);
         int padding = render.scale(90);
 
-        int textX = boardX + (boardWidth - textWidth)/2;
-        int textY = boardY - padding - fm.getDescent();
+        int spacingBelowBoard = render.scale(60);
 
-        int boxX = textX - innerPadding;
-        int boxY = textY - fm.getAscent() - innerPadding;
-        int boxWidth = textWidth + 2 * innerPadding;
+        int boxWidth = boardWidth;
         int boxHeight = textHeight + 2 * innerPadding;
-        int arc = 32;
+
+        int boxX = boardX;
+        int boxY = boardBottom + spacingBelowBoard;
+
+        int textX = boxX + (boxWidth - textWidth)/2;
+        int textY = boxY + (boxHeight + fm.getAscent() - fm.getDescent())/2;
 
         GUIService.drawBox(g2, stroke, boxX, boxY, boxWidth,
                 boxHeight, arc, arc, true, false, 255);
+
+        g2.setColor(Colorblindness.filter(Colors.getForeground()));
+        g2.drawString(input, textX, textY);
     }
 
     public void drawCheckmate(Graphics2D g2) {

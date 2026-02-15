@@ -8,19 +8,50 @@ import java.util.Map;
 public class Keyboard implements KeyListener {
     private final Map<Integer, Boolean> keyStates;
     private final Map<Integer, Boolean> keyProcessed;
+    private StringBuilder textBuffer = new StringBuilder();
+    private boolean canText = false;
 
     public Keyboard() {
         keyStates = new HashMap<>();
         keyProcessed = new HashMap<>();
     }
 
+    public boolean canText() {
+        return canText;
+    }
+
+    public void setCanText(boolean canText) {
+        this.canText = canText;
+    }
+
+    public String consumeText() {
+        String text = textBuffer.toString();
+        textBuffer.setLength(0);
+        return text;
+    }
+
+    public String getCurrentText() {
+        return textBuffer.toString();
+    }
+
     @Override
-    public void keyTyped(KeyEvent e) { }
+    public void keyTyped(KeyEvent e) {
+        if(!canText) { return; }
+        char c = e.getKeyChar();
+        if(!Character.isISOControl(c)) {
+            textBuffer.append(c);
+        }
+    }
 
     @Override
     public void keyPressed(KeyEvent e) {
         keyStates.put(e.getKeyCode(), true);
         keyProcessed.putIfAbsent(e.getKeyCode(), false);
+        if(canText) {
+            if(e.getKeyCode() == KeyEvent.VK_BACK_SPACE && !textBuffer.isEmpty()) {
+                textBuffer.deleteCharAt(textBuffer.length() - 1);
+            }
+        }
     }
 
     @Override

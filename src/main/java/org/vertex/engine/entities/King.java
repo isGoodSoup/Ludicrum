@@ -9,13 +9,19 @@ import org.vertex.engine.service.PieceService;
 import java.util.List;
 
 public class King extends Piece {
-	protected transient PieceService pieceService;
+	private transient PieceService pieceService;
 
 	public King(PieceService pieceService, Tint color, int col, int row) {
 		super(color, col, row);
 		this.id = Type.KING;
 		this.pieceService = pieceService;
 	}
+
+	public King(Tint color, int col, int row) {
+		super(color, col, row);
+		this.id = Type.KING;
+	}
+
 
 	@Override
 	public boolean canMove(int targetCol, int targetRow, List<Piece> board) {

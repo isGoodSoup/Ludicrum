@@ -19,6 +19,7 @@ public class BooleanService {
     public static boolean isExitActive;
     public static boolean isAchievementLocked;
     public static boolean isMovesActive;
+    public static boolean canType;
 
     public static boolean canDoMoves;
     public static boolean canUndoMoves;
@@ -70,7 +71,7 @@ public class BooleanService {
         canPromote = true;
         canDoAchievements = true;
         canShowTick = true;
-        canSave = true;
+        canSave = false;
         canResetTable = true;
         canStopwatch = true;
         canDoChaos = false;
@@ -80,6 +81,7 @@ public class BooleanService {
         isDarkMode = false;
         isCheckmate = false;
         isExitActive = false;
+        canType = false;
     }
 
     public static boolean getBoolean() {

@@ -48,7 +48,6 @@ public abstract class Piece {
 		Theme theme = Colors.getTheme();
 		String color = theme.getColor(this.color);
 		String suffix = "";
-		log.info("Loading sprite for: {}", pieceName);
 		String path ="/pieces/" + pieceName + "/" + pieceName + "_" + color;
 		return PieceService.getImage(path);
 	}
@@ -57,7 +56,6 @@ public abstract class Piece {
 		Theme theme = Colors.getTheme();
 		String color = theme.getColor(this.color);
 		String path = "/pieces/checker/checker_king_" + color;
-		log.info("Loading sprite for: checker_king");
 		return PieceService.getImage(path);
 	}
 

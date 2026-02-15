@@ -1,9 +1,12 @@
 package org.vertex.engine.service;
 
+import org.vertex.engine.enums.Console;
 import org.vertex.engine.input.Keyboard;
 import org.vertex.engine.manager.MovesManager;
 import org.vertex.engine.manager.SaveManager;
 import org.vertex.engine.render.RenderContext;
+
+import java.util.List;
 
 public class ServiceFactory {
     private final RenderContext render;
@@ -110,4 +113,6 @@ public class ServiceFactory {
     public AchievementService getAchievementService() {
         return achievement;
     }
+
+    public List<Console> getConsole() { return List.of(Console.values()); }
 }

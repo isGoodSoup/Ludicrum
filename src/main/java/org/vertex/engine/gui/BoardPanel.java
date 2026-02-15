@@ -43,7 +43,7 @@ public class BoardPanel extends JPanel implements Runnable {
         this.render = new RenderContext();
         service = new ServiceFactory(render);
         GameService.setState(GameState.MENU);
-        Colors.setTheme(Theme.DEFAULT);
+        Colors.setTheme(Theme.OCEAN);
         BooleanService.defaultToggles();
         final int WIDTH = RenderContext.BASE_WIDTH;
         final int HEIGHT = RenderContext.BASE_HEIGHT;
@@ -121,7 +121,6 @@ public class BoardPanel extends JPanel implements Runnable {
     private void update() {
         checkKeyboardInput();
         service.getTimerService().update();
-        service.getBoardService().resetBoard();
         checkAchievements();
         PlayState mode = GameService.getMode();
         if(mode != null) {
@@ -139,20 +138,32 @@ public class BoardPanel extends JPanel implements Runnable {
         GameState state = GameService.getState();
         GameMenu menu = GameService.getGameMenu();
 
-        if(keyboard.wasBPressed()) {
-            if(GameService.getState() == GameState.BOARD) {
-                if(!BooleanService.canSave) { return; }
-                service.getSaveManager().autoSave();
-            }
+        if(keyboard.isComboPressed(KeyEvent.VK_CONTROL, KeyEvent.VK_B)) {
             GameService.setState(GameState.MENU);
             service.getMovesManager().setSelectedIndexY(0);
-            service.getGuiService().getFx().playFX(0);
+            service.getGuiService().getFx().playFX(2);
         }
 
         if(BooleanService.canBeColorblind) {
             if(keyboard.wasOnePressed()) { MenuRender.setCb(ColorblindType.PROTANOPIA); }
             if(keyboard.wasTwoPressed()) { MenuRender.setCb(ColorblindType.DEUTERANOPIA); }
             if(keyboard.wasThreePressed()) { MenuRender.setCb(ColorblindType.TRITANOPIA); }
+        }
+
+        if(BooleanService.canDoSandbox) {
+            if(keyboard.isComboPressed(KeyEvent.VK_CONTROL, KeyEvent.VK_ENTER)) {
+                String fullInput = keyboard.consumeText().trim();
+                if(fullInput.isEmpty()) { return; }
+                String[] parts = fullInput.split("\\s+");
+                String commandName = parts[0];
+                String[] args = java.util.Arrays.copyOfRange(parts, 1, parts.length);
+                Console consoleCommand = Console.fromString(commandName);
+                if (consoleCommand != null) {
+                    consoleCommand.run(service, args);
+                } else {
+                    System.out.println("Unknown command: " + commandName);
+                }
+            }
         }
 
         switch(state) {
@@ -259,6 +270,10 @@ public class BoardPanel extends JPanel implements Runnable {
                 }
             }
             case BOARD -> {
+                if(keyboard.isComboPressed(KeyEvent.VK_CONTROL, KeyEvent.VK_S)) {
+                    BooleanService.canDoSandbox ^= true;
+                }
+                if(BooleanService.canDoSandbox) { return; }
                 if(keyboard.wasCancelPressed()) {
                     service.getMovesManager().cancelMove();
                 }
@@ -297,11 +312,11 @@ public class BoardPanel extends JPanel implements Runnable {
         }
 
         if(keyboard.isComboPressed(KeyEvent.VK_CONTROL, KeyEvent.VK_R)) {
-            refreshGraphics();
+            service.getBoardService().resetBoard();
         }
 
         if(keyboard.isComboPressed(KeyEvent.VK_CONTROL, KeyEvent.VK_H)) {
-            service.getRender().getMovesRender().hideMoves();
+            service.getRender().getMovesRender().toggleMoves();
         }
 
         if(keyboard.wasF11Pressed()) {
@@ -351,9 +366,5 @@ public class BoardPanel extends JPanel implements Runnable {
 
     private void playFX() {
         service.getGuiService().getFx().playFX(5);
-    }
-
-    public void refreshGraphics() {
-        repaint();
     }
 }

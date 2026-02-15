@@ -29,6 +29,8 @@ public class BoardService {
     private ServiceFactory serviceFactory;
     private static final Logger log = LoggerFactory.getLogger(BoardService.class);
 
+    private Games lastLoggedGame = null;
+
     public BoardService(PieceService pieceService,
                         PromotionService promotionService,
                         ModelService modelService,
@@ -121,23 +123,30 @@ public class BoardService {
     }
 
     public void startBoard() {
-        if(BooleanService.canDoSandbox) { setSandboxPieces(); }
+        if(BooleanService.canDoSandbox) {
+            setSandboxPieces();
+            if(BooleanService.canType) {
+                serviceFactory.getKeyboard().setCanText(true);
+            }
+        }
         else if(BooleanService.canDoChaos) { setPiecesChaos(); }
         else if(BooleanService.canDoTraining) { setPiecesTraining(); }
         else { setPieces(); }
 
-        if(BooleanService.canStopwatch) {
-            TimerService.setTime(Time.STOPWATCH);
-            BooleanService.canTime = false;
-            getServiceFactory().getTimerService().reset();
-            getServiceFactory().getTimerService().start();
-        }
+        if(!BooleanService.canDoSandbox) {
+            if(BooleanService.canStopwatch) {
+                TimerService.setTime(Time.STOPWATCH);
+                BooleanService.canTime = false;
+                getServiceFactory().getTimerService().reset();
+                getServiceFactory().getTimerService().start();
+            }
 
-        if(BooleanService.canTime) {
-            TimerService.setTime(Time.TIMER);
-            BooleanService.canStopwatch = false;
-            getServiceFactory().getTimerService().reset();
-            getServiceFactory().getTimerService().start();
+            if(BooleanService.canTime) {
+                TimerService.setTime(Time.TIMER);
+                BooleanService.canStopwatch = false;
+                getServiceFactory().getTimerService().reset();
+                getServiceFactory().getTimerService().start();
+            }
         }
     }
 
@@ -147,15 +156,19 @@ public class BoardService {
     }
 
     public void resetBoard() {
-        if(BooleanService.canResetTable
-                && getServiceFactory().getKeyboard().wasRPressed()) {
+        if(BooleanService.canResetTable) {
             getServiceFactory().getGameService().startNewGame();
         }
     }
 
     public void setPieces() {
         Games game = GameService.getGame();
-        log.info("Current game: {}", GameService.getGame());
+
+        if(game != GameService.getGame()) {
+            log.debug("Current game: {}", GameService.getGame());
+            lastLoggedGame = game;
+        }
+
         if(game == null) {
             throw new IllegalStateException("Game type not set before board initialization.");
         }

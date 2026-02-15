@@ -112,7 +112,7 @@ public class MovesRender {
         }
     }
 
-    public void hideMoves() {
+    public void toggleMoves() {
         BooleanService.isMovesActive = !BooleanService.isMovesActive;
     }
 }
