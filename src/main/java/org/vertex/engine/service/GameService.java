@@ -2,6 +2,7 @@ package org.vertex.engine.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.vertex.engine.animations.ToastAnimation;
 import org.vertex.engine.enums.*;
 import org.vertex.engine.interfaces.Ruleset;
 import org.vertex.engine.manager.SaveManager;
@@ -30,6 +31,7 @@ public class GameService {
     public GameService(RenderContext render, BoardService boardService) {
         GameService.render = render;
         GameService.boardService = boardService;
+        game = Games.CHESS;
     }
 
     public static GameMenu getGameMenu() {
@@ -86,6 +88,13 @@ public class GameService {
 
     public static boolean isBlackTurn() {
         return currentTurn == Tint.DARK;
+    }
+
+    public static void nextGame() {
+        Games[] games = Games.values();
+        int nextIndex = (game.ordinal() + 1) % games.length;
+        setGame(games[nextIndex]);
+        service.getAnimationService().add(new ToastAnimation(games[nextIndex].getLabel()));
     }
 
     public void startNewGame() {

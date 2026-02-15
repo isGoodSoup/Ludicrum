@@ -43,14 +43,13 @@ public class BoardPanel extends JPanel implements Runnable {
         this.render = new RenderContext();
         service = new ServiceFactory(render);
         GameService.setState(GameState.MENU);
-        Colors.setTheme(Theme.LEGACY);
+        Colors.setTheme(Theme.DEFAULT);
         BooleanService.defaultToggles();
         final int WIDTH = RenderContext.BASE_WIDTH;
         final int HEIGHT = RenderContext.BASE_HEIGHT;
         log.debug("Set size(s): {}, {}", WIDTH, HEIGHT);
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
         setBackground(Colorblindness.filter(Colors.getBackground()));
-        log.debug("Mouse listener inserted");
         addKeyListener(service.getKeyboard());
         log.debug("Keyboard listener inserted");
         setFocusable(true);
@@ -166,6 +165,15 @@ public class BoardPanel extends JPanel implements Runnable {
                 if(keyboard.isDownDown() && now - lastDownTime >= repeatDelay) {
                     move.moveDown(MenuRender.MENU);
                     lastDownTime = now;
+                }
+                if(keyboard.isComboPressed(KeyEvent.VK_CONTROL, KeyEvent.VK_G)) {
+                    GameService.nextGame();
+
+                    if (!BooleanService.doRuleTogglesUnlock) {
+                        if (!BooleanService.doRuleToggles) {
+                            BooleanService.doRuleToggles = true;
+                        }
+                    }
                 }
             }
             case SAVES -> {

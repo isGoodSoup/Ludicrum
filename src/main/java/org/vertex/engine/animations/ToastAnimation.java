@@ -12,22 +12,25 @@ import java.awt.image.BufferedImage;
 
 public class ToastAnimation implements Animation {
     private final String title;
-    private final String description;
-    private final BufferedImage icon;
+    private String description;
+    private BufferedImage icon;
     private double time = 0;
-    private static final double SLIDE_TIME = 0.5;
+    private static final double SLIDE_TIME = 0.3;
     private static final double STAY_TIME = 2.0;
-    private static final int SLIDE_DISTANCE = 180;
+    private static final int SLIDE_DISTANCE = 400;
     private static final int WIDTH = 800;
     private static final int HEIGHT = 125;
     private static final int ARC = 25;
-    private final int baseY;
+    private int baseY;
 
     public ToastAnimation(String title, String description, int panelHeight, BufferedImage icon) {
         this.title = title;
         this.description = description;
         this.icon = icon;
-        this.baseY = panelHeight - 180;
+    }
+
+    public ToastAnimation(String title) {
+        this.title = title;
     }
 
     @Override
@@ -41,13 +44,13 @@ public class ToastAnimation implements Animation {
         if(time > totalTime) return;
 
         int panelWidth = RenderContext.BASE_WIDTH;
-        int x = (panelWidth - WIDTH) / 2;
+        int x = (panelWidth - WIDTH)/2;
         int y = baseY;
 
-        if(time < SLIDE_TIME) { // sliding in
-            y += (int)((1 - time / SLIDE_TIME) * SLIDE_DISTANCE);
-        } else if (time > SLIDE_TIME + STAY_TIME) { // sliding out
-            double t = (time - SLIDE_TIME - STAY_TIME) / SLIDE_TIME;
+        if(time < SLIDE_TIME) {
+            y += (int)((1 - time/SLIDE_TIME) * SLIDE_DISTANCE);
+        } else if (time > SLIDE_TIME + STAY_TIME) {
+            double t = (time - SLIDE_TIME - STAY_TIME)/SLIDE_TIME;
             y += (int)(t * SLIDE_DISTANCE);
         }
 
@@ -62,6 +65,17 @@ public class ToastAnimation implements Animation {
             g2.drawImage(icon, x + 20, y + (HEIGHT - iconSize) / 2, iconSize, iconSize, null);
         }
 
+        if(description == null) {
+            g2.setFont(GUIService.getFont(GUIService.getMENU_FONT()));
+            g2.setColor(Colorblindness.filter(Colors.getHighlight()));
+            FontMetrics fm = g2.getFontMetrics();
+            int textX = x + 56;
+            int textY = y + (HEIGHT + fm.getAscent())/2;
+            g2.drawString(title, textX, textY);
+            g2.setColor(Colorblindness.filter(Theme.BLACK.getForeground()));
+            return;
+        }
+
         g2.setFont(GUIService.getFont(GUIService.getMENU_FONT()));
         g2.setColor(Colorblindness.filter(Colors.getHighlight()));
         FontMetrics fm = g2.getFontMetrics();
@@ -69,7 +83,14 @@ public class ToastAnimation implements Animation {
         int textY = y + (HEIGHT + fm.getAscent()) / 2 - 24;
         g2.drawString(title, textX, textY);
         g2.setColor(Colorblindness.filter(Theme.BLACK.getForeground()));
-        g2.drawString(description, textX, textY + 40);
+        if(description != null) {
+            g2.drawString(description, textX, textY + 40);
+        }
+    }
+
+    public void setStackIndex(int index, int panelHeight) {
+        int spacing = 40;
+        this.baseY = panelHeight - 180 - (index * (HEIGHT + spacing));
     }
 
     @Override

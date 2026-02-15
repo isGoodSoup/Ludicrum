@@ -6,7 +6,7 @@ public enum GameMenu {
     NEW_GAME("NEW GAME") {
         @Override
         public void run(GameService gameService) {
-            GameService.setState(GameState.GAMES);
+            GameService.getGame().setup(gameService);
         }
     },
     LOAD_GAME("LOAD GAME") {

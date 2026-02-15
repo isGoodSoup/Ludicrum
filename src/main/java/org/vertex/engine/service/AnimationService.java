@@ -5,6 +5,7 @@ import org.vertex.engine.animations.ToastAnimation;
 import org.vertex.engine.entities.Board;
 import org.vertex.engine.entities.Piece;
 import org.vertex.engine.interfaces.Animation;
+import org.vertex.engine.render.RenderContext;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -39,7 +40,19 @@ public class AnimationService {
     }
 
     public void render(Graphics2D g2) {
-        for (Animation anim : animations) anim.render(g2);
+        int panelHeight = RenderContext.BASE_HEIGHT;
+        int toastIndex = 0;
+
+        for(Animation anim : animations) {
+            if (anim instanceof ToastAnimation toast) {
+                toast.setStackIndex(toastIndex, panelHeight);
+                toast.render(g2);
+                toastIndex++;
+            } else {
+                anim.render(g2);
+            }
+        }
+
     }
 
     public boolean isAnimating(Piece piece) {

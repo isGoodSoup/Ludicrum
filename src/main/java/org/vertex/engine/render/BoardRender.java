@@ -5,7 +5,6 @@ import org.vertex.engine.entities.King;
 import org.vertex.engine.entities.Piece;
 import org.vertex.engine.enums.Games;
 import org.vertex.engine.gui.Colors;
-import org.vertex.engine.input.Mouse;
 import org.vertex.engine.service.*;
 
 import java.awt.*;
@@ -177,7 +176,6 @@ public class BoardRender {
     public void drawPiece(Graphics2D g2, Piece piece, BufferedImage override) {
         int square = render.scale(Board.getSquare());
         int size = (int) (square * piece.getScale());
-        Mouse mouse = guiService.getMouse();
         int offset = (square - size)/2;
 
         if(piece instanceof King && GameService.getGame() == Games.CHECKERS) {

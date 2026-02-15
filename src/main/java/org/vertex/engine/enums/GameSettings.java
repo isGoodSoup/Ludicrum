@@ -135,12 +135,6 @@ public enum GameSettings {
         }
         public void toggle() {
             BooleanService.canTheme ^= true;
-
-            if (!BooleanService.doRuleTogglesUnlock) {
-                if (!BooleanService.doRuleToggles) {
-                    BooleanService.doRuleToggles = true;
-                }
-            }
         }
     },
     COLORBLIND_MODE("Colorblind Mode") {
