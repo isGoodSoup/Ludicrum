@@ -231,8 +231,11 @@ public class KeyboardUI {
                 }
             }
             case RULES -> {
-                GameSettings option = MenuRender.SETTINGS_MENU[selectedIndexY];
-                option.toggle();
+                int absIndex = currentPage * ITEMS_PER_PAGE + selectedIndexY;
+                if(absIndex < MenuRender.SETTINGS_MENU.length) {
+                    GameSettings option = MenuRender.SETTINGS_MENU[absIndex];
+                    option.toggle();
+                }
             }
             case ACHIEVEMENTS -> BooleanService.canZoomIn ^= true;
             case BOARD -> keyboardMove();
@@ -246,7 +249,7 @@ public class KeyboardUI {
     public void nextPage() {
         int itemsPerPage = ITEMS_PER_PAGE;
         int totalItems = service.getAchievementService().getAllAchievements().size();
-        int totalPages = (totalItems + itemsPerPage - 1) / itemsPerPage;
+        int totalPages = (totalItems + itemsPerPage - 1)/itemsPerPage;
 
         if(currentPage < 0) { currentPage = 0; }
 
@@ -256,8 +259,8 @@ public class KeyboardUI {
     }
 
     public void nextPage(Object[] options) {
-        int itemsPerPage = 8;
-        int totalPages = (options.length + itemsPerPage - 1) / itemsPerPage;
+        int itemsPerPage = ITEMS_PER_PAGE;
+        int totalPages = (options.length + itemsPerPage - 1)/itemsPerPage;
 
         if(currentPage < 0) { currentPage = 0; }
 

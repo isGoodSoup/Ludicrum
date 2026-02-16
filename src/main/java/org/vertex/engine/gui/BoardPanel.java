@@ -271,12 +271,12 @@ public class BoardPanel extends JPanel implements Runnable {
                 }
                 if(keyboard.isLeftDown() && now - lastDownTime >= repeatDelay) {
                     keyboardUI.moveLeft(MenuRender.SETTINGS_MENU);
-                    service.getSound().playFX(4);
+                    service.getSound().playFX(2);
                     lastDownTime = now;
                 }
                 if(keyboard.isRightDown() && now - lastDownTime >= repeatDelay) {
                     keyboardUI.moveRight(MenuRender.SETTINGS_MENU);
-                    service.getSound().playFX(4);
+                    service.getSound().playFX(2);
                     lastDownTime = now;
                 }
             }
@@ -298,13 +298,13 @@ public class BoardPanel extends JPanel implements Runnable {
                 if(keyboard.isLeftDown() && now - lastUpTime >= repeatDelay) {
                     service.getKeyUI().previousPage();
                     service.getKeyUI().setSelectedIndexY(0);
-                    service.getSound().playFX(4);
+                    service.getSound().playFX(2);
                     lastUpTime = now;
                 }
                 if(keyboard.isRightDown() && now - lastDownTime >= repeatDelay) {
                     service.getKeyUI().nextPage();
                     service.getKeyUI().setSelectedIndexY(0);
-                    service.getSound().playFX(4);
+                    service.getSound().playFX(2);
                     lastDownTime = now;
                 }
             }
