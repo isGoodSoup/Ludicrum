@@ -14,12 +14,12 @@ public class King extends Piece {
 	public King(PieceService pieceService, Tint color, int col, int row) {
 		super(color, col, row);
 		this.pieceService = pieceService;
-		this.type = TypeID.KING;
+		this.typeID = TypeID.KING;
 	}
 
 	public King(Tint color, int col, int row) {
 		super(color, col, row);
-		this.type = TypeID.KING;
+		this.typeID = TypeID.KING;
 	}
 
 

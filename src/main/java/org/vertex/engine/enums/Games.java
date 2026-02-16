@@ -10,7 +10,11 @@ public enum Games {
         public void setup(GameService gameService) {
             GameService.setGame(this);
             GameService.setState(GameState.BOARD);
-            gameService.startNewGame();
+            if(!gameService.getSaveManager().autosaveExists()) {
+                gameService.startNewGame();
+            } else {
+                gameService.continueGame();
+            }
         }
 
         @Override
@@ -30,7 +34,11 @@ public enum Games {
         public void setup(GameService gameService) {
             GameService.setGame(this);
             GameService.setState(GameState.BOARD);
-            gameService.startNewGame(); // TODO
+            if(!gameService.getSaveManager().autosaveExists()) {
+                gameService.startNewGame();
+            } else {
+                gameService.continueGame();
+            }
         }
 
         @Override

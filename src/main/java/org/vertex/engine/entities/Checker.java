@@ -10,7 +10,7 @@ public class Checker extends Piece {
 
     public Checker(Tint color, int col, int row) {
         super(color, col, row);
-        this.type = TypeID.CHECKER;
+        this.typeID = TypeID.CHECKER;
     }
 
     public boolean isKing() {

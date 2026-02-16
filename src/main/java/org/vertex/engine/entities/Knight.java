@@ -9,7 +9,7 @@ public class Knight extends Piece {
 
 	public Knight(Tint color, int col, int row) {
 		super(color, col, row);
-		this.type = TypeID.KNIGHT;
+		this.typeID = TypeID.KNIGHT;
 	}
 
 	@Override

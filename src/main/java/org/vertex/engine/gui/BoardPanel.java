@@ -7,7 +7,6 @@ import org.vertex.engine.events.ToggleEvent;
 import org.vertex.engine.input.Keyboard;
 import org.vertex.engine.input.KeyboardInput;
 import org.vertex.engine.manager.MovesManager;
-import org.vertex.engine.records.Save;
 import org.vertex.engine.render.Colorblindness;
 import org.vertex.engine.render.MenuRender;
 import org.vertex.engine.render.RenderContext;
@@ -20,7 +19,6 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.io.Serial;
-import java.util.List;
 
 public class BoardPanel extends JPanel implements Runnable {
 	@Serial
@@ -95,7 +93,6 @@ public class BoardPanel extends JPanel implements Runnable {
         switch(GameService.getState()) {
             case MENU -> service.getRender().getMenuRender().drawGraphics(g2,
                     MenuRender.MENU);
-            case SAVES -> service.getRender().getMenuRender().drawSavesMenu(g2);
             case BOARD -> {
                 service.getRender().getBoardRender().drawBoard(g2);
                 service.getRender().getMovesRender().drawMoves(g2);
@@ -203,57 +200,6 @@ public class BoardPanel extends JPanel implements Runnable {
                     service.getSound().playFX(0);
                     service.getEventBus().fire(new ToggleEvent());
                 }
-            }
-            case SAVES -> {
-                List<Save> saves = service.getSaveManager().getSaves();
-                int itemsPerPage = KeyboardInput.getITEMS_PER_PAGE();
-                if(!saves.isEmpty()) {
-                    service.getKeyboardInput().setSelectedIndexY(0);
-                }
-                if(keyboard.wasSelectPressed()) {
-                    keyboardInput.activate(GameState.SAVES);
-                    service.getSound().playFX(3);
-                }
-                if(keyboard.isUpDown() && now - lastUpTime >= repeatDelay) {
-                    keyboardInput.moveUp(saves);
-                    service.getSound().playFX(1);
-                    lastUpTime = now;
-                }
-                if(keyboard.isDownDown() && now - lastDownTime >= repeatDelay) {
-                    keyboardInput.moveDown(saves);
-                    service.getSound().playFX(1);
-                    lastDownTime = now;
-                }
-                if(keyboard.isLeftDown() && now - lastUpTime >= repeatDelay) {
-                    service.getKeyboardInput().previousPage();
-                    service.getSound().playFX(2);
-                    service.getKeyboardInput().setSelectedIndexY(
-                            (service.getKeyboardInput().getCurrentPage() - 1) * itemsPerPage
-                    );
-                    lastUpTime = now;
-                }
-                if(keyboard.isRightDown() && now - lastDownTime >= repeatDelay) {
-                    service.getKeyboardInput().nextPage();
-                    service.getSound().playFX(2);
-                    service.getKeyboardInput().setSelectedIndexY(
-                            (service.getKeyboardInput().getCurrentPage() - 1) * itemsPerPage
-                    );
-                    lastDownTime = now;
-                }
-                if(keyboard.isComboPressed(KeyEvent.VK_CONTROL,
-                        KeyEvent.VK_D) && now - lastDownTime >= repeatDelay) {
-                    int selected = service.getKeyboardInput().getSelectedIndexY();
-                    if(selected >= 0 && selected < saves.size()) {
-                        String saveName = saves.get(selected).name();
-                        service.getSaveManager().removeSave(saveName);
-
-                        if(selected >= saves.size()) {
-                            service.getKeyboardInput().setSelectedIndexY(saves.size() - 1);
-                        }
-                    }
-                    lastDownTime = now;
-                }
-
             }
             case RULES -> {
                 if(keyboard.wasSelectPressed()) {

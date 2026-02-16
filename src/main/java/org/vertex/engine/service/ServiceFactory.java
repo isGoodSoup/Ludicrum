@@ -51,9 +51,8 @@ public class ServiceFactory {
         this.piece.setBoardService(board);
         this.board.setServiceFactory(this);
         this.model.setBoardService(board);
-        this.gs = new GameService(render, board);
         this.saveManager = new SaveManager();
-        this.saveManager.setServiceFactory(this);
+        this.gs = new GameService(render, board, saveManager);
         this.gs.setServiceFactory(this);
         this.gs.setSaveManager(saveManager);
         this.timer = new TimerService();
@@ -73,12 +72,14 @@ public class ServiceFactory {
         this.render.getMenuRender().setMoveManager(movesManager);
         this.render.getMenuRender().setKeyUI(key);
         this.render.getMenuRender().setAnimationService(animation);
+        this.render.getMenuRender().setAchievementService(achievement);
         this.render.getMovesRender().setBoardService(board);
         this.render.getMovesRender().setGuiService(gui);
         this.render.getMovesRender().setMovesManager(movesManager);
         this.movesManager.init(this, eventBus);
         this.render.getMenuRender().init();
         this.mouseInput.init();
+        this.achievement.init();
     }
 
     public RenderContext getRender() {

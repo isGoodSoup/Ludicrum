@@ -5,36 +5,33 @@ import com.google.gson.GsonBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vertex.engine.entities.*;
-import org.vertex.engine.enums.Tint;
 import org.vertex.engine.records.Save;
-import org.vertex.engine.service.BooleanService;
-import org.vertex.engine.service.GameService;
-import org.vertex.engine.service.ServiceFactory;
 import org.vertex.engine.util.RuntimeTypeAdapterFactory;
 
-import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class SaveManager {
+
+    private static final String AUTOSAVE_FILE = "autosave.json";
+    private static final String ACHIEVEMENTS_FILE = "achievements.json";
     private final Gson gson;
-    private final Path saveFolder;
-    private Save currentSave;
+    private final Path savePath;
+    private final Path achievementsPath;
     private static final Logger log = LoggerFactory.getLogger(SaveManager.class);
-    private ServiceFactory service;
-    private int lastTurn = -1;
-    private static final long AUTO_SAVE_INTERVAL = 30000;
 
     public SaveManager() {
-        this.saveFolder = Path.of(System.getProperty("user.home"), ".vertex", "chess", "saves");
+        Path saveFolder = Path.of(System.getProperty("user.home"), ".vertex", "chess");
+        this.achievementsPath = saveFolder.resolve(ACHIEVEMENTS_FILE);
         RuntimeTypeAdapterFactory<Piece> pieceAdapter =
                 RuntimeTypeAdapterFactory
-                        .of(Piece.class, "type")
+                        .of(Piece.class, "classType")
                         .registerSubtype(Pawn.class, "PAWN")
                         .registerSubtype(Rook.class, "ROOK")
                         .registerSubtype(Knight.class, "KNIGHT")
@@ -42,122 +39,84 @@ public class SaveManager {
                         .registerSubtype(Queen.class, "QUEEN")
                         .registerSubtype(King.class, "KING")
                         .registerSubtype(Checker.class, "CHECKER");
+
         this.gson = new GsonBuilder()
                 .registerTypeAdapterFactory(pieceAdapter)
                 .setPrettyPrinting()
                 .create();
+
+        this.savePath = saveFolder.resolve(AUTOSAVE_FILE);
         try {
-            if (!Files.exists(saveFolder)) {
-                Files.createDirectories(saveFolder);
-            }
-        } catch (IOException e) {
-            log.error("Failed to create saves folder: {}", e.getMessage());
+            Files.createDirectories(saveFolder);
+        } catch(IOException e) {
+            log.error("Failed to create save directory: {}", e.getMessage());
         }
-    }
-
-    public ServiceFactory getServiceFactory() {
-        return service;
-    }
-
-    public void setServiceFactory(ServiceFactory service) {
-        this.service = service;
-    }
-
-    public Save getCurrentSave() {
-        return currentSave;
-    }
-
-    public void setCurrentSave(Save currentSave) {
-        this.currentSave = currentSave;
-    }
-
-    public List<Save> getSaves() {
-        List<Save> freshSaves = new ArrayList<>();
-        for (String name : listSaves()) {
-            Save s = loadGame(name);
-            if (s != null) {
-                freshSaves.add(s);
-            }
-        }
-        return freshSaves;
     }
 
     public void saveGame(Save save) {
-        if(!BooleanService.canSave) { return; }
-        Path saveFile = saveFolder.resolve(save.name() + ".json");
-        try (FileWriter fw = new FileWriter(saveFile.toFile())) {
-            gson.toJson(save, fw);
-            log.debug("Game saved: {}", saveFile);
-        } catch (IOException e) {
-            log.error("Failed to save game: {}", e.getMessage());
-        }
-    }
-
-    public Save loadGame(String saveName) {
-        Path saveFile = saveFolder.resolve(saveName + ".json");
-        if (!Files.exists(saveFile)) {
-            log.error("Save file not found: {}", saveFile);
-            return null;
-        }
-
-        try (FileReader fr = new FileReader(saveFile.toFile())) {
-            return gson.fromJson(fr, Save.class);
-        } catch (IOException e) {
-            log.error("Failed to load game: {}", e.getMessage());
-            return null;
-        }
-    }
-
-    public void removeSave(String saveName) {
-        List<Save> saves = getSaves();
-        if(saveName == null || saveName.isEmpty()) {
+        Path temp = savePath.resolveSibling("autosave.tmp");
+        try(FileWriter writer = new FileWriter(temp.toFile())) {
+            gson.toJson(save, writer);
+        } catch(IOException e) {
+            log.error("Failed to write temp autosave: {}", e.getMessage());
             return;
         }
 
-        saves.removeIf(s -> s.name().equals(saveName));
-        if(currentSave != null && currentSave.name().equals(saveName)) {
-            currentSave = null;
-        }
-
-        File saveFile = new File(Path.of(System.getProperty("user.home")) + saveName +".json");
-        if (saveFile.exists() && !saveFile.delete()) {
-            log.error("Failed to delete save file: {}", saveFile.getAbsolutePath());
+        try {
+            Files.move(temp, savePath, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+            log.debug("Autosave written atomically.");
+        } catch(IOException e) {
+            log.error("Failed to rename temp autosave: {}", e.getMessage());
         }
     }
 
-
-    public List<String> listSaves() {
-        List<String> saveNames = new ArrayList<>();
-        try (var stream = Files.list(saveFolder)) {
-            stream.filter(f -> f.toString().endsWith(".json"))
-                    .forEach(f -> saveNames.add(f.getFileName().toString().replace(".json", "")));
-        } catch (IOException e) {
-            log.error("Failed to list saves: {}", e.getMessage());
+    public Save loadGame() {
+        if(!Files.exists(savePath)) {
+            log.debug("No autosave found.");
+            return null;
         }
-        return saveNames;
-    }
-
-    public boolean doesSaveExist(String autosave) {
-        File f = new File(saveFolder.resolve(autosave + ".json").toUri());
-        return f.exists();
-    }
-
-    public void autoSave() {
-        if(!BooleanService.canSave) { return; }
-        if(currentSave != null) {
-            Tint turn = GameService.getCurrentTurn();
-            if(turn.ordinal() != lastTurn) {
-                Save updated = new Save(
-                        GameService.getGame(),
-                        currentSave.name(),
-                        turn,
-                        service.getPieceService().getPieces(),
-                        service.getAchievementService().getUnlockedAchievements()
-                );
-                currentSave = updated;
-                saveGame(updated);
-                lastTurn = turn.ordinal();
+        try {
+            if(Files.size(savePath) == 0) {
+                log.warn("Autosave file is empty.");
+                return null;
             }
+
+            try(FileReader reader = new FileReader(savePath.toFile())) {
+                return gson.fromJson(reader, Save.class);
+            }
+
+        } catch(IOException e) {
+            log.error("Failed to load autosave: {}", e.getMessage());
+            return null;
         }
+    }
+
+    public void saveAchievements(List<Achievement> achievements) {
+        try (FileWriter writer = new FileWriter(achievementsPath.toFile())) {
+            gson.toJson(achievements, writer);
+            log.debug("Achievements saved.");
+        } catch (IOException e) {
+            log.error("Failed to save achievements: {}", e.getMessage());
+        }
+    }
+
+    public List<Achievement> loadAchievements() {
+        if (!Files.exists(achievementsPath)) {
+            log.debug("No achievements file found, returning empty list.");
+            return new ArrayList<>();
+        }
+        try(FileReader reader = new FileReader(achievementsPath.toFile())) {
+            Achievement[] arr = gson.fromJson(reader, Achievement[].class);
+            if(arr == null) return new ArrayList<>();
+            List<Achievement> list = new ArrayList<>(Arrays.asList(arr));
+            return list;
+        } catch(IOException e) {
+            log.error("Failed to load achievements, returning empty list.", e);
+            return new ArrayList<>();
+        }
+    }
+
+    public boolean autosaveExists() {
+        return Files.exists(savePath) && savePath.toFile().length() > 0;
     }
 }

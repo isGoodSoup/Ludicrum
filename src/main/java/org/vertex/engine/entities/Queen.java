@@ -11,7 +11,7 @@ public class Queen extends Piece {
 
 	public Queen(Tint color, int col, int row) {
 		super(color, col, row);
-		this.type = TypeID.QUEEN;
+		this.typeID = TypeID.QUEEN;
 	}
 
 	@Override

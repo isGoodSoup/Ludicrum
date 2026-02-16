@@ -9,7 +9,7 @@ public class Bishop extends Piece {
 
 	public Bishop(Tint color, int col, int row) {
 		super(color, col, row);
-		this.type = TypeID.BISHOP;
+		this.typeID = TypeID.BISHOP;
 	}
 
 	@Override

@@ -71,6 +71,12 @@ public class AchievementService {
         eventBus.register(GrandmasterEvent.class, this::onGrandmaster);
     }
 
+    public List<Achievement> init() {
+        List<Achievement> loaded = saveManager.loadAchievements();
+        setUnlockedAchievements(loaded);
+        return loaded;
+    }
+
     public ServiceFactory getService() {
         return service;
     }
@@ -97,7 +103,6 @@ public class AchievementService {
 
     public void unlock(Achievements type) {
         if(!BooleanService.canDoAchievements) { return; }
-        saveManager.autoSave();
         Achievement achievement = achievements.get(type);
         if(achievement != null && !achievement.isUnlocked()) {
             achievement.setUnlocked(true);
@@ -107,6 +112,8 @@ public class AchievementService {
                             RenderContext.BASE_HEIGHT,
                             AchievementSprites.getSprite(achievement)));
             service.getSound().playFX(5);
+            GameService.autoSave();
+            saveManager.saveAchievements(getUnlockedAchievements());
         }
         eventBus.fire(new GrandmasterEvent(Collections
                 .unmodifiableList(getUnlockedAchievements())));

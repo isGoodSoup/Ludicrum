@@ -13,81 +13,96 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 
 public class GameService {
+    private static final Logger log = LoggerFactory.getLogger(GameService.class);
     private static GameMenu gameMenu;
     private static GameState state;
     private static PlayState mode;
     private static Games game;
     private static Tint currentTurn;
-
     private static RenderContext render;
     private static BoardService boardService;
-
     private static ServiceFactory service;
-    public static SaveManager saveManager;
+    private static SaveManager saveManager;
 
-    private static final Logger log =
-            LoggerFactory.getLogger(GameService.class);
-
-    public GameService(RenderContext render, BoardService boardService) {
+    public GameService(RenderContext render, BoardService boardService, SaveManager saveManager) {
         GameService.render = render;
         GameService.boardService = boardService;
+        GameService.saveManager = saveManager;
         game = Games.CHESS;
     }
 
-    public static GameMenu getGameMenu() {
-        return gameMenu;
+    public static GameMenu getGameMenu() { return gameMenu; }
+    public static void setGameMenu(GameMenu menu) { gameMenu = menu; }
+
+    public static void setGame(Games g) { game = g; }
+    public static Games getGame() { return game; }
+
+    public static GameState getState() { return state; }
+    public static void setState(GameState s) { state = s; }
+
+    public static PlayState getMode() { return mode; }
+    public static Tint getCurrentTurn() { return currentTurn; }
+    public static void setCurrentTurn(Tint tint) { currentTurn = tint; }
+
+    public static ServiceFactory getServiceFactory() { return service; }
+    public void setServiceFactory(ServiceFactory svc) { service = svc; }
+
+    public SaveManager getSaveManager() { return saveManager; }
+    public void setSaveManager(SaveManager sm) { saveManager = sm; }
+
+    public void startNewGame() {
+        setCurrentTurn(Tint.LIGHT);
+        service.getMovesManager().setMoves(new ArrayList<>());
+        BooleanService.isCheckmate = false;
+        BooleanService.isPromotionActive = false;
+        boardService.startBoard();
+        Save newSave = new Save(
+                getGame(),
+                LocalDate.now().toString(),
+                getCurrentTurn(),
+                service.getPieceService().getPieces(),
+                service.getAchievementService().getUnlockedAchievements()
+        );
+        saveManager.saveGame(newSave);
+        log.info("New game started and autosave created.");
+        Ruleset rule = service.getModelService().createRuleSet(game);
+        service.getModelService().setRule(rule);
+        setState(GameState.BOARD);
     }
 
-    public static void setGameMenu(GameMenu gameMenu) {
-        GameService.gameMenu = gameMenu;
+    public void continueGame() {
+        if (!saveManager.autosaveExists()) {
+            log.warn("No autosave found. Starting new game.");
+            startNewGame();
+            return;
+        }
+        Save loaded = saveManager.loadGame();
+        if (loaded == null || loaded.pieces() == null) {
+            log.warn("Autosave invalid or empty. Starting new game.");
+            startNewGame();
+            return;
+        }
+        boardService.restoreSprites(loaded, service.getGuiService());
+        service.getPieceService().getPieces().clear();
+        service.getPieceService().getPieces().addAll(loaded.pieces());
+        service.getAchievementService().setUnlockedAchievements(loaded.achievements());
+        setCurrentTurn(loaded.player());
+
+        service.getTimerService().start();
+        log.info("Autosave loaded successfully.");
+        setState(GameState.BOARD);
     }
 
-    public static void setGame(Games game) {
-        GameService.game = game;
-    }
-
-    public static Games getGame() {
-        return game;
-    }
-
-    public SaveManager getSaveManager() {
-        return saveManager;
-    }
-
-    public void setSaveManager(SaveManager saveManager) {
-        GameService.saveManager = saveManager;
-    }
-
-    public static ServiceFactory getServiceFactory() {
-        return service;
-    }
-
-    public void setServiceFactory(ServiceFactory service) {
-        GameService.service = service;
-    }
-
-    public static GameState getState() {
-        return state;
-    }
-
-    public static PlayState getMode() {
-        return mode;
-    }
-
-    public static void setState(GameState state) {
-        GameService.state = state;
-    }
-
-    public static Tint getCurrentTurn() {
-        return currentTurn;
-    }
-
-    public static void setCurrentTurn(Tint tint) {
-        currentTurn = tint;
-    }
-
-    public static boolean isBlackTurn() {
-        return currentTurn == Tint.DARK;
+    public static void autoSave() {
+        Save save = new Save(
+                getGame(),
+                LocalDate.now().toString(),
+                getCurrentTurn(),
+                service.getPieceService().getPieces(),
+                service.getAchievementService().getUnlockedAchievements()
+        );
+        saveManager.saveGame(save);
+        log.debug("Autosave triggered.");
     }
 
     public static void nextGame() {
@@ -95,47 +110,5 @@ public class GameService {
         int nextIndex = (game.ordinal() + 1) % games.length;
         setGame(games[nextIndex]);
         service.getAnimationService().add(new ToastAnimation(games[nextIndex].getLabel()));
-    }
-
-    public void startNewGame() {
-        Save currentSave = service.getSaveManager().getCurrentSave();
-        setCurrentTurn(Tint.LIGHT);
-        service.getMovesManager().setMoves(new ArrayList<>());
-        BooleanService.isCheckmate = false;
-        BooleanService.isPromotionActive = false;
-        service.getBoardService().startBoard();
-        if(currentSave == null) {
-            Save newSave = new Save(
-                    getGame(),
-                    LocalDate.now().toString(),
-                    getCurrentTurn(),
-                    service.getPieceService().getPieces(),
-                    service.getAchievementService().getUnlockedAchievements()
-            );
-            service.getSaveManager().setCurrentSave(newSave);
-            service.getSaveManager().saveGame(newSave);
-            log.info("New save file created");
-        } else {
-            service.getSaveManager().saveGame(currentSave);
-        }
-        Ruleset rule = service.getModelService().createRuleSet(game);
-        service.getModelService().setRule(rule);
-    }
-
-    public void continueGame(String saveName) {
-        Save loaded = saveManager.loadGame(saveName);
-        if (loaded != null) {
-            boardService.restoreSprites(loaded, service.getGuiService());
-            service.getPieceService().getPieces().clear();
-            service.getPieceService().getPieces().addAll(loaded.pieces());
-            service.getAchievementService()
-                    .setUnlockedAchievements(loaded.achievements());
-            setCurrentTurn(loaded.player());
-            service.getTimerService().start();
-            log.info("Loaded save: {}", saveName);
-        } else {
-            log.error("Failed to load save: {}", saveName);
-        }
-        GameService.setState(GameState.BOARD);
     }
 }

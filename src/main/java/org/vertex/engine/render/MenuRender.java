@@ -38,7 +38,6 @@ public class MenuRender {
     private int lastHoveredIndex = -1;
     private int scrollOffset = 0;
     private static int totalWidth;
-    private static FontMetrics fm;
 
     private static RenderContext render;
     private GameService gameService;
@@ -47,6 +46,7 @@ public class MenuRender {
     private GUIService guiService;
     private KeyboardInput keyUI;
     private AnimationService animationService;
+    private AchievementService achievementService;
     private AchievementSprites sprites;
 
     public MenuRender(RenderContext render) {
@@ -149,16 +149,20 @@ public class MenuRender {
         return totalWidth = render.scale(RenderContext.BASE_WIDTH);
     }
 
-    public FontMetrics getFontMetrics() {
-        return fm;
-    }
-
     public static int getOPTION_X() {
         return OPTION_X;
     }
 
     public static int getOPTION_Y() {
         return OPTION_Y;
+    }
+
+    public AchievementService getAchievementService() {
+        return achievementService;
+    }
+
+    public void setAchievementService(AchievementService achievementService) {
+        this.achievementService = achievementService;
     }
 
     private void drawToggle(Graphics2D g2, BufferedImage image, int x, int y,
@@ -184,7 +188,8 @@ public class MenuRender {
         int logoWidth = (int) (GUIService.getLogo().getWidth()/SCALE);
         int logoHeight = (int) (GUIService.getLogo().getHeight()/SCALE);
         int x = getCenterX(containerWidth, logoWidth);
-        int y = render.getOffsetY() + render.scale(RenderContext.BASE_HEIGHT)/6;
+        int y =
+                render.getOffsetY() + render.scale(RenderContext.BASE_HEIGHT)/4;
         g2.drawImage(img, x, y, logoWidth, logoHeight, null);
     }
 
@@ -197,27 +202,37 @@ public class MenuRender {
 
         drawLogo(g2, getTotalWidth());
 
-        int startY = render.scale(RenderContext.BASE_HEIGHT)/2 + render.scale(GUIService.getMENU_START_Y());
-        int startX = render.scale(RenderContext.BASE_WIDTH)/2 + render.scale(GUIService.getMENU_START_X());
+        int centerY = 900;
         int spacing = render.scale(GUIService.getMENU_SPACING());
+        int centerX = render.getOffsetX() + getTotalWidth() / 2;
+        int totalWidth = 0;
 
-        for(int i = 0; i < options.length; i++) {
-            GameMenu op = options[i];
-            String option = op.getLabel();
-
+        for (int i = 0; i < options.length; i++) {
+            String text = options[i].getLabel();
             boolean isSelected = i == keyUI.getSelectedIndexY();
             g2.setFont(isSelected ? selectedFont : baseFont);
+            FontMetrics metrics = g2.getFontMetrics();
+            totalWidth += metrics.stringWidth(text);
+            if (i < options.length - 1) {
+                totalWidth += spacing;
+            }
+        }
 
-            fm = g2.getFontMetrics();
-            int textWidth = fm.stringWidth(option);
+        int startX = centerX - totalWidth / 2;
+        int currentX = startX;
 
-            int x = render.getOffsetX() + startX + i * spacing;
-            int y = 100;
-
+        for (int i = 0; i < options.length; i++) {
+            GameMenu op = options[i];
+            String option = op.getLabel();
+            boolean isSelected = i == keyUI.getSelectedIndexY();
+            g2.setFont(isSelected ? selectedFont : baseFont);
+            FontMetrics metrics = g2.getFontMetrics();
+            int textWidth = metrics.stringWidth(option);
             Color foreground = Colorblindness.filter(Colors.getForeground());
             Color textColor = isSelected ? Colors.getHighlight() : foreground;
             g2.setColor(textColor);
-            g2.drawString(option, x, y);
+            g2.drawString(option, currentX, centerY);
+            currentX += textWidth + spacing;
         }
     }
 
@@ -235,17 +250,16 @@ public class MenuRender {
                 false, 255);
 
         g2.setFont(GUIService.getFont(GUIService.getMENU_FONT()));
-        fm = g2.getFontMetrics();
 
         String header = SETTINGS;
         int headerY = render.getOffsetY() + render.scale(OPTION_Y);
-        int headerWidth = fm.stringWidth(header);
+        int headerWidth = g2.getFontMetrics().stringWidth(header);
         g2.setColor(Colorblindness.filter(Colors.getTheme() == Theme.DEFAULT
                 ? Color.WHITE : Colors.getForeground()));
         g2.drawString(header, getCenterX(getTotalWidth(), headerWidth),headerY);
 
         int startY = headerY + render.scale(90);
-        int lineHeight = fm.getHeight() + render.scale(10);
+        int lineHeight = g2.getFontMetrics().getHeight() + render.scale(10);
         int itemsPerPage = 8;
 
         int startIndex = keyUI.getCurrentPage() * itemsPerPage;
@@ -258,8 +272,7 @@ public class MenuRender {
         for(int i = startIndex; i < endIndex; i++) {
             GameSettings option = options[i];
             String enabledOption = ENABLE + option.getLabel();
-            int textWidth =
-                    g2.getFontMetrics().stringWidth(enabledOption.toUpperCase());
+            int textWidth = g2.getFontMetrics().stringWidth(enabledOption);
             int toggleWidth = render.scale(TOGGLE_ON.getWidth()/2);
             int rowWidth = textWidth + gap + toggleWidth;
             if(rowWidth > maxRowWidth) maxRowWidth = rowWidth;
@@ -282,7 +295,7 @@ public class MenuRender {
 
             boolean isEnabled = option.get();
 
-            g2.drawString(enabledOption.toUpperCase(), textX,
+            g2.drawString(enabledOption, textX,
                     render.getOffsetY() + startY);
 
             BufferedImage toggleImage;
@@ -310,10 +323,7 @@ public class MenuRender {
         g2.setColor(Colorblindness.filter(Colors.getBackground()));
         g2.fillRect(0, 0, getTotalWidth(), render.scale(RenderContext.BASE_HEIGHT));
 
-        List<Achievement> list =
-                boardService.getServiceFactory()
-                        .getAchievementService()
-                        .getSortedAchievements();
+        List<Achievement> list = achievementService.init();
         int stroke = 4;
         int x = 32, y = 32;
         int arc = 40;
@@ -325,7 +335,7 @@ public class MenuRender {
 
         String text = ACHIEVEMENTS;
         int headerY = render.getOffsetY() + render.scale(OPTION_Y);
-        int headerWidth = fm.stringWidth(text);
+        int headerWidth = g2.getFontMetrics().stringWidth(text);
         g2.setFont(GUIService.getFont(GUIService.getMENU_FONT()));
         g2.setColor(Colorblindness.filter(Colors.getTheme() == Theme.DEFAULT
                 ? Color.WHITE : Colors.getForeground()));
@@ -435,7 +445,6 @@ public class MenuRender {
 
     public void drawSandboxMenu(Graphics2D g2) {
         if(!BooleanService.isSandboxEnabled) { return; }
-
         int stroke = 6, arc = 32;
         int boardX = render.getBoardRender().getBoardOriginX();
         int boardY = render.getBoardRender().getBoardOriginY();

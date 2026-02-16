@@ -4,7 +4,6 @@ import org.vertex.engine.entities.Piece;
 import org.vertex.engine.enums.GameMenu;
 import org.vertex.engine.enums.GameSettings;
 import org.vertex.engine.enums.GameState;
-import org.vertex.engine.records.Save;
 import org.vertex.engine.render.MenuRender;
 import org.vertex.engine.service.BooleanService;
 import org.vertex.engine.service.GameService;
@@ -209,10 +208,6 @@ public class KeyboardInput {
         selectedIndexY = (newPage - 1) * itemsPerPage;
     }
 
-    public void activate(String saveName) {
-        service.getGameService().continueGame(saveName);
-    }
-
     public void activate(GameState state) {
         switch (state) {
             case MENU -> {
@@ -224,14 +219,9 @@ public class KeyboardInput {
                     }
                 }
             }
-            case SAVES -> {
-                List<Save> saves = service.getSaveManager().getSaves();
-                if(!saves.isEmpty() && selectedIndexY < saves.size()) {
-                    activate(saves.get(selectedIndexY).name());
-                }
-            }
             case RULES -> {
-                int absIndex = currentPage * ITEMS_PER_PAGE + selectedIndexY;
+                int itemsPerPage = 8;
+                int absIndex = currentPage * itemsPerPage + selectedIndexY;
                 if(absIndex < MenuRender.SETTINGS_MENU.length) {
                     GameSettings option = MenuRender.SETTINGS_MENU[absIndex];
                     option.toggle();

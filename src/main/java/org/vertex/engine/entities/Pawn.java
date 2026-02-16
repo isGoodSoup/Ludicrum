@@ -10,7 +10,7 @@ public class Pawn extends Piece {
 
 	public Pawn(Tint color, int col, int row) {
 		super(color, col, row);
-		this.type = TypeID.PAWN;
+		this.typeID = TypeID.PAWN;
 	}
 
 	@Override

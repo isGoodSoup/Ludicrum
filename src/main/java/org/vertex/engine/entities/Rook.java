@@ -10,7 +10,7 @@ public class Rook extends Piece {
 
 	public Rook(Tint color, int col, int row) {
 		super(color, col, row);
-		this.type = TypeID.ROOK;
+		this.typeID = TypeID.ROOK;
 	}
 
 	@Override

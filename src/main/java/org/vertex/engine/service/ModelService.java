@@ -52,8 +52,7 @@ public class ModelService {
             throw new IllegalStateException("Invalid ruleset: not set or null");
         }
         List<MoveScore> moves = rule.getAllLegalMoves(GameService.getCurrentTurn());
-        if(moves.isEmpty()) return null;
-
+        if(moves.isEmpty()) { return null; }
         moves.sort(Comparator.comparingInt(MoveScore::score).reversed());
         return moves.getFirst().move();
     }

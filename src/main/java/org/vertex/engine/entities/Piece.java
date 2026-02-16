@@ -17,7 +17,7 @@ import java.util.List;
 public abstract class Piece {
 	protected final long id;
 	private static long NEXT_ID = 1;
-	protected TypeID type;
+	protected TypeID typeID;
 	private int x, y;
 	private int col, row, preCol, preRow;
 	private static final double DEFAULT_SCALE = 1.0;
@@ -71,11 +71,11 @@ public abstract class Piece {
 	}
 
 	public TypeID getTypeID() {
-		return type;
+		return typeID;
 	}
 
 	public void setTypeID(TypeID type) {
-		this.type = type;
+		this.typeID = type;
 	}
 
 	public int getPreCol() {
