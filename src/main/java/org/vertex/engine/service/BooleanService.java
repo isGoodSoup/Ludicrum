@@ -20,6 +20,7 @@ public class BooleanService {
     public static boolean isAchievementLocked;
     public static boolean isMovesActive;
     public static boolean canType;
+    public static boolean canPlayFX;
     public static boolean isSandboxEnabled;
 
     public static boolean canDoMoves;
@@ -41,6 +42,7 @@ public class BooleanService {
     private static final Random random = new Random();
 
     public static void defaultToggles() {
+        canPlayFX = true;
         canDoMoves = true;
         canAIPlay = true;
         canPromote = true;

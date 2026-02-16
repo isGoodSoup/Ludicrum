@@ -5,6 +5,7 @@ import org.vertex.engine.entities.Board;
 import org.vertex.engine.enums.*;
 import org.vertex.engine.gui.Colors;
 import org.vertex.engine.input.Keyboard;
+import org.vertex.engine.input.KeyboardUI;
 import org.vertex.engine.manager.MovesManager;
 import org.vertex.engine.records.Save;
 import org.vertex.engine.service.BoardService;
@@ -50,6 +51,7 @@ public class MenuRender {
     private BoardService boardService;
     private MovesManager movesManager;
     private GUIService guiService;
+    private KeyboardUI keyUI;
     private AchievementSprites sprites;
 
     public MenuRender(RenderContext render) {
@@ -81,6 +83,14 @@ public class MenuRender {
         HARD_MODE_ON = Colorblindness.filter(HARD_MODE_ON);
         HARD_MODE_ON_HIGHLIGHTED =
                 Colorblindness.filter(HARD_MODE_ON_HIGHLIGHTED);
+    }
+
+    public KeyboardUI getKeyUI() {
+        return keyUI;
+    }
+
+    public void setKeyUI(KeyboardUI keyUI) {
+        this.keyUI = keyUI;
     }
 
     public GameService getGameService() {
@@ -205,18 +215,17 @@ public class MenuRender {
                     fm.getHeight()
             );
 
-            boolean isSelected = i == movesManager.getSelectedIndexY();
+            boolean isSelected = i == keyUI.getSelectedIndexY();
 
             Color foreground = Colorblindness.filter(Colors.getForeground());
             Color textColor = isSelected ? Colors.getHighlight() : foreground;
 
-            g2.setColor(textColor);
-            g2.drawString(option, x, y);
-
             if(isSelected && lastHoveredIndex != i) {
-                guiService.getFx().playFX(BooleanService.getRandom(1, 2));
                 lastHoveredIndex = i;
             }
+
+            g2.setColor(textColor);
+            g2.drawString(option, x, y);
         }
     }
 
@@ -276,7 +285,7 @@ public class MenuRender {
             int toggleX = blockX + maxRowWidth - toggleWidth;
             int toggleY = startY - toggleHeight;
 
-            boolean isSelected = i == movesManager.getSelectedIndexY();
+            boolean isSelected = i == keyUI.getSelectedIndexY();
             boolean isEnabled = option.get();
 
             g2.drawString(enabledOption.toUpperCase(), textX,
@@ -335,7 +344,7 @@ public class MenuRender {
         x = getCenterX(getTotalWidth(), width);
         boolean hasBackground = true;
 
-        int itemsPerPage = MovesManager.getITEMS_PER_PAGE();
+        int itemsPerPage = KeyboardUI.getITEMS_PER_PAGE();
         int start = (currentPage - 1) * itemsPerPage;
         int end = Math.min(start + itemsPerPage, list.size());
 
@@ -346,7 +355,7 @@ public class MenuRender {
                     x, startY, width, height
             );
 
-            boolean isSelected = i == movesManager.getSelectedIndexY();
+            boolean isSelected = i == keyUI.getSelectedIndexY();
 
             int textX = x + render.scale(110);
             int titleY = startY + render.scale(60);
@@ -422,7 +431,7 @@ public class MenuRender {
         x = getCenterX(getTotalWidth(), width);
         boolean hasBackground = true;
 
-        int itemsPerPage = MovesManager.getITEMS_PER_PAGE();
+        int itemsPerPage = KeyboardUI.getITEMS_PER_PAGE();
         int start = (currentPage - 1) * itemsPerPage;
         int end = Math.min(start + itemsPerPage, saves.size());
 
@@ -433,7 +442,7 @@ public class MenuRender {
                     x, startY, width, height
             );
 
-            boolean isSelected = i == movesManager.getSelectedIndexY();
+            boolean isSelected = i == keyUI.getSelectedIndexY();
 
             int textX = x + render.scale(110);
             int titleY = startY + render.scale(60);

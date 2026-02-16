@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 import org.vertex.engine.entities.Board;
 import org.vertex.engine.enums.Theme;
 import org.vertex.engine.gui.Colors;
-import org.vertex.engine.gui.Sound;
 import org.vertex.engine.manager.MovesManager;
 import org.vertex.engine.render.Colorblindness;
 import org.vertex.engine.render.RenderContext;
@@ -27,7 +26,6 @@ public class GUIService {
     private static final int PADDING = 90;
 
     private final RenderContext render;
-    private final Sound fx;
 
     private static BufferedImage oldLogo;
     private static BufferedImage logo;
@@ -56,7 +54,6 @@ public class GUIService {
         this.gameService = gameService;
         this.modelService = modelService;
         this.timerService = timerService;
-        this.fx = new Sound();
         GUIService.promotionService = promotionService;
         logo = null;
         oldLogo = null;
@@ -133,10 +130,6 @@ public class GUIService {
 
     public static int getPADDING() {
         return PADDING;
-    }
-
-    public Sound getFx() {
-        return fx;
     }
 
     public BufferedImage getImage(String path) throws IOException {

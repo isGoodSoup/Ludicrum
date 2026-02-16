@@ -7,7 +7,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.Serial;
 
-public class Frame extends JFrame {
+public class GameFrame extends JFrame {
 	@Serial
     private static final long serialVersionUID = -3130387824420425271L;
 	private final static String TITLE = "Vertex v0.8";
@@ -16,7 +16,7 @@ public class Frame extends JFrame {
 	private Rectangle windowedBounds;
 	private final Cursor blank;
 
-    public Frame() {
+    public GameFrame() {
 		super(TITLE);
 		blank = Toolkit.getDefaultToolkit().createCustomCursor(
 				new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB),
@@ -65,6 +65,6 @@ public class Frame extends JFrame {
 	}
 
 	public static void main(String[] args) {
-		SwingUtilities.invokeLater(Frame::new);
+		SwingUtilities.invokeLater(GameFrame::new);
 	}
 }

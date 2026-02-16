@@ -1,7 +1,8 @@
-package org.vertex.engine.gui;
+package org.vertex.engine.sound;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.vertex.engine.service.BooleanService;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -114,6 +115,7 @@ public class Sound {
     }
 
     public void playFX(int i) {
+        if(!BooleanService.canPlayFX) { return; }
         play(i);
         stop(i);
     }

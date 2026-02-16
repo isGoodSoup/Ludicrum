@@ -6,7 +6,7 @@ import org.vertex.engine.entities.*;
 import org.vertex.engine.enums.Games;
 import org.vertex.engine.enums.Time;
 import org.vertex.engine.enums.Tint;
-import org.vertex.engine.gui.Sound;
+import org.vertex.engine.sound.Sound;
 import org.vertex.engine.manager.MovesManager;
 import org.vertex.engine.manager.SaveManager;
 import org.vertex.engine.records.Save;

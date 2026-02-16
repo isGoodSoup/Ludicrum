@@ -106,7 +106,6 @@ public class AchievementService {
                             achievement.getId().getDescription(),
                             RenderContext.BASE_HEIGHT,
                             AchievementSprites.getSprite(achievement)));
-            service.getGuiService().getFx().playFX(5);
         }
         eventBus.fire(new GrandmasterEvent(Collections
                 .unmodifiableList(getUnlockedAchievements())));

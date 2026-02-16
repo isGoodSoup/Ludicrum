@@ -1,6 +1,8 @@
 package org.vertex.engine.service;
 
+import org.vertex.engine.sound.Sound;
 import org.vertex.engine.input.Keyboard;
+import org.vertex.engine.input.KeyboardUI;
 import org.vertex.engine.manager.EventBus;
 import org.vertex.engine.manager.MovesManager;
 import org.vertex.engine.manager.SaveManager;
@@ -11,6 +13,8 @@ public class ServiceFactory {
     private final PieceService piece;
     private final BoardService board;
     private final Keyboard keyboard;
+    private final KeyboardUI keyUI;
+    private final Sound sound;
     private final GUIService gui;
     private final GameService gs;
     private final PromotionService promotion;
@@ -26,6 +30,9 @@ public class ServiceFactory {
         this.render = render;
         this.eventBus = new EventBus();
         this.keyboard = new Keyboard();
+        this.keyUI = new KeyboardUI();
+        this.sound = new Sound();
+        this.keyUI.setService(this);
         this.animation = new AnimationService();
         this.piece = new PieceService(eventBus);
         this.promotion = new PromotionService(piece, eventBus);
@@ -58,6 +65,7 @@ public class ServiceFactory {
         this.render.getMenuRender().setGuiService(gui);
         this.render.getMenuRender().setGameService(gs);
         this.render.getMenuRender().setMoveManager(movesManager);
+        this.render.getMenuRender().setKeyUI(keyUI);
         this.render.getMovesRender().setBoardService(board);
         this.render.getMovesRender().setGuiService(gui);
         this.render.getMovesRender().setMovesManager(movesManager);
@@ -81,8 +89,16 @@ public class ServiceFactory {
         return keyboard;
     }
 
+    public KeyboardUI getKeyUI() {
+        return keyUI;
+    }
+
     public GUIService getGuiService() {
         return gui;
+    }
+
+    public Sound getSound() {
+        return sound;
     }
 
     public PromotionService getPromotionService() {

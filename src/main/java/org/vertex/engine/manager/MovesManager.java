@@ -2,29 +2,28 @@ package org.vertex.engine.manager;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.vertex.engine.entities.*;
-import org.vertex.engine.enums.*;
+import org.vertex.engine.entities.King;
+import org.vertex.engine.entities.Pawn;
+import org.vertex.engine.entities.Piece;
+import org.vertex.engine.entities.Rook;
+import org.vertex.engine.enums.GameState;
+import org.vertex.engine.enums.Tint;
 import org.vertex.engine.events.*;
-import org.vertex.engine.gui.Sound;
 import org.vertex.engine.records.Move;
-import org.vertex.engine.records.Save;
-import org.vertex.engine.render.MenuRender;
-import org.vertex.engine.service.*;
+import org.vertex.engine.service.BooleanService;
+import org.vertex.engine.service.GameService;
+import org.vertex.engine.service.PieceService;
+import org.vertex.engine.service.ServiceFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MovesManager {
     private Piece selectedPiece;
-    private int moveX = 4;
-    private int moveY = 6;
     private ServiceFactory service;
-    private Sound fx;
     private List<Move> moves;
-    private int selectedIndexY;
-    private int selectedIndexX;
+
     private int currentPage = 1;
-    private static final int ITEMS_PER_PAGE = 6;
 
     private EventBus eventBus;
     private static final Logger log =
@@ -35,10 +34,7 @@ public class MovesManager {
     public void init(ServiceFactory service, EventBus eventBus) {
         this.service = service;
         this.eventBus = eventBus;
-        this.fx = service.getGuiService().getFx();
         this.moves = new ArrayList<>();
-        this.selectedIndexY = 0;
-        this.selectedIndexX = 0;
     }
 
     public List<Move> getMoves() {
@@ -57,43 +53,12 @@ public class MovesManager {
         this.selectedPiece = selectedPiece;
     }
 
-    public int getSelectedIndexX() {
-        return selectedIndexX;
-    }
-
-    public void setSelectedIndexX(int selectedIndexX) {
-        this.selectedIndexX = selectedIndexX;
-    }
-
-    public int getSelectedIndexY() {
-        return selectedIndexY;
-    }
-
-    public void setSelectedIndexY(int selectedIndexY) {
-        this.selectedIndexY = selectedIndexY;
-    }
-
     public void setMoves(List<Move> moves) {
         this.moves = moves;
     }
 
-    public void setGuiService(GUIService gui) {
-        this.fx = gui.getFx();
-    }
-
     public int getCurrentPage() {
         return currentPage;
-    }
-
-    public static int getITEMS_PER_PAGE() {
-        return ITEMS_PER_PAGE;
-    }
-
-    private Sound getFx() {
-        if (fx == null) {
-            fx = service.getGuiService().getFx();
-        }
-        return fx;
     }
 
     public void attemptMove(Piece piece, int targetCol, int targetRow) {
@@ -141,7 +106,6 @@ public class MovesManager {
 
         PieceService.movePiece(piece, targetCol, targetRow);
         piece.setHasMoved(true);
-        fx.playFX(0);
 
         if(service.getPromotionService().checkPromotion(piece)) {
             BooleanService.isPromotionActive = true;
@@ -149,8 +113,8 @@ public class MovesManager {
             Piece promoted = service.getPromotionService().autoPromote(piece);
             service.getPieceService().replacePiece(piece, promoted);
             log.info("Promoted piece");
-            moveX = promoted.getCol();
-            moveY = promoted.getRow();
+            service.getKeyUI().setMoveX(promoted.getCol());
+            service.getKeyUI().setMoveY(promoted.getRow());
             selectedPiece = null;
             service.getPieceService().setHoveredPieceKeyboard(promoted);
         } else {
@@ -200,7 +164,6 @@ public class MovesManager {
             if(!hasEscapeMoves) {
                 BooleanService.isCheckmate = true;
                 service.getTimerService().stop();
-                service.getGuiService().getFx().playFX(6);
                 GameService.setState(GameState.CHECKMATE);
                 log.info("Checkmate to {}",
                         selectedPiece.getOtherPiece().getColor());
@@ -218,36 +181,12 @@ public class MovesManager {
                 if(kingCounter == 2 && service.getPieceService().getPieces().size() == 2) {
                     BooleanService.isStalemate = true;
                     service.getTimerService().stop();
-                    service.getGuiService().getFx().playFX(6);
                     GameService.setState(GameState.STALEMATE);
                     log.info("Stalemate. Both sides hold just the King");
                 }
             }
         }
         return false;
-    }
-
-    public void keyboardMove() {
-        if (selectedPiece == null) {
-            for(Piece p : service.getPieceService().getPieces()) {
-                if(p.getColor() == GameService.getCurrentTurn()
-                        && p.getCol() == moveX
-                        && p.getRow() == moveY) {
-                    selectedPiece = p;
-                    fx.playFX(0);
-                    return;
-                }
-            }
-        } else {
-            if (!BooleanService.isLegal) {
-                return;
-            }
-            service.getAnimationService().startMove(selectedPiece, moveX, moveY);
-            attemptMove(selectedPiece, moveX, moveY);
-            if (selectedPiece != null) {
-                selectedPiece = null;
-            }
-        }
     }
 
     private void executeCastling(Piece currentPiece, int targetCol) {
@@ -356,211 +295,6 @@ public class MovesManager {
         }
         return false;
     }
-    public void previousPage() {
-        int currentPage = service.getRender().getMenuRender().getCurrentPage();
-        if(currentPage > 1) {
-            service.getRender().getMenuRender().setCurrentPage(currentPage - 1);
-        }
-    }
-
-    public void nextPage() {
-        int itemsPerPage = MovesManager.getITEMS_PER_PAGE();
-        int totalItems =service.getAchievementService().getAllAchievements().size();
-        int totalPages = (totalItems + itemsPerPage - 1) / itemsPerPage;
-
-        int current = service.getRender().getMenuRender().getCurrentPage();
-
-        if(current < totalPages) {
-            service.getRender().getMenuRender().setCurrentPage(current + 1);
-        }
-    }
-
-    public void nextPage(Object[] options) {
-        int itemsPerPage = 8;
-        int totalPages = (options.length + itemsPerPage - 1) / itemsPerPage;
-
-        int currentPage = service.getRender().getMenuRender().getCurrentPage();
-        if(currentPage < totalPages) {
-            service.getRender().getMenuRender().setCurrentPage(currentPage + 1);
-        }
-    }
-
-    public void updateKeyboardHover() {
-        List<Piece> selectablePieces = service.getPieceService()
-                .getPieces()
-                .stream()
-                .filter(p -> p.getColor() == GameService.getCurrentTurn())
-                .toList();
-
-        service.getPieceService().setHoveredSquare(moveX, moveY);
-        if(selectedPiece == null) {
-            Piece hoveredPiece =
-                    PieceService.getPieceAt(moveX, moveY,
-                            service.getPieceService().getPieces());
-
-            if(hoveredPiece != null &&
-                    hoveredPiece.getColor() == GameService.getCurrentTurn()) {
-                service.getPieceService().setHoveredPieceKeyboard(hoveredPiece);
-            } else {
-                service.getPieceService().setHoveredPieceKeyboard(null);
-            }
-            BooleanService.isLegal = false;
-            return;
-        }
-
-        BooleanService.isLegal =
-                selectedPiece.canMove(moveX, moveY,
-                        service.getPieceService().getPieces())
-                        && !service.getPieceService().wouldLeaveKingInCheck(
-                        selectedPiece, moveX, moveY);
-    }
-
-    private List<Piece> getSelectablePieces() {
-        return service.getPieceService()
-                .getPieces()
-                .stream()
-                .filter(p -> p.getColor() == GameService.getCurrentTurn())
-                .toList();
-    }
-
-    public void moveUp() {
-        GameState state = GameService.getState();
-        if(state == GameState.BOARD) {
-            moveY = Math.max(0, moveY - 1);
-            updateKeyboardHover();
-            getFx().playFX(BooleanService.getRandom(1, 2));
-        }
-    }
-
-    public void moveUp(Object[] options) {
-        selectedIndexY--;
-        getFx().playFX(BooleanService.getRandom(1, 2));
-        if(selectedIndexY < 0) {
-            selectedIndexY = options.length - 1;
-        }
-    }
-
-    public void moveUp(List<?> list) {
-        if(list.isEmpty()) { return; }
-
-        MenuRender menu = service.getRender().getMenuRender();
-        int itemsPerPage = ITEMS_PER_PAGE;
-        int currentPage = menu.getCurrentPage();
-        int startIndex = (currentPage - 1) * itemsPerPage;
-        int endIndex = Math.min(startIndex + itemsPerPage, list.size());
-
-        selectedIndexY--;
-        if(selectedIndexY < startIndex) {
-            selectedIndexY = endIndex - 1;
-        }
-
-        getFx().playFX(BooleanService.getRandom(1, 2));
-    }
-
-    public void moveLeft() {
-        if(GameService.getState() == GameState.BOARD) {
-            moveX = Math.max(0, moveX - 1);
-            updateKeyboardHover();
-            getFx().playFX(BooleanService.getRandom(1, 2));
-        }
-    }
-
-    public void moveLeft(Object[] options) {
-        MenuRender menu = service.getRender().getMenuRender();
-        previousPage();
-
-        int itemsPerPage = 8;
-        int newPage = menu.getCurrentPage();
-        selectedIndexY = (newPage - 1) * itemsPerPage;
-
-        getFx().playFX(4);
-    }
-
-    public void moveDown(List<?> list) {
-        if(list.isEmpty()) { return; }
-
-        MenuRender menu = service.getRender().getMenuRender();
-        int itemsPerPage = ITEMS_PER_PAGE;
-        int currentPage = menu.getCurrentPage();
-        int startIndex = (currentPage - 1) * itemsPerPage;
-        int endIndex = Math.min(startIndex + itemsPerPage, list.size());
-
-        selectedIndexY++;
-        if(selectedIndexY >= endIndex) {
-            selectedIndexY = startIndex;
-        }
-
-        getFx().playFX(BooleanService.getRandom(1, 2));
-    }
-
-    public void moveDown() {
-        GameState state = GameService.getState();
-        if(state == GameState.BOARD) {
-            moveY = Math.min(7, moveY + 1);
-            updateKeyboardHover();
-            getFx().playFX(BooleanService.getRandom(1, 2));
-        }
-    }
-
-    public void moveDown(Object[] options) {
-        selectedIndexY++;
-        getFx().playFX(BooleanService.getRandom(1, 2));
-        if(selectedIndexY < 0) {
-            selectedIndexY = 0;
-        }
-    }
-
-    public void moveRight() {
-        if(GameService.getState() == GameState.BOARD) {
-            moveX = Math.min(7, moveX + 1);
-            updateKeyboardHover();
-            getFx().playFX(BooleanService.getRandom(1, 2));
-        }
-    }
-
-    public void moveRight(Object[] options) {
-        MenuRender menu = service.getRender().getMenuRender();
-        nextPage(options);
-
-        int itemsPerPage = 8;
-        int newPage = menu.getCurrentPage();
-        selectedIndexY = (newPage - 1) * itemsPerPage;
-
-        getFx().playFX(4);
-    }
-
-    public void activate(String saveName) {
-        getFx().playFX(3);
-        service.getGameService().continueGame(saveName);
-    }
-
-    public void activate(GameState state) {
-        switch (state) {
-            case MENU -> {
-                GameMenu[] options = MenuRender.MENU;
-                if(selectedIndexY >= 0 && selectedIndexY < options.length) {
-                    GameMenu selected = options[selectedIndexY];
-                    if (selected.isEnabled(service.getGameService())) {
-                        getFx().playFX(3);
-                        selected.run(service.getGameService());
-                    }
-                }
-            }
-            case SAVES -> {
-                List<Save> saves = service.getSaveManager().getSaves();
-                if(!saves.isEmpty() && selectedIndexY < saves.size()) {
-                    activate(saves.get(selectedIndexY).name());
-                }
-            }
-            case RULES -> {
-                getFx().playFX(0);
-                GameSettings option = MenuRender.SETTINGS_MENU[selectedIndexY];
-                option.toggle();
-            }
-            case ACHIEVEMENTS -> {}
-            case BOARD -> keyboardMove();
-        }
-    }
 
     public void cancelMove() {
         if (selectedPiece != null) {
@@ -586,5 +320,13 @@ public class MovesManager {
             PieceService.updatePos(captured);
         }
         service.getPieceService().switchTurns();
+    }
+
+    private List<Piece> getSelectablePieces() {
+        return service.getPieceService()
+                .getPieces()
+                .stream()
+                .filter(p -> p.getColor() == GameService.getCurrentTurn())
+                .toList();
     }
 }
