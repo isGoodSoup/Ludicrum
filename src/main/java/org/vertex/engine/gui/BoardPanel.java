@@ -227,7 +227,7 @@ public class BoardPanel extends JPanel implements Runnable {
                     service.getKeyUI().previousPage();
                     service.getSound().playFX(2);
                     service.getKeyUI().setSelectedIndexY(
-                            (service.getRender().getMenuRender().getCurrentPage() - 1) * itemsPerPage
+                            (service.getKeyUI().getCurrentPage() - 1) * itemsPerPage
                     );
                     lastUpTime = now;
                 }
@@ -235,7 +235,7 @@ public class BoardPanel extends JPanel implements Runnable {
                     service.getKeyUI().nextPage();
                     service.getSound().playFX(2);
                     service.getKeyUI().setSelectedIndexY(
-                            (service.getRender().getMenuRender().getCurrentPage() - 1) * itemsPerPage
+                            (service.getKeyUI().getCurrentPage() - 1) * itemsPerPage
                     );
                     lastDownTime = now;
                 }
@@ -257,7 +257,7 @@ public class BoardPanel extends JPanel implements Runnable {
             case RULES -> {
                 if(keyboard.wasSelectPressed()) {
                     keyboardUI.activate(GameState.RULES);
-                    service.getSound().playFX(3);
+                    service.getSound().playFX(0);
                 }
                 if(keyboard.isUpDown() && now - lastUpTime >= repeatDelay) {
                     keyboardUI.moveUp(MenuRender.SETTINGS_MENU);
@@ -297,11 +297,13 @@ public class BoardPanel extends JPanel implements Runnable {
                 }
                 if(keyboard.isLeftDown() && now - lastUpTime >= repeatDelay) {
                     service.getKeyUI().previousPage();
+                    service.getKeyUI().setSelectedIndexY(0);
                     service.getSound().playFX(4);
                     lastUpTime = now;
                 }
                 if(keyboard.isRightDown() && now - lastDownTime >= repeatDelay) {
                     service.getKeyUI().nextPage();
+                    service.getKeyUI().setSelectedIndexY(0);
                     service.getSound().playFX(4);
                     lastDownTime = now;
                 }

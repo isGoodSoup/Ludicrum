@@ -18,6 +18,7 @@ public class KeyboardUI {
     private int moveY = 6;
     private int selectedIndexY;
     private int selectedIndexX;
+    private int currentPage;
     private static final int ITEMS_PER_PAGE = 6;
 
     private ServiceFactory service;
@@ -65,6 +66,14 @@ public class KeyboardUI {
 
     public void setSelectedIndexX(int selectedIndexX) {
         this.selectedIndexX = selectedIndexX;
+    }
+
+    public int getCurrentPage() {
+        return currentPage;
+    }
+
+    public void setCurrentPage(int currentPage) {
+        this.currentPage = currentPage;
     }
 
     public static int getITEMS_PER_PAGE() {
@@ -119,7 +128,7 @@ public class KeyboardUI {
 
     public void moveUp(Object[] options) {
         selectedIndexY--;
-        if(selectedIndexY < 0) {
+        if (selectedIndexY < 0) {
             selectedIndexY = options.length - 1;
         }
     }
@@ -129,8 +138,7 @@ public class KeyboardUI {
 
         MenuRender menu = service.getRender().getMenuRender();
         int itemsPerPage = ITEMS_PER_PAGE;
-        int currentPage = menu.getCurrentPage();
-        int startIndex = (currentPage - 1) * itemsPerPage;
+        int startIndex = currentPage * itemsPerPage;
         int endIndex = Math.min(startIndex + itemsPerPage, list.size());
 
         selectedIndexY--;
@@ -151,7 +159,7 @@ public class KeyboardUI {
         previousPage();
 
         int itemsPerPage = 8;
-        int newPage = menu.getCurrentPage();
+        int newPage = currentPage;
         selectedIndexY = (newPage - 1) * itemsPerPage;
     }
 
@@ -160,8 +168,7 @@ public class KeyboardUI {
 
         MenuRender menu = service.getRender().getMenuRender();
         int itemsPerPage = ITEMS_PER_PAGE;
-        int currentPage = menu.getCurrentPage();
-        int startIndex = (currentPage - 1) * itemsPerPage;
+        int startIndex = currentPage * itemsPerPage;
         int endIndex = Math.min(startIndex + itemsPerPage, list.size());
 
         selectedIndexY++;
@@ -178,9 +185,10 @@ public class KeyboardUI {
         }
     }
 
+
     public void moveDown(Object[] options) {
         selectedIndexY++;
-        if(selectedIndexY < 0) {
+        if (selectedIndexY >= options.length) {
             selectedIndexY = 0;
         }
     }
@@ -197,7 +205,7 @@ public class KeyboardUI {
         nextPage(options);
 
         int itemsPerPage = 8;
-        int newPage = menu.getCurrentPage();
+        int newPage = currentPage;
         selectedIndexY = (newPage - 1) * itemsPerPage;
     }
 
@@ -232,21 +240,18 @@ public class KeyboardUI {
     }
 
     public void previousPage() {
-        int currentPage = service.getRender().getMenuRender().getCurrentPage();
-        if(currentPage > 1) {
-            service.getRender().getMenuRender().setCurrentPage(currentPage - 1);
-        }
+        currentPage = Math.max(0, currentPage - 1);
     }
 
     public void nextPage() {
         int itemsPerPage = ITEMS_PER_PAGE;
-        int totalItems =service.getAchievementService().getAllAchievements().size();
+        int totalItems = service.getAchievementService().getAllAchievements().size();
         int totalPages = (totalItems + itemsPerPage - 1) / itemsPerPage;
 
-        int current = service.getRender().getMenuRender().getCurrentPage();
+        if(currentPage < 0) { currentPage = 0; }
 
-        if(current < totalPages) {
-            service.getRender().getMenuRender().setCurrentPage(current + 1);
+        if(currentPage < totalPages - 1) {
+            currentPage++;
         }
     }
 
@@ -254,9 +259,10 @@ public class KeyboardUI {
         int itemsPerPage = 8;
         int totalPages = (options.length + itemsPerPage - 1) / itemsPerPage;
 
-        int currentPage = service.getRender().getMenuRender().getCurrentPage();
-        if(currentPage < totalPages) {
-            service.getRender().getMenuRender().setCurrentPage(currentPage + 1);
+        if(currentPage < 0) { currentPage = 0; }
+
+        if(currentPage < totalPages - 1) {
+            currentPage++;
         }
     }
 }

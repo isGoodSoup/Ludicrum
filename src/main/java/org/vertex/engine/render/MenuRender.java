@@ -41,7 +41,6 @@ public class MenuRender {
     private int scrollOffset = 0;
     private static int totalWidth;
     private static FontMetrics fm;
-    private int currentPage = 1;
 
     private static RenderContext render;
     private GameService gameService;
@@ -148,14 +147,6 @@ public class MenuRender {
         return render.getOffsetY() + (totalHeight - objectHeight) / 2;
     }
 
-    public int getCurrentPage() {
-        return currentPage;
-    }
-
-    public void setCurrentPage(int currentPage) {
-        this.currentPage = currentPage;
-    }
-
     public int getTotalWidth() {
         return totalWidth = render.scale(RenderContext.BASE_WIDTH);
     }
@@ -258,7 +249,7 @@ public class MenuRender {
         int lineHeight = fm.getHeight() + render.scale(10);
         int itemsPerPage = 8;
 
-        int startIndex = (currentPage - 1) * itemsPerPage;
+        int startIndex = keyUI.getCurrentPage() * itemsPerPage;
         int endIndex = Math.min(startIndex + itemsPerPage, options.length);
 
         int gap = render.scale(100);
@@ -277,6 +268,9 @@ public class MenuRender {
 
         for(int i = startIndex; i < endIndex; i++) {
             GameSettings option = options[i];
+            int relativeIndex = i - startIndex;
+            boolean isSelected = relativeIndex == keyUI.getSelectedIndexY();
+
             String enabledOption = ENABLE + option.getLabel();
             int textWidth = g2.getFontMetrics().stringWidth(enabledOption);
             int toggleWidth = render.scale(TOGGLE_ON.getWidth()/2);
@@ -287,7 +281,6 @@ public class MenuRender {
             int toggleX = blockX + maxRowWidth - toggleWidth;
             int toggleY = startY - toggleHeight;
 
-            boolean isSelected = i == keyUI.getSelectedIndexY();
             boolean isEnabled = option.get();
 
             g2.drawString(enabledOption.toUpperCase(), textX,
@@ -347,13 +340,14 @@ public class MenuRender {
         boolean hasBackground = true;
 
         int itemsPerPage = KeyboardUI.getITEMS_PER_PAGE();
-        int start = (currentPage - 1) * itemsPerPage;
+        int start = keyUI.getCurrentPage() * itemsPerPage;
         int end = Math.min(start + itemsPerPage, list.size());
 
         BufferedImage img = null;
         for(int i = start; i < end; i++) {
             Achievement a = list.get(i);
-            boolean isSelected = i == keyUI.getSelectedIndexY();
+            int relativeIndex = i - start;
+            boolean isSelected = relativeIndex == keyUI.getSelectedIndexY();
 
             int textX = x + render.scale(110);
             int titleY = startY + render.scale(60);
@@ -471,7 +465,7 @@ public class MenuRender {
         boolean hasBackground = true;
 
         int itemsPerPage = KeyboardUI.getITEMS_PER_PAGE();
-        int start = (currentPage - 1) * itemsPerPage;
+        int start = (keyUI.getCurrentPage() - 1) * itemsPerPage;
         int end = Math.min(start + itemsPerPage, saves.size());
 
         BufferedImage img = null;
