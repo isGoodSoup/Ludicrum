@@ -144,6 +144,10 @@ public class MenuRender {
                 + (containerWidth - elementWidth)/2;
     }
 
+    private int getCenterY(int totalHeight, int objectHeight) {
+        return render.getOffsetY() + (totalHeight - objectHeight) / 2;
+    }
+
     public int getCurrentPage() {
         return currentPage;
     }
@@ -395,10 +399,45 @@ public class MenuRender {
         }
 
         if(BooleanService.canZoomIn) {
-            GUIService.drawBox(g2, stroke, x, y, RenderContext.BASE_WIDTH/4,
-                    RenderContext.BASE_HEIGHT/4, arcWidth, arcHeight,
-                    true, false, 180);
+            int zoomWidth  = render.scale(RenderContext.BASE_WIDTH / 3);
+            int zoomHeight = render.scale(RenderContext.BASE_HEIGHT / 3);
+            int zoomX = getCenterX(getTotalWidth(), zoomWidth);
+            int zoomY = getCenterY(render.scale(RenderContext.BASE_HEIGHT), zoomHeight);
+
+            GUIService.drawBox(g2, stroke,
+                    zoomX,
+                    zoomY,
+                    zoomWidth,
+                    zoomHeight,
+                    arcWidth,
+                    arcHeight,
+                    true,
+                    false,
+                    180);
+
+            int selectedIndex = keyUI.getSelectedIndexY();
+            int actualIndex = start + selectedIndex;
+
+            if(actualIndex >= 0 && actualIndex < list.size()) {
+                Achievement selected = list.get(actualIndex);
+                BufferedImage zoomImg = AchievementSprites.getSprite(selected);
+
+                if(zoomImg != null) {
+                    int padding = render.scale(40);
+
+                    int imgSize = Math.min(
+                            zoomWidth - padding * 2,
+                            zoomHeight - padding * 2
+                    );
+
+                    int imgX = zoomX + (zoomWidth - imgSize) / 2;
+                    int imgY = zoomY + (zoomHeight - imgSize) / 2;
+
+                    g2.drawImage(zoomImg, imgX, imgY, imgSize, imgSize, null);
+                }
+            }
         }
+
     }
 
     public void drawSavesMenu(Graphics2D g2) {

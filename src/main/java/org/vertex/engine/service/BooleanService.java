@@ -49,6 +49,7 @@ public class BooleanService {
         canPromote = true;
         canDoAchievements = true;
         canShowTick = true;
+        canZoomIn = false;
         canSave = false;
         canResetTable = true;
         canStopwatch = true;

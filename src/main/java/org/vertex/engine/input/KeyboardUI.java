@@ -226,7 +226,7 @@ public class KeyboardUI {
                 GameSettings option = MenuRender.SETTINGS_MENU[selectedIndexY];
                 option.toggle();
             }
-            case ACHIEVEMENTS -> {}
+            case ACHIEVEMENTS -> BooleanService.canZoomIn ^= true;
             case BOARD -> keyboardMove();
         }
     }

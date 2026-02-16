@@ -281,6 +281,10 @@ public class BoardPanel extends JPanel implements Runnable {
                 }
             }
             case ACHIEVEMENTS -> {
+                if(keyboard.wasSelectPressed()) {
+                    keyboardUI.activate(GameState.ACHIEVEMENTS);
+                    service.getSound().playFX(3);
+                }
                 if(keyboard.isUpDown() && now - lastUpTime >= repeatDelay) {
                     keyboardUI.moveUp(service.getAchievementService().getAchievementList());
                     service.getSound().playFX(1);
