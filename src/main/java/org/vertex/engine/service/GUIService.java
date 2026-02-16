@@ -19,6 +19,7 @@ import java.util.Objects;
 public class GUIService {
     private static Font font;
     private static final int MENU_SPACING = 40;
+    private static final int MENU_START_X = 100;
     private static final int MENU_START_Y = 160;
     private static final int MENU_FONT = 32;
     private static final int MENU_SUBFONT = 24;
@@ -94,6 +95,10 @@ public class GUIService {
 
     public static int getMENU_START_Y() {
         return MENU_START_Y;
+    }
+
+    public static int getMENU_START_X() {
+        return MENU_START_X;
     }
 
     public static int getMENU_FONT() {

@@ -3,16 +3,10 @@ package org.vertex.engine.enums;
 import org.vertex.engine.service.GameService;
 
 public enum GameMenu {
-    NEW_GAME("NEW GAME") {
+    PLAY("PLAY") {
         @Override
         public void run(GameService gameService) {
             GameService.getGame().setup(gameService);
-        }
-    },
-    LOAD_GAME("LOAD GAME") {
-        @Override
-        public void run(GameService gameService) {
-            GameService.setState(GameState.SAVES);
         }
     },
     SETTINGS("SETTINGS") {

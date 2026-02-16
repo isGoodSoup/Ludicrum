@@ -7,7 +7,6 @@ import org.vertex.engine.gui.Colors;
 import org.vertex.engine.input.Keyboard;
 import org.vertex.engine.input.KeyboardInput;
 import org.vertex.engine.manager.MovesManager;
-import org.vertex.engine.records.Save;
 import org.vertex.engine.service.*;
 
 import java.awt.*;
@@ -21,7 +20,6 @@ public class MenuRender {
     public static final GameSettings[] SETTINGS_MENU = GameSettings.values();
     private static final String SETTINGS = "SETTINGS";
     private static final String ACHIEVEMENTS = "ACHIEVEMENTS";
-    private static final String SAVES = "SAVE FILES";
     public static String ENABLE = "Enable ";
     private static final String CHECKMATE = "Checkmate!";
     private static final String STALEMATE = "Stalemate";
@@ -200,6 +198,7 @@ public class MenuRender {
         drawLogo(g2, getTotalWidth());
 
         int startY = render.scale(RenderContext.BASE_HEIGHT)/2 + render.scale(GUIService.getMENU_START_Y());
+        int startX = render.scale(RenderContext.BASE_WIDTH)/2 + render.scale(GUIService.getMENU_START_X());
         int spacing = render.scale(GUIService.getMENU_SPACING());
 
         for(int i = 0; i < options.length; i++) {
@@ -212,8 +211,8 @@ public class MenuRender {
             fm = g2.getFontMetrics();
             int textWidth = fm.stringWidth(option);
 
-            int x = getCenterX(getTotalWidth(), textWidth);
-            int y = render.getOffsetY() + startY + i * spacing;
+            int x = render.getOffsetX() + startX + i * spacing;
+            int y = 100;
 
             Color foreground = Colorblindness.filter(Colors.getForeground());
             Color textColor = isSelected ? Colors.getHighlight() : foreground;
@@ -432,70 +431,6 @@ public class MenuRender {
             }
         }
 
-    }
-
-    public void drawSavesMenu(Graphics2D g2) {
-        List<Save> saves = gameService.getSaveManager().getSaves();
-        int stroke = 4;
-        int x = 32, y = 32;
-        int arc = 40;
-
-        GUIService.drawBox(g2, stroke, x, y,
-                render.scale(RenderContext.BASE_WIDTH - x * 2),
-                render.scale(RenderContext.BASE_HEIGHT - y * 2), arc, arc, true,
-                false, 255);
-
-        g2.setFont(GUIService.getFont(GUIService.getMENU_FONT()));
-        FontMetrics fm = g2.getFontMetrics();
-
-        int headerY = render.getOffsetY() + render.scale(OPTION_Y);
-        int headerWidth = fm.stringWidth(SAVES);
-        g2.setColor(Colorblindness.filter(Color.WHITE));
-        g2.drawString(SAVES, getCenterX(getTotalWidth(), headerWidth), headerY);
-
-        if(saves.isEmpty()) {
-            return;
-        }
-
-        int spacing = 25;
-        int startY = headerY + spacing * 2;
-        int width = RenderContext.BASE_WIDTH/2;
-        int height = 100, arcWidth = 32, arcHeight = 32;
-        x = getCenterX(getTotalWidth(), width);
-        boolean hasBackground = true;
-
-        int itemsPerPage = KeyboardInput.getITEMS_PER_PAGE();
-        int start = (keyUI.getCurrentPage() - 1) * itemsPerPage;
-        int end = Math.min(start + itemsPerPage, saves.size());
-
-        BufferedImage img = null;
-        for (int i = start; i < end; i++) {
-            Save s = saves.get(i);
-            Rectangle hitbox = new Rectangle(
-                    x, startY, width, height
-            );
-
-            boolean isSelected = i == keyUI.getSelectedIndexY();
-
-            int textX = x + render.scale(110);
-            int titleY = startY + render.scale(60);
-            int descY = titleY;
-            g2.setFont(GUIService.getFont(GUIService.getMENU_FONT()));
-            g2.setColor(Colorblindness.filter(Color.WHITE));
-
-            if(isSelected) {
-                GUIService.drawBox(g2, stroke, x, startY,
-                        width, height, arcWidth, arcHeight, hasBackground,
-                        true, 255);
-            } else {
-                GUIService.drawBox(g2, stroke, x, startY,
-                        width, height, arcWidth, arcHeight, hasBackground,
-                        false, 255);
-            }
-
-            g2.drawString(s.name(), textX, descY);
-            startY += height + spacing;
-        }
     }
 
     public void drawSandboxMenu(Graphics2D g2) {
