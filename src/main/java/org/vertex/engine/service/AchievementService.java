@@ -174,6 +174,10 @@ public class AchievementService {
     }
 
     private void onCapture(CaptureEvent event) {
+        Piece attacker = event.piece();
+        Piece captured = event.captured();
+        if(attacker.getColor() != Tint.LIGHT) { return; }
+
         if (isFirstCapture) {
             unlock(Achievements.FIRST_CAPTURE);
             isFirstCapture = false;

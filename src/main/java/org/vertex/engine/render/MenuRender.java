@@ -393,6 +393,12 @@ public class MenuRender {
             }
             startY += height + spacing;
         }
+
+        if(BooleanService.canZoomIn) {
+            GUIService.drawBox(g2, stroke, x, y, RenderContext.BASE_WIDTH/4,
+                    RenderContext.BASE_HEIGHT/4, arcWidth, arcHeight,
+                    true, false, 180);
+        }
     }
 
     public void drawSavesMenu(Graphics2D g2) {

@@ -21,6 +21,7 @@ public class BooleanService {
     public static boolean isMovesActive;
     public static boolean canType;
     public static boolean canPlayFX;
+    public static boolean canZoomIn;
     public static boolean isSandboxEnabled;
 
     public static boolean canDoMoves;
