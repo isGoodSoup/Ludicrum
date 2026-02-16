@@ -1,12 +1,10 @@
 package org.vertex.engine.service;
 
-import org.vertex.engine.enums.Console;
 import org.vertex.engine.input.Keyboard;
+import org.vertex.engine.manager.EventBus;
 import org.vertex.engine.manager.MovesManager;
 import org.vertex.engine.manager.SaveManager;
 import org.vertex.engine.render.RenderContext;
-
-import java.util.List;
 
 public class ServiceFactory {
     private final RenderContext render;
@@ -22,13 +20,15 @@ public class ServiceFactory {
     private final AnimationService animation;
     private final TimerService timer;
     private final AchievementService achievement;
+    private final EventBus eventBus;
 
     public ServiceFactory(RenderContext render) {
         this.render = render;
+        this.eventBus = new EventBus();
         this.keyboard = new Keyboard();
         this.animation = new AnimationService();
-        this.piece = new PieceService();
-        this.promotion = new PromotionService(piece);
+        this.piece = new PieceService(eventBus);
+        this.promotion = new PromotionService(piece, eventBus);
         this.model = new ModelService(piece, animation, promotion);
         this.movesManager = new MovesManager();
         this.piece.setMoveManager(movesManager);
@@ -46,7 +46,7 @@ public class ServiceFactory {
         this.timer = new TimerService();
         this.gui = new GUIService(render, piece, board, gs, promotion,
                 model, movesManager, timer);
-        this.achievement = new AchievementService();
+        this.achievement = new AchievementService(eventBus);
         this.achievement.setAnimationService(animation);
         this.achievement.setSaveManager(saveManager);
         this.render.getBoardRender().setBoardService(board);
@@ -60,7 +60,7 @@ public class ServiceFactory {
         this.render.getMovesRender().setBoardService(board);
         this.render.getMovesRender().setGuiService(gui);
         this.render.getMovesRender().setMovesManager(movesManager);
-        this.movesManager.init(this);
+        this.movesManager.init(this, eventBus);
         this.render.getMenuRender().init();
     }
 
@@ -114,5 +114,7 @@ public class ServiceFactory {
         return achievement;
     }
 
-    public List<Console> getConsole() { return List.of(Console.values()); }
+    public EventBus getEventBus() {
+        return eventBus;
+    }
 }

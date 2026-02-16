@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.vertex.engine.enums.Games;
 import org.vertex.engine.enums.Theme;
 import org.vertex.engine.enums.Tint;
-import org.vertex.engine.enums.Type;
+import org.vertex.engine.enums.TypeID;
 import org.vertex.engine.gui.Colors;
 import org.vertex.engine.render.Colorblindness;
 import org.vertex.engine.service.GameService;
@@ -15,7 +15,9 @@ import java.awt.image.BufferedImage;
 import java.util.List;
 
 public abstract class Piece {
-	protected Type id;
+	protected final long id;
+	private static long NEXT_ID = 1;
+	protected TypeID type;
 	private int x, y;
 	private int col, row, preCol, preRow;
 	private static final double DEFAULT_SCALE = 1.0;
@@ -37,6 +39,7 @@ public abstract class Piece {
 		this.y = getY(row);
 		this.preCol = col;
 		this.preRow = row;
+		this.id = NEXT_ID++;
 		getSprite();
 		getKingSprites();
 	}
@@ -59,16 +62,20 @@ public abstract class Piece {
 		return PieceService.getImage(path);
 	}
 
-	public Type getId() {
+	public BufferedImage getFilteredSprite(BufferedImage image) {
+		return Colorblindness.filter(image);
+	}
+
+	public long getID() {
 		return id;
 	}
 
-	public void setId(Type id) {
-		this.id = id;
+	public TypeID getTypeID() {
+		return type;
 	}
 
-	public BufferedImage getFilteredSprite(BufferedImage image) {
-		return Colorblindness.filter(image);
+	public void setTypeID(TypeID type) {
+		this.type = type;
 	}
 
 	public int getPreCol() {

@@ -89,7 +89,7 @@ public enum Console {
             boolean removed = false;
             while (iterator.hasNext()) {
                 Piece p = iterator.next();
-                if (p.getId().name().equalsIgnoreCase(pieceStr)
+                if (p.getTypeID().name().equalsIgnoreCase(pieceStr)
                         && p.getColor().name().equalsIgnoreCase(colorStr)
                         && p.getCol() == col
                         && p.getRow() == row) {

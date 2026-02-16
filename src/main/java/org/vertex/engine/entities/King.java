@@ -1,7 +1,7 @@
 package org.vertex.engine.entities;
 
 import org.vertex.engine.enums.Tint;
-import org.vertex.engine.enums.Type;
+import org.vertex.engine.enums.TypeID;
 import org.vertex.engine.service.BooleanService;
 import org.vertex.engine.service.GameService;
 import org.vertex.engine.service.PieceService;
@@ -13,13 +13,13 @@ public class King extends Piece {
 
 	public King(PieceService pieceService, Tint color, int col, int row) {
 		super(color, col, row);
-		this.id = Type.KING;
 		this.pieceService = pieceService;
+		this.type = TypeID.KING;
 	}
 
 	public King(Tint color, int col, int row) {
 		super(color, col, row);
-		this.id = Type.KING;
+		this.type = TypeID.KING;
 	}
 
 

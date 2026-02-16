@@ -1,7 +1,7 @@
 package org.vertex.engine.entities;
 
 import org.vertex.engine.enums.Tint;
-import org.vertex.engine.enums.Type;
+import org.vertex.engine.enums.TypeID;
 import org.vertex.engine.service.PieceService;
 
 import java.util.List;
@@ -11,7 +11,7 @@ public class Queen extends Piece {
 
 	public Queen(Tint color, int col, int row) {
 		super(color, col, row);
-		this.id = Type.QUEEN;
+		this.type = TypeID.QUEEN;
 	}
 
 	@Override

@@ -147,11 +147,6 @@ public class BoardService {
         }
     }
 
-    private void getPiecesDebug() {
-        log.info("Initializing pieces...");
-        pieceService.getPieces().forEach(p -> log.info(p.getId().name()));
-    }
-
     public void resetBoard() {
         if(BooleanService.canResetTable) {
             getServiceFactory().getGameService().startNewGame();

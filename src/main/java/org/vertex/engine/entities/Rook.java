@@ -1,7 +1,7 @@
 package org.vertex.engine.entities;
 
 import org.vertex.engine.enums.Tint;
-import org.vertex.engine.enums.Type;
+import org.vertex.engine.enums.TypeID;
 import org.vertex.engine.service.PieceService;
 
 import java.util.List;
@@ -10,7 +10,7 @@ public class Rook extends Piece {
 
 	public Rook(Tint color, int col, int row) {
 		super(color, col, row);
-		this.id = Type.ROOK;
+		this.type = TypeID.ROOK;
 	}
 
 	@Override

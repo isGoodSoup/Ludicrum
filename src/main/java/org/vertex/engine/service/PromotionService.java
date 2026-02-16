@@ -4,18 +4,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vertex.engine.entities.*;
 import org.vertex.engine.enums.Tint;
+import org.vertex.engine.manager.EventBus;
+import org.vertex.engine.events.PromotionEvent;
 
 public class PromotionService {
     private Tint promotionColor;
     private Piece promotingPawn;
-    private int promotionTracker;
 
     private final PieceService pieceService;
+    private final EventBus event;
 
     private static final Logger log = LoggerFactory.getLogger(PromotionService.class);
 
-    public PromotionService(PieceService pieceService) {
+    public PromotionService(PieceService pieceService, EventBus event) {
         this.pieceService = pieceService;
+        this.event = event;
     }
 
     public Tint getPromotionColor() {
@@ -32,10 +35,6 @@ public class PromotionService {
 
     public void setPromotingPawn(Piece promotingPawn) {
         this.promotingPawn = promotingPawn;
-    }
-
-    public int getPromotionTracker() {
-        return promotionTracker;
     }
 
     public boolean checkPromotion(Piece p) {
@@ -83,12 +82,14 @@ public class PromotionService {
         pieceService.setHoveredPieceKeyboard(promotedPiece);
 
         BooleanService.isPromotionActive = false;
-        promotionTracker++;
-        pieceService.switchTurns();
-
-        if(promotionTracker == 10 && !BooleanService.doKingPromoter) {
-            BooleanService.doKingPromoter = true;
+        if(piece instanceof Pawn pawn) {
+            event.fire(new PromotionEvent(pawn));
         }
+
+        if(piece instanceof Checker checker) {
+            event.fire(new PromotionEvent(checker));
+        }
+        pieceService.switchTurns();
         return promotedPiece;
     }
 }

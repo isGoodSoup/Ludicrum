@@ -3,6 +3,7 @@ package org.vertex.engine.gui;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vertex.engine.enums.*;
+import org.vertex.engine.events.ToggleEvent;
 import org.vertex.engine.input.Keyboard;
 import org.vertex.engine.manager.MovesManager;
 import org.vertex.engine.records.Save;
@@ -121,7 +122,6 @@ public class BoardPanel extends JPanel implements Runnable {
     private void update() {
         checkKeyboardInput();
         service.getTimerService().update();
-        checkAchievements();
         PlayState mode = GameService.getMode();
         if(mode != null) {
             switch(mode) {
@@ -179,12 +179,7 @@ public class BoardPanel extends JPanel implements Runnable {
                 }
                 if(keyboard.isComboPressed(KeyEvent.VK_CONTROL, KeyEvent.VK_G)) {
                     GameService.nextGame();
-
-                    if (!BooleanService.doRuleTogglesUnlock) {
-                        if (!BooleanService.doRuleToggles) {
-                            BooleanService.doRuleToggles = true;
-                        }
-                    }
+                    service.getEventBus().fire(new ToggleEvent());
                 }
             }
             case SAVES -> {
@@ -323,46 +318,6 @@ public class BoardPanel extends JPanel implements Runnable {
 
         if(keyboard.wasF11Pressed()) {
             frame.toggleFullscreen();
-        }
-    }
-
-    private void checkAchievements() {
-        if(!BooleanService.canDoAchievements) { return; }
-        if(BooleanService.doFirstWin) {
-            service.getAchievementService().unlock(Achievements.FIRST_WIN);
-            BooleanService.doFirstWin = false;
-            BooleanService.doFirstWinUnlock = true;
-            playFX();
-        }
-        if(BooleanService.doRuleToggles) {
-            service.getAchievementService().unlock(Achievements.SECRET_TOGGLES);
-            BooleanService.doRuleToggles = false;
-            BooleanService.doRuleTogglesUnlock = true;
-            playFX();
-        }
-        if(BooleanService.doCheckOver) {
-            service.getAchievementService().unlock(Achievements.CHECK_OVER);
-            BooleanService.doCheckOver = false;
-            BooleanService.doCheckOverUnlock = true;
-            playFX();
-        }
-        if(BooleanService.doCastlingMaster) {
-            service.getAchievementService().unlock(Achievements.CASTLING_MASTER);
-            BooleanService.doCastlingMaster = false;
-            BooleanService.doCastlingMasterUnlock = true;
-            playFX();
-        }
-        if(BooleanService.doQuickWin) {
-            service.getAchievementService().unlock(Achievements.QUICK_WIN);
-            BooleanService.doQuickWin = false;
-            BooleanService.doQuickWinUnlock = true;
-            playFX();
-        }
-        if(BooleanService.doKingPromoter) {
-            service.getAchievementService().unlock(Achievements.KING_PROMOTER);
-            BooleanService.doKingPromoter = false;
-            BooleanService.doKingPromoterUnlock = true;
-            playFX();
         }
     }
 

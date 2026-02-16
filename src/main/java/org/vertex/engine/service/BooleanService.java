@@ -38,31 +38,6 @@ public class BooleanService {
     public static boolean canTheme;
     public static boolean canShowTick;
 
-    public static boolean doFirstWin;
-    public static boolean doFirstWinUnlock;
-    public static boolean doRuleToggles;
-    public static boolean doRuleTogglesUnlock;
-    public static boolean doCheckmate;
-    public static boolean doCheckmateUnlock;
-    public static boolean doCastlingMaster;
-    public static boolean doCastlingMasterUnlock;
-    public static boolean doKingPromoter;
-    public static boolean doKingPromoterUnlock;
-    public static boolean doQuickWin;
-    public static boolean doQuickWinUnlock;
-    public static boolean doCheckOver;
-    public static boolean doCheckOverUnlock;
-    public static boolean doHundred;
-    public static boolean doHundredUnlock;
-    public static boolean doAllPieces;
-    public static boolean doAllPiecesUnlock;
-    public static boolean doHardGame;
-    public static boolean doHardGameUnlock;
-    public static boolean doUntouchable;
-    public static boolean doUntouchableUnlock;
-    public static boolean doGrandmaster;
-    public static boolean doGrandmasterUnlock;
-
     private static final Random random = new Random();
 
     public static void defaultToggles() {

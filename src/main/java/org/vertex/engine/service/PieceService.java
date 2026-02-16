@@ -5,7 +5,9 @@ import org.slf4j.LoggerFactory;
 import org.vertex.engine.entities.*;
 import org.vertex.engine.enums.Games;
 import org.vertex.engine.enums.Tint;
-import org.vertex.engine.enums.Type;
+import org.vertex.engine.enums.TypeID;
+import org.vertex.engine.events.CheckEvent;
+import org.vertex.engine.manager.EventBus;
 import org.vertex.engine.manager.MovesManager;
 
 import javax.imageio.ImageIO;
@@ -24,15 +26,16 @@ public class PieceService {
     private int dragOffsetY;
     private int hoveredSquareX = -1;
     private int hoveredSquareY = -1;
-    private int checkingTracker;
 
+    private final EventBus eventBus;
     private static MovesManager movesManager;
     private static BoardService boardService;
 
     private static final Logger log = LoggerFactory.getLogger(PieceService.class);
 
-    public PieceService() {
-        pieces = new ArrayList<>();
+    public PieceService(EventBus eventBus) {
+        this.eventBus = eventBus;
+        this.pieces = new ArrayList<>();
         cache = new HashMap<>();
     }
 
@@ -74,14 +77,6 @@ public class PieceService {
         this.hoveredSquareY = row;
     }
 
-    public int getCheckingTracker() {
-        return checkingTracker;
-    }
-
-    public void setCheckingTracker(int checkingTracker) {
-        this.checkingTracker = checkingTracker;
-    }
-
     public int getHoveredSquareX() {
         return hoveredSquareX;
     }
@@ -117,7 +112,7 @@ public class PieceService {
     }
 
     public int getPieceValue(Piece p) {
-        return switch(p.getId()) {
+        return switch(p.getTypeID()) {
             case PAWN -> 10;
             case CHECKER -> 20;
             case KNIGHT, BISHOP -> 30;
@@ -201,12 +196,13 @@ public class PieceService {
         p.setRow(newRow);
         updatePos(p);
 
-        log.debug("{} {}: {} -> {}", p.getColor().toString(), p.getId().toString(), oldPos, newPos);
+        log.debug("{} {}: {} -> {}", p.getColor().toString(),
+                p.getTypeID().toString(), oldPos, newPos);
         BoardService.getBoardState()[newRow][newCol] = p;
     }
 
     public static void updatePos(Piece piece) {
-        if(piece.getId() == Type.PAWN) {
+        if(piece.getTypeID() == TypeID.PAWN) {
             if(Math.abs(piece.getRow() - piece.getPreRow()) == 2) {
                 piece.setTwoStepsAhead(true);
             }
@@ -299,7 +295,7 @@ public class PieceService {
             if(p.getColor() != kingColor) {
                 if(p.canMove(king.getCol(), king.getRow(), pieces)) {
                     checkingPiece = p;
-                    checkingTracker++;
+                    eventBus.fire(new CheckEvent(p, king));
                     return true;
                 }
             }

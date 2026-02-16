@@ -7,6 +7,7 @@ import org.vertex.engine.entities.Pawn;
 import org.vertex.engine.entities.Piece;
 import org.vertex.engine.entities.Rook;
 import org.vertex.engine.enums.*;
+import org.vertex.engine.events.*;
 import org.vertex.engine.gui.Sound;
 import org.vertex.engine.records.Move;
 import org.vertex.engine.records.Save;
@@ -26,18 +27,17 @@ public class MovesManager {
     private int selectedIndexY;
     private int selectedIndexX;
     private int currentPage = 1;
-    private int moveTracker = 0;
-    private int castlingTracker;
-    private int victoryTracker;
     private static final int ITEMS_PER_PAGE = 6;
 
+    private EventBus eventBus;
     private static final Logger log =
             LoggerFactory.getLogger(MovesManager.class);
 
     public MovesManager() {}
 
-    public void init(ServiceFactory service) {
+    public void init(ServiceFactory service, EventBus eventBus) {
         this.service = service;
+        this.eventBus = eventBus;
         this.fx = service.getGuiService().getFx();
         this.moves = new ArrayList<>();
         this.selectedIndexY = 0;
@@ -158,29 +158,17 @@ public class MovesManager {
         service.getModelService().triggerAIMove();
 
         if(isCheckmate()) {
-            victoryTracker++;
-            if(!BooleanService.doFirstWinUnlock) {
-                if(!BooleanService.doFirstWin) {
-                    BooleanService.doFirstWin = true;
-                }
-            }
+            eventBus.fire(new CheckmateEvent(piece,
+                    service.getPieceService().getKing(Tint.DARK)));
+            eventBus.fire(new TotalMovesEvent(piece));
         }
 
-        if(service.getPieceService().getCheckingTracker() == 4 && isCheckmate() &&
-        !BooleanService.doCheckOverUnlock) {
-            if(!BooleanService.doCheckOver) {
-                BooleanService.doCheckOver = true;
-                service.getPieceService().setCheckingTracker(0);
-            }
+        if(isCheckmate() && BooleanService.canDoHard) {
+            eventBus.fire(new HardEvent(piece));
         }
 
-        moveTracker++;
-        if(moveTracker == 4  && isCheckmate()) {
-            if(!BooleanService.doQuickWinUnlock) {
-                if(!BooleanService.doQuickWin) {
-                    BooleanService.doQuickWin = true;
-                }
-            }
+        if(isStalemate()) {
+            eventBus.fire(new StalemateEvent(piece));
         }
     }
 
@@ -298,17 +286,9 @@ public class MovesManager {
                         p.setCol(rookTargetCol);
                         PieceService.updatePos(p);
                         p.setHasMoved(true);
-                        castlingTracker++;
+                        eventBus.fire(new CastlingEvent(currentPiece, p));
                         break;
                     }
-                }
-            }
-        }
-
-        if(castlingTracker == 10) {
-            if(!BooleanService.doCastlingMasterUnlock) {
-                if(!BooleanService.doCastlingMaster) {
-                    BooleanService.doCastlingMaster = true;
                 }
             }
         }
@@ -332,16 +312,7 @@ public class MovesManager {
                             p.isTwoStepsAhead()) {
                         captured = p;
                         service.getPieceService().removePiece(p);
-                        Move lastMove = moves.getLast();
-                        Move newMove = new Move(
-                                lastMove.piece(),
-                                lastMove.fromRow(),
-                                lastMove.fromCol(),
-                                lastMove.targetCol(),
-                                lastMove.targetRow(),
-                                lastMove.color(),
-                                lastMove.captured()
-                        );
+                        Move newMove = getMoveEvent();
                         moves.add(newMove);
                         break;
                     }
@@ -350,6 +321,20 @@ public class MovesManager {
         }
 
         currentPiece.setTwoStepsAhead(movedSquares == 2);
+    }
+
+    private Move getMoveEvent() {
+        Move lastMove = moves.getLast();
+        Move newMove = new Move(
+                lastMove.piece(),
+                lastMove.fromRow(),
+                lastMove.fromCol(),
+                lastMove.targetCol(),
+                lastMove.targetRow(),
+                lastMove.color(),
+                lastMove.captured()
+        );
+        return newMove;
     }
 
     private boolean isEnPassantMove(Piece pawn, int targetCol, int targetRow,
