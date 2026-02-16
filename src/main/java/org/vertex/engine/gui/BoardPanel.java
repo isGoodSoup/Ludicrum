@@ -150,7 +150,7 @@ public class BoardPanel extends JPanel implements Runnable {
             if(keyboard.wasThreePressed()) { MenuRender.setCb(ColorblindType.TRITANOPIA); }
         }
 
-        if(BooleanService.canDoSandbox) {
+        if(BooleanService.isSandboxEnabled) {
             if(keyboard.isComboPressed(KeyEvent.VK_CONTROL, KeyEvent.VK_ENTER)) {
                 String fullInput = keyboard.consumeText().trim();
                 if(fullInput.isEmpty()) { return; }
@@ -270,8 +270,10 @@ public class BoardPanel extends JPanel implements Runnable {
                 }
             }
             case BOARD -> {
-                if(keyboard.isComboPressed(KeyEvent.VK_CONTROL, KeyEvent.VK_S)) {
+                if(keyboard.isComboPressed(KeyEvent.VK_CONTROL,
+                        KeyEvent.VK_S) && BooleanService.isSandboxEnabled) {
                     BooleanService.canDoSandbox ^= true;
+                    BooleanService.canType ^= true;
                 }
                 if(BooleanService.canDoSandbox) { return; }
                 if(keyboard.wasCancelPressed()) {

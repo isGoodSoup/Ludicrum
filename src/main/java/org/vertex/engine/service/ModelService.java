@@ -68,7 +68,7 @@ public class ModelService {
                 .attemptMove(move.piece(), move.targetCol(), move.targetRow());
     }
 
-    public void triggerAiMoveIfNeeded() {
+    public void triggerAIMove() {
         if(!BooleanService.canAIPlay ||
                 GameService.getCurrentTurn() != Tint.DARK ||
                 BooleanService.isAIMoving) return;

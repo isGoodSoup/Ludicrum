@@ -20,6 +20,7 @@ public class BooleanService {
     public static boolean isAchievementLocked;
     public static boolean isMovesActive;
     public static boolean canType;
+    public static boolean isSandboxEnabled;
 
     public static boolean canDoMoves;
     public static boolean canUndoMoves;
@@ -74,6 +75,7 @@ public class BooleanService {
         canResetTable = true;
         canStopwatch = true;
         canDoSandbox = false;
+        isSandboxEnabled = false;
         canDoChaos = false;
         canTheme = false;
         isFullscreen = true;

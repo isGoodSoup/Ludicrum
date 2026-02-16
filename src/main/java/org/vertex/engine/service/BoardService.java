@@ -124,10 +124,8 @@ public class BoardService {
 
     public void startBoard() {
         if(BooleanService.canDoSandbox) {
-            setSandboxPieces();
-            if(BooleanService.canType) {
-                serviceFactory.getKeyboard().setCanText(true);
-            }
+            BooleanService.canType = true;
+            BooleanService.isSandboxEnabled ^= true;
         }
         else if(BooleanService.canDoChaos) { setPiecesChaos(); }
         else { setPieces(); }
@@ -298,12 +296,5 @@ public class BoardService {
             }
             case CHECKERS -> {}
         }
-    }
-
-    private void setSandboxPieces() {
-        List<Piece> pieces = pieceService.getPieces();
-        pieces.clear();
-        clearBoardState();
-
     }
 }

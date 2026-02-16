@@ -1,5 +1,7 @@
 package org.vertex.engine.input;
 
+import org.vertex.engine.service.BooleanService;
+
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.HashMap;
@@ -9,19 +11,10 @@ public class Keyboard implements KeyListener {
     private final Map<Integer, Boolean> keyStates;
     private final Map<Integer, Boolean> keyProcessed;
     private StringBuilder textBuffer = new StringBuilder();
-    private boolean canText = false;
 
     public Keyboard() {
         keyStates = new HashMap<>();
         keyProcessed = new HashMap<>();
-    }
-
-    public boolean canText() {
-        return canText;
-    }
-
-    public void setCanText(boolean canText) {
-        this.canText = canText;
     }
 
     public String consumeText() {
@@ -36,7 +29,7 @@ public class Keyboard implements KeyListener {
 
     @Override
     public void keyTyped(KeyEvent e) {
-        if(!canText) { return; }
+        if(!BooleanService.canType) { return; }
         char c = e.getKeyChar();
         if(!Character.isISOControl(c)) {
             textBuffer.append(c);
@@ -47,7 +40,7 @@ public class Keyboard implements KeyListener {
     public void keyPressed(KeyEvent e) {
         keyStates.put(e.getKeyCode(), true);
         keyProcessed.putIfAbsent(e.getKeyCode(), false);
-        if(canText) {
+        if(BooleanService.canType) {
             if(e.getKeyCode() == KeyEvent.VK_BACK_SPACE && !textBuffer.isEmpty()) {
                 textBuffer.deleteCharAt(textBuffer.length() - 1);
             }

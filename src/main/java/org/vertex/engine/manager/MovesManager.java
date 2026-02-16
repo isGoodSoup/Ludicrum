@@ -155,7 +155,7 @@ public class MovesManager {
             service.getPieceService().switchTurns();
         }
 
-        service.getModelService().triggerAiMoveIfNeeded();
+        service.getModelService().triggerAIMove();
 
         if(isCheckmate()) {
             victoryTracker++;

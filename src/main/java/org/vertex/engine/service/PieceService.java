@@ -161,6 +161,7 @@ public class PieceService {
     }
 
     public Piece getKing(Tint color) {
+        if(BooleanService.isSandboxEnabled) { return null; }
         for(Piece p : pieces) {
             if(p instanceof King && p.getColor() == color) {
                 return p;
@@ -291,6 +292,7 @@ public class PieceService {
 
     public boolean isKingInCheck(Tint kingColor) {
         if(GameService.getGame() != Games.CHESS) { return false; }
+        if(BooleanService.isSandboxEnabled) { return false; }
         Piece king = getKing(kingColor);
 
         for(Piece p : pieces) {
@@ -331,16 +333,18 @@ public class PieceService {
         simPiece.setRow(targetRow);
 
         if(GameService.getGame() == Games.CHESS) {
-            Piece king = simPieces.stream()
-                    .filter(p -> p instanceof King
-                            && p.getColor() == piece.getColor())
-                    .findFirst()
-                    .orElseThrow(() -> new IllegalStateException("King must exist after cloning"));
+            if(!BooleanService.isSandboxEnabled && !BooleanService.canType) {
+                Piece king = simPieces.stream()
+                        .filter(p -> p instanceof King
+                                && p.getColor() == piece.getColor())
+                        .findFirst()
+                        .orElseThrow(() -> new IllegalStateException("King must exist after cloning"));
 
-            for (Piece enemy : simPieces) {
-                if (enemy.getColor() != piece.getColor() &&
-                        enemy.canMove(king.getCol(), king.getRow(), simPieces)) {
-                    return true;
+                for (Piece enemy : simPieces) {
+                    if (enemy.getColor() != piece.getColor() &&
+                            enemy.canMove(king.getCol(), king.getRow(), simPieces)) {
+                        return true;
+                    }
                 }
             }
         }

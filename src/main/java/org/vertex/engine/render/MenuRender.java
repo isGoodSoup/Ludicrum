@@ -457,7 +457,7 @@ public class MenuRender {
     }
 
     public void drawSandboxMenu(Graphics2D g2) {
-        if(!BooleanService.canDoSandbox) { return; }
+        if(!BooleanService.isSandboxEnabled) { return; }
 
         int stroke = 6, arc = 32;
         int boardX = render.getBoardRender().getBoardOriginX();
@@ -489,15 +489,6 @@ public class MenuRender {
 
         GUIService.drawBox(g2, stroke, boxX, boxY, boxWidth,
                 boxHeight, arc, arc, true, false, 255);
-
-        int panelWidth = render.scale(400);
-        int panelHeight = boardHeight + 25;
-        int panelX = boardX - panelWidth - render.scale(60);
-
-        int panelY = boardY + (boardHeight - panelHeight)/2;
-
-        GUIService.drawBox(g2, stroke, panelX, panelY, panelWidth, panelHeight,
-                arc, arc, true, false, 255);
 
         g2.setColor(Colorblindness.filter(Colors.getForeground()));
         g2.drawString(input, textX, textY);
