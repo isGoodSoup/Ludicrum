@@ -113,6 +113,13 @@ public class BoardPanel extends JPanel implements Runnable {
             case STALEMATE -> service.getRender().getMenuRender().drawCheckmate(g2);
         }
         render(g2);
+        if(BooleanService.canToggleHelp) {
+            renderControls(g2);
+        }
+    }
+
+    public void renderControls(Graphics2D g2) {
+        service.getRender().getControlsRender().drawControlsHUD(g2);
     }
 
     public void render(Graphics2D g2) throws InterruptedException {
@@ -142,9 +149,9 @@ public class BoardPanel extends JPanel implements Runnable {
         GameState state = GameService.getState();
         GameMenu menu = GameService.getGameMenu();
 
-        if(keyboard.isComboPressed(KeyEvent.VK_CONTROL, KeyEvent.VK_B)) {
+        if(keyboard.isEscapeDown()) {
             GameService.setState(GameState.MENU);
-            service.getKeyboardInput().setSelectedIndexY(3);
+            service.getKeyboardInput().setSelectedIndexY(0);
             service.getSound().playFX(2);
         }
 

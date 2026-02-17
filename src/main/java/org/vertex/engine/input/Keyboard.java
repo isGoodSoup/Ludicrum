@@ -73,9 +73,7 @@ public class Keyboard implements KeyListener {
     public boolean wasRightPressed() { return wasKeyPressed(KeyEvent.VK_RIGHT); }
     public boolean wasEnterPressed() { return wasKeyPressed(KeyEvent.VK_ENTER); }
     public boolean wasSpacePressed() { return wasKeyPressed(KeyEvent.VK_SPACE); }
-    public boolean wasControlPressed() { return wasKeyPressed(KeyEvent.VK_CONTROL); }
     public boolean wasZPressed() { return wasKeyPressed(KeyEvent.VK_Z); }
-    public boolean wasBPressed() { return wasKeyPressed(KeyEvent.VK_B); }
     public boolean wasRPressed() { return wasKeyPressed(KeyEvent.VK_R); }
     public boolean wasQPressed() { return wasKeyPressed(KeyEvent.VK_Q); }
     public boolean wasOnePressed() { return wasKeyPressed(KeyEvent.VK_1); }
@@ -94,15 +92,11 @@ public class Keyboard implements KeyListener {
     public boolean isRightDown() { return isKeyDown(KeyEvent.VK_RIGHT); }
     public boolean isEnterDown() { return isKeyDown(KeyEvent.VK_ENTER); }
     public boolean isSpaceDown() { return isKeyDown(KeyEvent.VK_SPACE); }
-    public boolean isControlDown() { return isKeyDown(KeyEvent.VK_CONTROL); }
     public boolean isZDown() { return isKeyDown(KeyEvent.VK_Z); }
-    public boolean isBDown() { return isKeyDown(KeyEvent.VK_B); }
     public boolean isDDown() { return isKeyDown(KeyEvent.VK_D); }
     public boolean isRDown() { return isKeyDown(KeyEvent.VK_R); }
     public boolean isQDown() { return isKeyDown(KeyEvent.VK_Q); }
-    public boolean isOneDown() { return isKeyDown(KeyEvent.VK_1); }
-    public boolean isTwoDown() { return isKeyDown(KeyEvent.VK_2); }
-    public boolean isThreeDown() { return isKeyDown(KeyEvent.VK_3); }
+    public boolean isEscapeDown() { return isKeyDown(KeyEvent.VK_ESCAPE); }
 
     public boolean isComboPressed(int modifierKey, int triggerKey) {
         return isKeyDown(modifierKey) && wasKeyPressed(triggerKey);

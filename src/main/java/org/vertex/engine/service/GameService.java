@@ -88,6 +88,9 @@ public class GameService {
         service.getAchievementService().setUnlockedAchievements(loaded.achievements());
         setCurrentTurn(loaded.player());
 
+        Ruleset rule = service.getModelService().createRuleSet(getGame());
+        service.getModelService().setRule(rule);
+
         service.getTimerService().start();
         log.info("Autosave loaded successfully.");
         setState(GameState.BOARD);

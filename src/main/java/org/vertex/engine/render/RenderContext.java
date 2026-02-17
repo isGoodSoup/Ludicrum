@@ -12,6 +12,7 @@ public class RenderContext {
     private BoardRender boardRender;
     private MenuRender menuRender;
     private MovesRender movesRender;
+    private ControlsRender controlsRender;
 
     private MovesManager movesManager;
 
@@ -19,6 +20,7 @@ public class RenderContext {
         this.boardRender = new BoardRender(this);
         this.menuRender = new MenuRender(this);
         this.movesRender = new MovesRender(this, movesManager);
+        this.controlsRender = new ControlsRender();
     }
 
     public BoardRender getBoardRender() {
@@ -51,6 +53,14 @@ public class RenderContext {
 
     public void setMovesManager(MovesManager movesManager) {
         this.movesManager = movesManager;
+    }
+
+    public ControlsRender getControlsRender() {
+        return controlsRender;
+    }
+
+    public void setControlsRender(ControlsRender controlsRender) {
+        this.controlsRender = controlsRender;
     }
 
     public void updateTransform(int windowWidth, int windowHeight) {

@@ -40,6 +40,7 @@ public class BooleanService {
     public static boolean canBeColorblind;
     public static boolean canTheme;
     public static boolean canShowTick;
+    public static boolean canToggleHelp;
 
     private static final Random random = new Random();
 
@@ -63,6 +64,7 @@ public class BooleanService {
         isCheckmate = false;
         isExitActive = false;
         canType = false;
+        canToggleHelp = false;
         isDragging = false;
     }
 

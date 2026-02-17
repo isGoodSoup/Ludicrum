@@ -13,6 +13,17 @@ public enum GameSettings {
             BooleanService.canDoSandbox = false;
         }
     },
+    HELP("Help") {
+        @Override
+        public boolean get() {
+            return BooleanService.canToggleHelp;
+        }
+        @Override
+        public void toggle() {
+            BooleanService.canToggleHelp ^= true;
+        }
+
+    },
     SAVES("Saves") {
         public boolean get() {
             return BooleanService.canSave;

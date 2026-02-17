@@ -76,6 +76,7 @@ public class ServiceFactory {
         this.render.getMovesRender().setBoardService(board);
         this.render.getMovesRender().setGuiService(gui);
         this.render.getMovesRender().setMovesManager(movesManager);
+        this.render.getControlsRender().setServiceFactory(this);
         this.movesManager.init(this, eventBus);
         this.render.getMenuRender().init();
         this.mouseInput.init();
