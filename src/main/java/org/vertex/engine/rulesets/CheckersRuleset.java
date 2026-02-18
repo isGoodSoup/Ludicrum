@@ -1,5 +1,6 @@
 package org.vertex.engine.rulesets;
 
+import org.vertex.engine.entities.Board;
 import org.vertex.engine.entities.Checker;
 import org.vertex.engine.entities.Piece;
 import org.vertex.engine.enums.Tint;
@@ -15,6 +16,11 @@ import java.util.List;
 public class CheckersRuleset implements Ruleset {
     private final PieceService pieceService;
     private final BoardService boardService;
+
+    private static final int[][] OFFSETS = {
+            {1, 1}, {1, -1}, {-1, 1}, {-1, -1},   // single moves
+            {2, 2}, {2, -2}, {-2, 2}, {-2, -2}    // jumps
+    };
 
     public CheckersRuleset(PieceService pieceService, BoardService boardService) {
         this.pieceService = pieceService;
@@ -52,24 +58,48 @@ public class CheckersRuleset implements Ruleset {
 
     @Override
     public List<MoveScore> getAllLegalMoves(Tint color) {
-        List<MoveScore> moves = new ArrayList<>();
+        List<MoveScore> allMoves = new ArrayList<>();
+        List<MoveScore> captureMoves = new ArrayList<>();
         for (Piece p : pieceService.getPieces()) {
             if (p.getColor() != color) continue;
-
-            for(int dr = -2; dr <= 2; dr++) {
-                for(int dc = -2; dc <= 2; dc++) {
-                    int newRow = p.getRow() + dr;
-                    int newCol = p.getCol() + dc;
-                    if (isLegalMove(p, newCol, newRow)) {
-                        moves.add(new MoveScore(new Move(p, p.getCol(),
-                                p.getRow(), newCol, newRow, p.getColor(), p.getOtherPiece()),
-                                evaluateMove(new Move(p, p.getCol(),
-                                        p.getRow(), newCol, newRow,
-                                        p.getColor(), p.getOtherPiece()))));
-                    }
+            for (int[] offset : OFFSETS) {
+                int newRow = p.getRow() + offset[0];
+                int newCol = p.getCol() + offset[1];
+                if (isLegalMove(p, newCol, newRow)) {
+                    MoveScore ms = new MoveScore(new Move
+                            (p, p.getCol(), p.getRow(), newCol, newRow, p.getColor(),
+                                    p.getOtherPiece()), evaluateMove(new Move(p,
+                            p.getCol(), p.getRow(), newCol, newRow, p.getColor(),
+                            p.getOtherPiece())));
+                    if (Math.abs(offset[0]) == 2) captureMoves.add(ms);
+                    else allMoves.add(ms);
                 }
             }
         }
-        return moves;
+        return captureMoves.isEmpty() ? allMoves : captureMoves;
+    }
+
+    public void executeMove(Move move) {
+        Piece p = move.piece();
+        int dRow = move.targetRow() - p.getRow();
+        int dCol = move.targetCol() - p.getCol();
+
+        if (Math.abs(dRow) == 2 && Math.abs(dCol) == 2) {
+            int capturedRow = p.getRow() + dRow / 2;
+            int capturedCol = p.getCol() + dCol / 2;
+            Piece captured = PieceService.getPieceAt(capturedCol, capturedRow, pieceService.getPieces());
+            if (captured != null) pieceService.removePiece(captured);
+        }
+
+        p.setRow(move.targetRow());
+        p.setCol(move.targetCol());
+        p.setX(move.targetCol() * Board.getSquare());
+        p.setY(move.targetRow() * Board.getSquare());
+
+        if (p instanceof Checker c) {
+            if ((c.getColor() == Tint.LIGHT && c.getRow() == 0) || (c.getColor() == Tint.DARK && c.getRow() == 7)) {
+                c.promoteToKing();
+            }
+        }
     }
 }

@@ -252,9 +252,9 @@ public class MenuRender {
                 ? Color.WHITE : Colors.getForeground()));
         g2.drawString(header, getCenterX(getTotalWidth(), headerWidth),headerY);
 
-        int startY = headerY + render.scale(90);
+        int startY = headerY + render.scale(100);
         int lineHeight = g2.getFontMetrics().getHeight() + render.scale(10);
-        int itemsPerPage = 8;
+        int itemsPerPage = 6;
 
         int startIndex = keyUI.getCurrentPage() * itemsPerPage;
         int endIndex = Math.min(startIndex + itemsPerPage, options.length);

@@ -2,10 +2,7 @@ package org.vertex.engine.manager;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.vertex.engine.entities.King;
-import org.vertex.engine.entities.Pawn;
-import org.vertex.engine.entities.Piece;
-import org.vertex.engine.entities.Rook;
+import org.vertex.engine.entities.*;
 import org.vertex.engine.enums.GameState;
 import org.vertex.engine.enums.Tint;
 import org.vertex.engine.events.*;
@@ -84,12 +81,53 @@ public class MovesManager {
             return;
         }
 
-        Piece captured = PieceService.getPieceAt(
-                targetCol, targetRow, service.getPieceService().getPieces());
+        Piece captured = null;
+
+        if(Math.abs(targetRow - piece.getRow()) == 2 && Math.abs(targetCol - piece.getCol()) == 2) {
+            int capturedRow = (piece.getRow() + targetRow)/2;
+            int capturedCol = (piece.getCol() + targetCol)/2;
+            captured = PieceService.getPieceAt(capturedCol, capturedRow,
+                    service.getPieceService().getPieces());
+        } else {
+            captured = PieceService.getPieceAt(targetCol, targetRow, service.getPieceService().getPieces());
+        }
 
         if(captured != null) {
             service.getPieceService().removePiece(captured);
             eventBus.fire(new CaptureEvent(piece, captured));
+        }
+
+        if(piece instanceof Checker && captured != null) {
+            boolean areMoreJumpsAvailable = true;
+            while(areMoreJumpsAvailable) {
+                areMoreJumpsAvailable = false;
+                for(int dr = -2; dr <= 2; dr += 4) {
+                    for(int dc = -2; dc <= 2; dc += 4) {
+                        int newRow = piece.getRow() + dr;
+                        int newCol = piece.getCol() + dc;
+                        if(piece.canMove(newCol, newRow, service.getPieceService().getPieces())) {
+                            int capturedRow = (piece.getRow() + newRow) / 2;
+                            int capturedCol = (piece.getCol() + newCol) / 2;
+                            Piece nextCaptured = PieceService.getPieceAt(capturedCol, capturedRow,
+                                    service.getPieceService().getPieces());
+
+                            if(nextCaptured != null && nextCaptured.getColor() != piece.getColor()) {
+                                service.getPieceService().removePiece(nextCaptured);
+                                eventBus.fire(new CaptureEvent(piece, nextCaptured));
+                                PieceService.movePiece(piece, newCol, newRow);
+                                moves.add(new Move(piece,
+                                        piece.getRow() - dr,
+                                        piece.getCol() - dc,
+                                        newCol, newRow,
+                                        piece.getColor(),
+                                        nextCaptured));
+
+                                areMoreJumpsAvailable = true;
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         if(piece instanceof King) {
