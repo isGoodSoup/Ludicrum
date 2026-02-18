@@ -441,8 +441,8 @@ public class MenuRender {
         int stroke = 6, arc = 32;
         int boardX = render.getBoardRender().getBoardOriginX();
         int boardY = render.getBoardRender().getBoardOriginY();
-        int boardWidth = Board.getSquare() * boardService.getBoard().getCOL();
-        int boardHeight = Board.getSquare() * boardService.getBoard().getROW();
+        int boardWidth = Board.getSquare() * boardService.getBoard().getCol();
+        int boardHeight = Board.getSquare() * boardService.getBoard().getRow();
         int boardBottom = boardY + boardHeight;
 
         g2.setFont(GUIService.getFont(GUIService.getMENU_FONT()));

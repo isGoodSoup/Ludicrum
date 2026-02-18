@@ -81,6 +81,7 @@ public class ServiceFactory {
         this.render.getMenuRender().init();
         this.mouseInput.init();
         this.achievement.init();
+        this.board.getBoard().init();
     }
 
     public RenderContext getRender() {

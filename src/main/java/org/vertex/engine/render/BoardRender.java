@@ -59,7 +59,7 @@ public class BoardRender {
 
     public int getBoardOriginX() {
         int leftPanelWidth = render.scale(RenderContext.BASE_WIDTH/2);
-        int totalBoardWidth = Board.getSquare() * boardService.getBoard().getCOL();
+        int totalBoardWidth = Board.getSquare() * boardService.getBoard().getCol();
         int scaledBoardWidth = render.scale(totalBoardWidth);
         int middlePanelWidth =
                 render.scale(RenderContext.BASE_WIDTH - 2 * RenderContext.BASE_WIDTH/2);
@@ -68,7 +68,7 @@ public class BoardRender {
     }
 
     public int getBoardOriginY() {
-        int totalBoardHeight = Board.getSquare() * boardService.getBoard().getROW();
+        int totalBoardHeight = Board.getSquare() * boardService.getBoard().getRow();
         int scaledBoardHeight = render.scale(totalBoardHeight);
         int panelHeight = render.scale(RenderContext.BASE_HEIGHT);
         int centerOffset = (panelHeight - scaledBoardHeight) / 2;
@@ -114,8 +114,8 @@ public class BoardRender {
         g2.setColor(Colorblindness.filter(Colors.getBackground()));
         g2.fillRect(0, 0, RenderContext.BASE_WIDTH, RenderContext.BASE_HEIGHT);
 
-        final int ROW = boardService.getBoard().getROW();
-        final int COL = boardService.getBoard().getCOL();
+        final int ROW = boardService.getBoard().getRow();
+        final int COL = boardService.getBoard().getCol();
         final int SQUARE = render.scale(Board.getSquare());
         final int PADDING = render.scale(Board.getPadding());
 

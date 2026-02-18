@@ -4,6 +4,7 @@ import org.vertex.engine.animations.ToastAnimation;
 import org.vertex.engine.entities.Achievement;
 import org.vertex.engine.entities.Piece;
 import org.vertex.engine.enums.Achievements;
+import org.vertex.engine.enums.Games;
 import org.vertex.engine.enums.Tint;
 import org.vertex.engine.events.*;
 import org.vertex.engine.manager.EventBus;
@@ -70,6 +71,21 @@ public class AchievementService {
         eventBus.register(PromotionEvent.class, this::onPromotion);
         eventBus.register(HardEvent.class, this::onHardGame);
         eventBus.register(StalemateEvent.class, this::onStalemate);
+        eventBus.register(ChessMasterEvent.class, event -> {
+            long chessStartId = 1001L;
+            long chessEndId   = 1011L;
+            long unlockedChess = event.achievements().stream()
+                    .map(a -> a.getId().getId())
+                    .filter(id -> id >= chessStartId && id <= chessEndId)
+                    .count();
+            long totalChess = getSortedAchievements().stream()
+                    .map(a -> a.getId().getId())
+                    .filter(id -> id >= chessStartId && id <= chessEndId)
+                    .count();
+            if(unlockedChess >= totalChess) {
+                unlock(Achievements.MASTER_OF_NONE);
+            }
+        });
         eventBus.register(GrandmasterEvent.class, this::onGrandmaster);
     }
 
@@ -122,6 +138,7 @@ public class AchievementService {
             service.getSound().playFX(5);
             GameService.autoSave();
             saveManager.saveAchievements(getUnlockedAchievements());
+            eventBus.fire(new ChessMasterEvent(getUnlockedAchievements()));
         }
         eventBus.fire(new GrandmasterEvent(Collections
                 .unmodifiableList(getUnlockedAchievements())));
@@ -191,8 +208,13 @@ public class AchievementService {
         Piece piece = event.piece();
         moveCount.merge(piece.getID(), 1, Integer::sum);
 
-        if(moveCount.get(piece.getID()) < 5 && isQuickWin) {
+        if(GameService.getGame() == Games.CHESS && moveCount.get(piece.getID()) < 5 && isQuickWin) {
             unlock(Achievements.QUICK_WIN);
+            isQuickWin = false;
+        }
+
+        if(GameService.getGame() == Games.CHECKERS && moveCount.get(piece.getID()) < 8 && isQuickWin) {
+            unlock(Achievements.QUICK_START);
             isQuickWin = false;
         }
     }
@@ -200,13 +222,19 @@ public class AchievementService {
     private void onCapture(CaptureEvent event) {
         Piece attacker = event.piece();
         Piece captured = event.captured();
-        if(attacker.getColor() != Tint.LIGHT) { return; }
+        if(attacker.getColor() != Tint.LIGHT) return;
 
-        if (isFirstCapture) {
+        if(GameService.getGame() == Games.CHESS && isFirstCapture) {
             unlock(Achievements.FIRST_CAPTURE);
             isFirstCapture = false;
         }
+
+        if(GameService.getGame() == Games.CHECKERS && isFirstCapture) {
+            unlock(Achievements.ROUND_CAPTURE);
+            isFirstCapture = false;
+        }
     }
+
 
     private void onToggle(ToggleEvent event) {
         if(isFirstToggle) {
@@ -216,6 +244,7 @@ public class AchievementService {
     }
 
     private void onCastling(CastlingEvent event) {
+        if(GameService.getGame() != Games.CHESS) { return; }
         castlingCount++;
         if(castlingCount == 10) {
             unlock(Achievements.CASTLING_MASTER);
@@ -223,6 +252,7 @@ public class AchievementService {
     }
 
     private void onCheck(CheckEvent event) {
+        if(GameService.getGame() != Games.CHESS) { return; }
         Piece piece = event.piece();
         Piece king = event.king();
         checkCount.merge(piece.getID(), 1, Integer::sum);
@@ -235,6 +265,7 @@ public class AchievementService {
     }
 
     private void onCheckmate(CheckmateEvent event) {
+        if(GameService.getGame() != Games.CHESS) { return; }
         Piece piece = event.piece();
         winCount.merge(piece.getID(), 1, Integer::sum);
         if(isFirstWin) {
@@ -252,11 +283,13 @@ public class AchievementService {
     }
 
     private void onHardGame(HardEvent event) {
+        if(GameService.getGame() != Games.CHESS) { return; }
         Piece piece = event.piece();
         unlock(Achievements.HARD_GAME);
     }
 
     private void onPromotion(PromotionEvent event) {
+        if(GameService.getGame() != Games.CHESS) { return; }
         Piece piece = event.piece();
         promotionCount.merge(piece.getID(), 1, Integer::sum);
 
@@ -266,6 +299,7 @@ public class AchievementService {
     }
 
     private void onStalemate(StalemateEvent event) {
+        if(GameService.getGame() != Games.CHESS) { return; }
         Piece piece = event.piece();
         unlock(Achievements.ALL_PIECES);
     }

@@ -154,7 +154,7 @@ public class GUIService {
 
         int boardX = render.getBoardRender().getBoardOriginX();
         int boardY = render.getBoardRender().getBoardOriginY();
-        int boardWidth = Board.getSquare() * boardService.getBoard().getCOL();
+        int boardWidth = Board.getSquare() * boardService.getBoard().getCol();
 
         g2.setFont(getFont(MENU_FONT));
         FontMetrics fm = g2.getFontMetrics();
@@ -189,7 +189,7 @@ public class GUIService {
         int size = render.scale(Board.getSquare());
         int boardX = render.getBoardRender().getBoardOriginX();
         int boardY = render.getBoardRender().getBoardOriginY();
-        int boardWidth = Board.getSquare() * boardService.getBoard().getCOL();
+        int boardWidth = Board.getSquare() * boardService.getBoard().getCol();
 
         int padding = render.scale(PADDING + 30);
         int tickX = boardX + (boardWidth - size)/2;

@@ -38,7 +38,7 @@ public class BoardService {
         this.promotionService = promotionService;
         this.modelService = modelService;
         BoardService.movesManager = movesManager;
-        boardState = new Piece[board.getROW()][board.getCOL()];
+        boardState = new Piece[board.getRow()][board.getCol()];
         this.columns = new HashMap<>();
         precomputeSquares();
     }
@@ -72,8 +72,8 @@ public class BoardService {
     }
 
     private void precomputeSquares() {
-        int rows = board.getROW();
-        int cols = board.getCOL();
+        int rows = board.getRow();
+        int cols = board.getCol();
         squares = new String[rows][cols];
 
         for(int r = 0; r < rows; r++) {
@@ -87,7 +87,7 @@ public class BoardService {
 
     public void restoreSprites(Save save, GUIService guiService) {
         List<Piece> loadedPieces = save.pieces();
-        Piece[][] boardArray = new Piece[board.getROW()][board.getCOL()];
+        Piece[][] boardArray = new Piece[board.getRow()][board.getCol()];
         for(Piece p : loadedPieces) {
             if(p == null) continue;
             int col = p.getCol();
@@ -105,7 +105,7 @@ public class BoardService {
     }
 
     private void clearBoardState() {
-        boardState = new Piece[board.getROW()][board.getCOL()];
+        boardState = new Piece[board.getRow()][board.getCol()];
         pieceService.getPieces().clear();
     }
 
@@ -114,7 +114,7 @@ public class BoardService {
     }
 
     public String getSquareNameAt(int col, int row) {
-        int rankIndex = board.getROW() - 1 - row;
+        int rankIndex = board.getRow() - 1 - row;
         char fileChar = (char) ('a' + col);
         return "" + fileChar + (rankIndex + 1);
     }

@@ -66,7 +66,7 @@ public class MovesRender {
         int stroke = 4;
         int boardX = render.getBoardRender().getBoardOriginX();
         int boardY = render.getBoardRender().getBoardOriginY();
-        int boardSize = Board.getSquare() * boardService.getBoard().getCOL();
+        int boardSize = Board.getSquare() * boardService.getBoard().getCol();
         int arcWidth = 32;
         int arcHeight = 32;
         boolean hasBackground = true;

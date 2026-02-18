@@ -1,5 +1,6 @@
 package org.vertex.engine.enums;
 
+import org.vertex.engine.entities.Board;
 import org.vertex.engine.service.GameService;
 
 public enum Games {
@@ -18,8 +19,8 @@ public enum Games {
         }
 
         @Override
-        public int getBoardSize() {
-            return 8;
+        public int getBoardSize(Board board) {
+            return board.getGrids().get(GameService.getGame());
         }
 
         @Override
@@ -42,8 +43,31 @@ public enum Games {
         }
 
         @Override
-        public int getBoardSize() {
-            return 8;
+        public int getBoardSize(Board board) {
+            return board.getGrids().get(GameService.getGame());
+        }
+
+        @Override
+        public boolean isEnabled() {
+            return true;
+        }
+    },
+    SHOGI("SHOGI", "shogi_", "Japanese chess on a 9×9 board where " +
+            "captured pieces can rejoin the game under your control."){
+        @Override
+        public void setup(GameService gameService) {
+            GameService.setGame(this);
+            GameService.setState(GameState.BOARD);
+            if(!gameService.getSaveManager().autosaveExists()) {
+                gameService.startNewGame();
+            } else {
+                gameService.continueGame();
+            }
+        }
+
+        @Override
+        public int getBoardSize(Board board) {
+            return board.getGrids().get(GameService.getGame());
         }
 
         @Override
@@ -76,7 +100,7 @@ public enum Games {
 
     public abstract boolean isEnabled();
 
-    public abstract int getBoardSize();
+    public abstract int getBoardSize(Board board);
 
     public abstract void setup(GameService gameService);
 }

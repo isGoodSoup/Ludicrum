@@ -23,7 +23,7 @@ public enum Console {
             int col, row;
             try {
                 col = Character.toUpperCase(square.charAt(0)) - 'A';
-                row = service.getBoardService().getBoard().getROW() - Integer.parseInt(square.substring(1));
+                row = service.getBoardService().getBoard().getRow() - Integer.parseInt(square.substring(1));
             } catch (NumberFormatException e) {
                 log.warn("Column and row must be integers.");
                 return;
@@ -79,7 +79,7 @@ public enum Console {
             int col, row;
             try {
                 col = Character.toUpperCase(square.charAt(0)) - 'A';
-                row = service.getBoardService().getBoard().getROW() - Integer.parseInt(square.substring(1));
+                row = service.getBoardService().getBoard().getRow() - Integer.parseInt(square.substring(1));
             } catch (NumberFormatException e) {
                 log.error("Column and row must be integers.");
                 return;
