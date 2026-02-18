@@ -9,5 +9,8 @@
         <module name="Vertex" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="VertexUpgrade" target="21" />
+    </bytecodeTargetLevel>
   </component>
 </project>

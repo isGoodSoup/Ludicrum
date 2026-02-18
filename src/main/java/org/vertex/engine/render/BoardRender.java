@@ -98,10 +98,9 @@ public class BoardRender {
         Piece selectedPiece = pieceService.getMoveManager() != null
                 ? pieceService.getMoveManager().getSelectedPiece() : null;
 
-        for (Piece p : pieceService.getPieces()) {
-            if (p != currentPiece) {
-                BufferedImage img = p.getSprite();
-                drawPiece(g2, p, Colorblindness.filter(img));
+        synchronized (pieceService.getPieces()) {
+            for (Piece p : pieceService.getPieces()) {
+                drawPiece(g2, p, Colorblindness.filter(p.getSprite()));
             }
         }
 

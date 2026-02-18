@@ -55,7 +55,7 @@ public class AchievementSprites {
         }
 
         if (!achievement.isUnlocked()) {
-            sprite = AchievementLock.filter(sprite);
+            sprite = AchievementLock.filter(sprite, achievement.isUnlocked());
         }
         return sprite;
     }

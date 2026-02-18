@@ -127,11 +127,7 @@ public class MovesManager {
             service.getPieceService().switchTurns();
         }
 
-        new Timer(BooleanService.getRandom(1500, 3000),
-                e -> service.getModelService().triggerAIMove()) {{
-            setRepeats(false);
-            start();
-        }};
+        service.getModelService().triggerAIMove();
 
         if(isCheckmate()) {
             eventBus.fire(new CheckmateEvent(piece,

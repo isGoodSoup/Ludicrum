@@ -1,7 +1,5 @@
 package org.vertex.engine.render;
 
-import org.vertex.engine.service.BooleanService;
-
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
@@ -35,7 +33,7 @@ public class AchievementLock {
         return filtered;
     }
 
-    public static BufferedImage filter(BufferedImage img) {
-        return BooleanService.isAchievementLocked ? apply(img) : img;
+    public static BufferedImage filter(BufferedImage img, boolean isUnlocked) {
+        return isUnlocked ? apply(img) : img;
     }
 }

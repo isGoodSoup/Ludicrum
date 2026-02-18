@@ -18,7 +18,6 @@ public class BooleanService {
     public static boolean isDarkMode;
     public static boolean isFullscreen;
     public static boolean isExitActive;
-    public static boolean isAchievementLocked;
     public static boolean isMovesActive;
     public static boolean canType;
     public static boolean canPlayFX;

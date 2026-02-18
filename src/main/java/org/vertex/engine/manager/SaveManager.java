@@ -102,7 +102,6 @@ public class SaveManager {
 
     public List<Achievement> loadAchievements() {
         if (!Files.exists(achievementsPath)) {
-            log.debug("No achievements file found, returning empty list.");
             return new ArrayList<>();
         }
         try(FileReader reader = new FileReader(achievementsPath.toFile())) {

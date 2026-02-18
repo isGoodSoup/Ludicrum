@@ -333,7 +333,8 @@ public class MenuRender {
         g2.setFont(GUIService.getFont(GUIService.getMENU_FONT()));
         g2.setColor(Colorblindness.filter(Colors.getTheme() == Theme.DEFAULT
                 ? Color.WHITE : Colors.getForeground()));
-        g2.drawString(text, getCenterX(getTotalWidth(), headerWidth), headerY);
+        g2.drawString(text, getCenterX(getTotalWidth() - 150, headerWidth),
+                headerY);
 
         int spacing = 25;
         int startY = headerY + spacing * 2;
@@ -373,11 +374,9 @@ public class MenuRender {
                 g2.drawString(a.getId().getTitle(), textX, titleY);
             }
 
-            BooleanService.isAchievementLocked = true;
             img = AchievementSprites.getSprite(a);
-
             if (img != null && !a.isUnlocked()) {
-                img = AchievementLock.filter(img);
+                img = AchievementLock.filter(img, a.isUnlocked());
             }
 
             if (img != null) {
