@@ -103,13 +103,13 @@ public class BoardPanel extends JPanel implements Runnable {
             case CHECKMATE -> service.getRender().getMenuRender().drawCheckmate(g2);
             case STALEMATE -> service.getRender().getMenuRender().drawCheckmate(g2);
         }
-        render(g2);
+        renderAnimations(g2);
         if(BooleanService.canToggleHelp) {
             renderControls(g2);
         }
     }
 
-    private void render(Graphics2D g2) {
+    private void renderAnimations(Graphics2D g2) {
         service.getAnimationService().render(g2);
     }
 
