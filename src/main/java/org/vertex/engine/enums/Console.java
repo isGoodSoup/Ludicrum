@@ -41,8 +41,12 @@ public enum Console {
 
             Piece createdPiece = switch(pieceStr) {
                 case "PAWN" -> new Pawn(tone, col, row);
+                case "TOKIN" -> new Tokin(tone, col, row);
                 case "BISHOP" -> new Bishop(tone, col, row);
                 case "KNIGHT" -> new Knight(tone, col, row);
+                case "LANCE" -> new Lance(tone, col, row);
+                case "SILVER" -> new Silver(tone, col, row);
+                case "GOLD" -> new Gold(tone, col, row);
                 case "ROOK" -> new Rook(tone, col, row);
                 case "QUEEN" -> new Queen(tone, col, row);
                 case "KING" -> new King(service.getPieceService(), tone, col, row);
