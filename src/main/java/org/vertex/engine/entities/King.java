@@ -10,18 +10,10 @@ import java.util.List;
 
 public class King extends Piece {
 	private transient PieceService pieceService;
-	private transient GameService gameService;
 
-	public King(PieceService pieceService, GameService gameService,
-				Tint color, int col, int row) {
+	public King(PieceService pieceService, Tint color, int col, int row) {
 		super(color, col, row);
 		this.pieceService = pieceService;
-		this.gameService = gameService;
-		this.typeID = TypeID.KING;
-	}
-
-	public King(Tint color, int col, int row) {
-		super(color, col, row);
 		this.typeID = TypeID.KING;
 	}
 
@@ -33,17 +25,9 @@ public class King extends Piece {
 		this.pieceService = pieceService;
 	}
 
-	public GameService getGameService() {
-		return gameService;
-	}
-
-	public void setGameService(GameService gameService) {
-		this.gameService = gameService;
-	}
-
 	@Override
 	public boolean canMove(int targetCol, int targetRow, List<Piece> board) {
-		switch(gameService.getGame()) {
+		switch(GameService.getGames()) {
 			case CHESS -> {
 				if(!isWithinBoard(targetCol, targetRow)) { return false; }
 				int colDiff = Math.abs(targetCol - getCol());
@@ -99,8 +83,7 @@ public class King extends Piece {
 
 	@Override
 	public Piece copy() {
-		King p = new King(pieceService, gameService,
-				getColor(), getCol(), getRow());
+		King p = new King(this.pieceService, getColor(), getCol(), getRow());
 		p.setHasMoved(hasMoved());
 		return p;
 	}
