@@ -207,6 +207,7 @@ public class KeyboardInput {
 
         if(keyboard.isEscapeDown()) {
             service.getGameService().setState(GameState.MENU);
+            service.getGameService().autoSave();
             selectedIndexY = 0;
             service.getSound().playFX(2);
         }
