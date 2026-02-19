@@ -2,10 +2,12 @@ package org.vertex.engine.render;
 
 import org.vertex.engine.entities.Achievement;
 import org.vertex.engine.entities.Board;
+import org.vertex.engine.entities.Piece;
 import org.vertex.engine.enums.*;
 import org.vertex.engine.gui.Colors;
 import org.vertex.engine.input.Keyboard;
 import org.vertex.engine.input.KeyboardInput;
+import org.vertex.engine.input.Mouse;
 import org.vertex.engine.manager.MovesManager;
 import org.vertex.engine.service.*;
 
@@ -48,6 +50,8 @@ public class MenuRender {
     private KeyboardInput keyUI;
     private AnimationService animationService;
     private AchievementService achievementService;
+    private PieceService pieceService;
+    private Mouse mouse;
     private AchievementSprites sprites;
 
     public MenuRender(RenderContext render) {
@@ -164,6 +168,22 @@ public class MenuRender {
 
     public void setAchievementService(AchievementService achievementService) {
         this.achievementService = achievementService;
+    }
+
+    public Mouse getMouse() {
+        return mouse;
+    }
+
+    public void setMouse(Mouse mouse) {
+        this.mouse = mouse;
+    }
+
+    public PieceService getPieceService() {
+        return pieceService;
+    }
+
+    public void setPieceService(PieceService pieceService) {
+        this.pieceService = pieceService;
     }
 
     private void drawButton(Graphics2D g2, int x, int y,
@@ -503,17 +523,35 @@ public class MenuRender {
         g2.drawString(text, getCenterX(getTotalWidth(), headerWidth),headerY);
     }
 
-    public BufferedImage getSprite(int i) {
-        return switch (i) {
-            case 0 -> DARK_MODE_ON;
-            case 1 -> DARK_MODE_ON_HIGHLIGHTED;
-            case 2 -> TOGGLE_ON;
-            case 3 -> TOGGLE_OFF;
-            case 4 -> TOGGLE_ON_HIGHLIGHTED;
-            case 5 -> TOGGLE_OFF_HIGHLIGHTED;
-            case 6 -> HARD_MODE_ON;
-            case 7 -> HARD_MODE_ON_HIGHLIGHTED;
-            default -> null;
-        };
+    public void showTooltip(Graphics2D g2) {
+        Piece p = pieceService.getHoveredPiece();
+
+        final int COL = boardService.getBoard().getCol();
+        final int SQUARE = render.scale(Board.getSquare());
+
+        int boardSize = SQUARE * COL;
+        int boardX = (RenderContext.BASE_WIDTH - boardSize)/2;
+        int boardY = (RenderContext.BASE_HEIGHT - boardSize)/2;
+        int mouseBoardX = render.unscaleX(mouse.getX()) - boardX;
+        int mouseBoardY = render.unscaleY(mouse.getY()) - boardY;
+        int mouseCol = mouseBoardX/Board.getSquare();
+        int mouseRow = mouseBoardY/Board.getSquare();
+
+        Piece hovered = PieceService.getPieceAt(mouseCol, mouseRow, pieceService.getPieces());
+        pieceService.setHoveredPiece(hovered);
+
+        if(p != null) {
+            if(mouseCol == p.getCol() && mouseRow == p.getRow()) {
+                TypeID id = p.getTypeID();
+                g2.setFont(GUIService.getFont(24));
+                int textWidth = g2.getFontMetrics().stringWidth(id.name());
+                int textHeight = g2.getFontMetrics().getHeight();
+                GUIService.drawBox(g2, 4, mouse.getX(), mouse.getY(),
+                        textWidth + 15, textHeight + 5, ARC/4, ARC/4,
+                        true, false, 180);
+                g2.setColor(Colorblindness.filter(Color.WHITE));
+                g2.drawString(id.name(), mouse.getX() + 5, mouse.getY() + 25);
+            }
+        }
     }
 }

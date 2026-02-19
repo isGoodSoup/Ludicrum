@@ -23,6 +23,7 @@ public class PieceService {
     private final List<Piece> pieces;
     private Piece checkingPiece;
     private Piece hoveredPieceKeyboard;
+    private Piece hoveredPiece;
     private int dragOffsetX;
     private int dragOffsetY;
     private int hoveredSquareX = -1;
@@ -72,6 +73,14 @@ public class PieceService {
 
     public void setHeldPiece(Piece piece) {
         movesManager.setSelectedPiece(piece);
+    }
+
+    public Piece getHoveredPiece() {
+        return hoveredPiece;
+    }
+
+    public void setHoveredPiece(Piece hoveredPiece) {
+        this.hoveredPiece = hoveredPiece;
     }
 
     public Piece getHoveredPieceKeyboard() {

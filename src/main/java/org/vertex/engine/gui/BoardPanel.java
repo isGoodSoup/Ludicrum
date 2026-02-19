@@ -95,6 +95,7 @@ public class BoardPanel extends JPanel implements Runnable {
                 if(BooleanService.canDoSandbox) {
                     service.getRender().getMenuRender().drawSandboxMenu(g2);
                 }
+                renderTooltip(g2);
             }
             case RULES -> service.getRender().getMenuRender()
                     .drawOptionsMenu(g2, MenuRender.SETTINGS_MENU);
@@ -108,12 +109,16 @@ public class BoardPanel extends JPanel implements Runnable {
         }
     }
 
-    public void renderControls(Graphics2D g2) {
-        service.getRender().getControlsRender().drawControlsHUD(g2);
+    private void render(Graphics2D g2) {
+        service.getAnimationService().render(g2);
     }
 
-    public void render(Graphics2D g2) throws InterruptedException {
-        service.getAnimationService().render(g2);
+    private void renderTooltip(Graphics2D g2) {
+        service.getRender().getMenuRender().showTooltip(g2);
+    }
+
+    private void renderControls(Graphics2D g2) {
+        service.getRender().getControlsRender().drawControlsHUD(g2);
     }
 
     private void update() {

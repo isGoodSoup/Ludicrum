@@ -41,11 +41,7 @@ public class Pawn extends Piece {
 			}
             case SHOGI -> {
 				if(targetCol == getCol() && targetRow == getRow() + direction) {
-					return pieceAtTarget == null;
-				}
-				if(targetCol == getCol() && targetRow == getRow()
-						&& !hasMoved() && isPathClear(this, targetCol, targetRow, board)) {
-					return pieceAtTarget == null;
+					return pieceAtTarget == null || pieceAtTarget.getColor() != getColor();
 				}
 			}
         }
