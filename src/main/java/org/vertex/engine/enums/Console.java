@@ -49,7 +49,7 @@ public enum Console {
                 case "GOLD" -> new Gold(tone, col, row);
                 case "ROOK" -> new Rook(tone, col, row);
                 case "QUEEN" -> new Queen(tone, col, row);
-                case "KING" -> new King(service.getPieceService(), tone, col, row);
+                case "KING" -> new King(tone, col, row);
                 default -> null;
             };
 

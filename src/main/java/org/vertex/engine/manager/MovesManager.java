@@ -71,6 +71,20 @@ public class MovesManager {
             }
         }
 
+        if (piece instanceof King) {
+            int colDiff = targetCol - piece.getCol();
+            if (Math.abs(colDiff) > 1) {
+                int step = (colDiff > 0) ? 1 : -1;
+                for (int c = piece.getCol(); c != targetCol + step; c += step) {
+                    if (service.getPieceService()
+                            .wouldLeaveKingInCheck(piece, c, piece.getRow())) {
+                        PieceService.updatePos(piece);
+                        return;
+                    }
+                }
+            }
+        }
+
         BooleanService.isLegal = piece.canMove(targetCol, targetRow,
                 service.getPieceService().getPieces())
                 && !service.getPieceService().wouldLeaveKingInCheck(
@@ -134,7 +148,8 @@ public class MovesManager {
             executeCastling(piece, targetCol);
         }
 
-        if (piece instanceof Pawn && isEnPassantMove(piece, targetCol, targetRow, service.getPieceService().getPieces())) {
+        if (piece instanceof Pawn && isEnPassantMove(piece, targetCol,
+                targetRow, service.getPieceService().getPieces())) {
             executeEnPassant(piece, captured, targetCol, targetRow);
         } else {
             moves.add(new Move(
@@ -193,8 +208,8 @@ public class MovesManager {
             boolean hasEscapeMoves = false;
             for(Piece piece : service.getPieceService().getPieces()) {
                 if(piece.getColor() == service.getGameService().getCurrentTurn()) {
-                    for(int col = 0; col < 8; col++) {
-                        for(int row = 0; row < 8; row++) {
+                    for(int col = 0; col < service.getBoardService().getBoard().getCol(); col++) {
+                        for(int row = 0; row < service.getBoardService().getBoard().getRow(); row++) {
                             if(piece.canMove(col, row, service.getPieceService().getPieces()) &&
                                     !service.getPieceService().wouldLeaveKingInCheck(piece, col, row)) {
                                 hasEscapeMoves = true;
@@ -250,15 +265,6 @@ public class MovesManager {
             int step = (colDiff > 0) ? 1 : -1;
             int rookStartCol = (colDiff > 0) ? 7 : 0;
             int rookTargetCol = (colDiff > 0) ? 5 : 3;
-
-            if(service.getPieceService().isKingInCheck(currentPiece.getColor()) ||
-                    service.getPieceService().wouldLeaveKingInCheck(currentPiece,
-                            currentPiece.getCol() + step,
-                            currentPiece.getRow())) {
-                PieceService.updatePos(currentPiece);
-                currentPiece = null;
-                return;
-            }
 
             boolean pathClear = true;
             for(int c = currentPiece.getCol() + step; c != rookStartCol; c += step) {
@@ -372,13 +378,5 @@ public class MovesManager {
             PieceService.updatePos(captured);
         }
         service.getPieceService().switchTurns();
-    }
-
-    private List<Piece> getSelectablePieces() {
-        return service.getPieceService()
-                .getPieces()
-                .stream()
-                .filter(p -> p.getColor() ==  service.getGameService().getCurrentTurn())
-                .toList();
     }
 }

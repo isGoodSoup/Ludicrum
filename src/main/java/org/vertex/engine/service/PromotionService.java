@@ -180,8 +180,7 @@ public class PromotionService {
             }
         }
         if(p instanceof Checker) {
-            promotedPiece = new King(pieceService, p.getColor(),
-                    p.getRow(), p.getCol());
+            promotedPiece = new King(p.getColor(), p.getRow(), p.getCol());
         }
         if(GameService.getGames() == Games.SHOGI) {
             if(p instanceof Lance || p instanceof Silver || p instanceof Knight ) {

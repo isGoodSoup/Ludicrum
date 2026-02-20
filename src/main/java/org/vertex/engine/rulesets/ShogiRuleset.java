@@ -99,7 +99,7 @@ public class ShogiRuleset implements Ruleset {
             return p;
         }
         if(p instanceof Pawn) return new Queen(p.getColor(), p.getRow(), p.getCol());
-        if(p instanceof Checker) return new King(pieceService, p.getColor(), p.getRow(), p.getCol());
+        if(p instanceof Checker) return new King(p.getColor(), p.getRow(), p.getCol());
         return p;
     }
 

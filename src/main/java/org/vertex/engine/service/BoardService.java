@@ -223,8 +223,8 @@ public class BoardService {
                 pieces.add(wQ);
                 pieces.add(bQ);
 
-                King wK = new King(pieceService, Tint.LIGHT, 4, 7);
-                King bK = new King(pieceService, Tint.DARK, 4, 0);
+                King wK = new King(Tint.LIGHT, 4, 7);
+                King bK = new King(Tint.DARK, 4, 0);
                 pieces.add(wK);
                 pieces.add(bK);
 
@@ -288,7 +288,7 @@ public class BoardService {
                         new Knight(Tint.LIGHT, 1, 8),
                         new Silver(Tint.LIGHT, 2, 8),
                         new Gold(Tint.LIGHT, 3, 8),
-                        new King(pieceService, Tint.LIGHT, 4, 8),
+                        new King(Tint.LIGHT, 4, 8),
                         new Gold(Tint.LIGHT, 5, 8),
                         new Silver(Tint.LIGHT, 6, 8),
                         new Knight(Tint.LIGHT, 7, 8),
@@ -303,7 +303,7 @@ public class BoardService {
                         new Knight(Tint.DARK, 1, 0),
                         new Silver(Tint.DARK, 2, 0),
                         new Gold(Tint.DARK, 3, 0),
-                        new King(pieceService, Tint.DARK, 4, 0),
+                        new King(Tint.DARK, 4, 0),
                         new Gold(Tint.DARK, 5, 0),
                         new Silver(Tint.DARK, 6, 0),
                         new Knight(Tint.DARK, 7, 0),
@@ -360,8 +360,8 @@ public class BoardService {
                         pieces.add(pieceService.getRandomPiece(Tint.DARK, col, 0));
                     }
                 }
-                pieces.add(new King(pieceService, Tint.LIGHT, 4, 7));
-                pieces.add(new King(pieceService, Tint.DARK, 4, 0));
+                pieces.add(new King(Tint.LIGHT, 4, 7));
+                pieces.add(new King(Tint.DARK, 4, 0));
             }
             case CHECKERS -> {}
             case SHOGI -> {}
