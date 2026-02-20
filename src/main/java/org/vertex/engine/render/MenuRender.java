@@ -34,8 +34,6 @@ public class MenuRender {
     private transient BufferedImage TOGGLE_OFF;
     private transient BufferedImage TOGGLE_ON_HIGHLIGHTED;
     private transient BufferedImage TOGGLE_OFF_HIGHLIGHTED;
-    private transient BufferedImage DARK_MODE_ON;
-    private transient BufferedImage DARK_MODE_ON_HIGHLIGHTED;
     private transient BufferedImage HARD_MODE_ON;
     private transient BufferedImage HARD_MODE_ON_HIGHLIGHTED;
     private static ColorblindType cb;
@@ -68,8 +66,6 @@ public class MenuRender {
             TOGGLE_OFF = UIService.getImage("/ui/toggle_off");
             TOGGLE_ON_HIGHLIGHTED = UIService.getImage("/ui/toggle_onh");
             TOGGLE_OFF_HIGHLIGHTED = UIService.getImage("/ui/toggle_offh");
-            DARK_MODE_ON = UIService.getImage("/ui/dark-mode_on");
-            DARK_MODE_ON_HIGHLIGHTED = UIService.getImage("/ui/dark-mode_onh");
             HARD_MODE_ON = UIService.getImage("/ui/hardmode_on");
             HARD_MODE_ON_HIGHLIGHTED = UIService.getImage("/ui/hardmode_onh");
 
@@ -80,11 +76,8 @@ public class MenuRender {
         TOGGLE_OFF = Colorblindness.filter(TOGGLE_OFF);
         TOGGLE_ON_HIGHLIGHTED = Colorblindness.filter(TOGGLE_ON_HIGHLIGHTED);
         TOGGLE_OFF_HIGHLIGHTED = Colorblindness.filter(TOGGLE_OFF_HIGHLIGHTED);
-        DARK_MODE_ON = Colorblindness.filter(DARK_MODE_ON);
-        DARK_MODE_ON_HIGHLIGHTED = Colorblindness.filter(DARK_MODE_ON_HIGHLIGHTED);
         HARD_MODE_ON = Colorblindness.filter(HARD_MODE_ON);
-        HARD_MODE_ON_HIGHLIGHTED =
-                Colorblindness.filter(HARD_MODE_ON_HIGHLIGHTED);
+        HARD_MODE_ON_HIGHLIGHTED = Colorblindness.filter(HARD_MODE_ON_HIGHLIGHTED);
     }
 
     public KeyboardInput getKeyUI() {
@@ -157,7 +150,7 @@ public class MenuRender {
     }
 
     private int getCenterY(int totalHeight, int objectHeight) {
-        return render.getOffsetY() + (totalHeight - objectHeight) / 2;
+        return render.getOffsetY() + (totalHeight - objectHeight)/2;
     }
 
     public int getTotalWidth() {
@@ -207,19 +200,18 @@ public class MenuRender {
         int logoHeight = 0;
         img = Colorblindness.filter(img);
         int boardWidth = Board.getSquare() * 8;
-        logoWidth = (int) (UIService.getLogo().getWidth()/SCALE);
-        logoHeight = (int) (UIService.getLogo().getHeight()/SCALE);
+        logoWidth = UIService.getLogo().getWidth() * 2;
+        logoHeight = UIService.getLogo().getHeight() * 2;
         int boardCenterX = render.getOffsetX() + render.scale(
                 RenderContext.BASE_WIDTH) * 2 + boardWidth/2;
         int x = getCenterX(containerWidth, logoWidth);
-        int y =
-                render.getOffsetY() + render.scale(RenderContext.BASE_HEIGHT)/4;
+        int y = render.getOffsetY() + render.scale(RenderContext.BASE_HEIGHT)/3;
         g2.drawImage(img, x, y, logoWidth, logoHeight, null);
     }
 
     public void drawGraphics(Graphics2D g2, GameMenu[] options) {
         g2.setColor(Colorblindness.filter(Colors.getBackground()));
-        g2.fillRect(0, 0, getTotalWidth(), render.scale(RenderContext.BASE_HEIGHT));
+        g2.fillRect(0, 0, totalWidth, render.scale(RenderContext.BASE_HEIGHT));
 
         Font baseFont = UIService.getFont(UIService.getMENU_FONT());
         Font selectedFont = UIService.getFontBold(UIService.getMENU_FONT());
@@ -228,19 +220,30 @@ public class MenuRender {
 
         int centerY = 800;
         int spacing = render.scale(UIService.getMENU_SPACING());
-        int centerX = render.getOffsetX() + getTotalWidth() / 2;
-        int totalWidth = 0;
+        int centerX = render.getOffsetX() + totalWidth/2;
 
-        for(int i = 0; i < options.length; i++) {
-            String text = options[i].getLabel();
-            if(text.equals(GameMenu.PLAY.getLabel())) { text += GameService.getGame().getLabel(); }
-            boolean isSelected = i == keyUI.getSelectedIndexY();
-            g2.setFont(isSelected ? selectedFont : baseFont);
-            FontMetrics metrics = g2.getFontMetrics();
-            totalWidth += metrics.stringWidth(text);
-            if(i < options.length - 1) {
-                totalWidth += spacing;
+        int paddingX = 25;
+        int paddingY = 25;
+        int totalWidth = 0;
+        int[] buttonWidths = new int[options.length];
+        FontMetrics[] metricsArray = new FontMetrics[options.length];
+
+        for (int i = 0; i < options.length; i++) {
+            GameMenu op = options[i];
+            String option = op.getLabel();
+            if (op == GameMenu.PLAY) {
+                option += GameService.getGame().getLabel();
             }
+
+            boolean isSelected = i == keyUI.getSelectedIndexY();
+            Font font = isSelected ? selectedFont : baseFont;
+            g2.setFont(font);
+            FontMetrics metrics = g2.getFontMetrics();
+            metricsArray[i] = metrics;
+            int buttonWidth = metrics.stringWidth(option) + paddingX;
+            buttonWidths[i] = buttonWidth;
+            totalWidth += buttonWidth;
+            if (i < options.length - 1) totalWidth += spacing;
         }
 
         int startX = centerX - totalWidth/2;
@@ -250,44 +253,45 @@ public class MenuRender {
         Rectangle hoveredHitbox = null;
         String tooltip = "";
 
-        for(int i = 0; i < options.length; i++) {
+        for (int i = 0; i < options.length; i++) {
             GameMenu op = options[i];
             String option = op.getLabel();
-            if(op == GameMenu.PLAY) { option += GameService.getGame().getLabel(); }
+            if (op == GameMenu.PLAY) option += GameService.getGame().getLabel();
             boolean isSelected = i == keyUI.getSelectedIndexY();
-            g2.setFont(isSelected ? selectedFont : baseFont);
-            FontMetrics metrics = g2.getFontMetrics();
+            Font font = isSelected ? selectedFont : baseFont;
+            g2.setFont(font);
+
+            FontMetrics metrics = metricsArray[i];
             int textWidth = metrics.stringWidth(option);
             int textHeight = metrics.getHeight();
             int ascent = metrics.getAscent();
-            int paddingX = 25;
-            int paddingY = 25;
-            int buttonWidth = textWidth + paddingX;
+            int buttonWidth = buttonWidths[i];
             int buttonHeight = textHeight + paddingY;
-            Color textColor = isSelected ?
-                    Colorblindness.filter(Colors.getHighlight())
+
+            Color textColor = isSelected
+                    ? Colorblindness.filter(Colors.getHighlight())
                     : Colorblindness.filter(Colors.getBackground());
 
-            Rectangle hitbox = new Rectangle(currentX - 2, centerY,
-                    buttonWidth, buttonHeight);
+            Rectangle hitbox = new Rectangle(currentX - 2,
+                    centerY, buttonWidth, buttonHeight);
 
             uiService.drawButton(g2, currentX - 2, centerY,
                     buttonWidth, buttonHeight, ARC, isSelected);
 
-            int textX = currentX + (buttonWidth - textWidth) / 2;
-            int textY = centerY + (buttonHeight - textHeight) / 2 + ascent;
+            int textX = currentX + (buttonWidth - textWidth)/2;
+            int textY = centerY + (buttonHeight - textHeight)/2 + ascent;
             g2.setColor(textColor);
             g2.drawString(option, textX, textY);
 
-            if(hitbox.contains(mouse.getX(), mouse.getY())) {
+            if (hitbox.contains(mouse.getX(), mouse.getY())) {
                 hoveredOption = op;
                 hoveredHitbox = hitbox;
             }
             currentX += buttonWidth + spacing;
         }
 
-        if(hoveredOption != null) {
-            if(hoveredOption == GameMenu.PLAY) {
+        if (hoveredOption != null) {
+            if (hoveredOption == GameMenu.PLAY) {
                 tooltip = gameService.getTooltip(GameService.getGame(),
                         gameService.getSaveManager().autosaveExists());
             } else {
@@ -299,7 +303,7 @@ public class MenuRender {
 
     public void drawOptionsMenu(Graphics2D g2, GameSettings[] options) {
         g2.setColor(Colorblindness.filter(Colors.getBackground()));
-        g2.fillRect(0, 0, getTotalWidth(), render.scale(RenderContext.BASE_HEIGHT));
+        g2.fillRect(0, 0, totalWidth, render.scale(RenderContext.BASE_HEIGHT));
 
         int x = 32, y = 32;
 
@@ -315,7 +319,7 @@ public class MenuRender {
         int headerWidth = g2.getFontMetrics().stringWidth(header);
         g2.setColor(Colorblindness.filter(Colors.getTheme() == Theme.DEFAULT
                 ? Color.WHITE : Colors.getForeground()));
-        g2.drawString(header, getCenterX(getTotalWidth(), headerWidth),headerY);
+        g2.drawString(header, getCenterX(totalWidth, headerWidth),headerY);
 
         int startY = headerY + render.scale(100);
         int lineHeight = g2.getFontMetrics().getHeight() + render.scale(10);
@@ -347,7 +351,7 @@ public class MenuRender {
             int toggleWidth = render.scale(TOGGLE_ON.getWidth()/2);
             int toggleHeight = render.scale(TOGGLE_ON.getHeight()/2);
 
-            int blockX = getCenterX(getTotalWidth(), maxRowWidth);
+            int blockX = getCenterX(totalWidth, maxRowWidth);
             int textX = blockX;
             int toggleX = blockX + maxRowWidth - toggleWidth;
             int toggleY = startY - toggleHeight;
@@ -358,11 +362,7 @@ public class MenuRender {
                     render.getOffsetY() + startY);
 
             BufferedImage toggleImage;
-            if(options[i] == GameSettings.DARK_MODE) {
-                toggleImage = isEnabled
-                        ? (isSelected ? DARK_MODE_ON_HIGHLIGHTED : DARK_MODE_ON)
-                        : (isSelected ? TOGGLE_OFF_HIGHLIGHTED : TOGGLE_OFF);
-            } else if(options[i] == GameSettings.HARD_MODE) {
+            if(options[i] == GameSettings.HARD_MODE) {
                 toggleImage = isEnabled
                         ? (isSelected ? HARD_MODE_ON_HIGHLIGHTED : HARD_MODE_ON)
                         : (isSelected ? TOGGLE_OFF_HIGHLIGHTED : TOGGLE_OFF);
@@ -380,7 +380,7 @@ public class MenuRender {
 
     public void drawAchievementsMenu(Graphics2D g2) {
         g2.setColor(Colorblindness.filter(Colors.getBackground()));
-        g2.fillRect(0, 0, getTotalWidth(), render.scale(RenderContext.BASE_HEIGHT));
+        g2.fillRect(0, 0, totalWidth, render.scale(RenderContext.BASE_HEIGHT));
 
         List<Achievement> list = achievementService.init();
         int x = 32, y = 32;
@@ -396,14 +396,14 @@ public class MenuRender {
         g2.setFont(UIService.getFont(UIService.getMENU_FONT()));
         g2.setColor(Colorblindness.filter(Colors.getTheme() == Theme.DEFAULT
                 ? Color.WHITE : Colors.getForeground()));
-        g2.drawString(text, getCenterX(getTotalWidth() - 150, headerWidth),
+        g2.drawString(text, getCenterX(totalWidth - 150, headerWidth),
                 headerY);
 
         int spacing = 25;
         int startY = headerY + spacing * 2;
         int width = RenderContext.BASE_WIDTH/2;
         int height = 100;
-        x = getCenterX(getTotalWidth(), width);
+        x = getCenterX(totalWidth, width);
         boolean hasBackground = true;
 
         int itemsPerPage = KeyboardInput.getITEMS_PER_PAGE();
@@ -445,7 +445,7 @@ public class MenuRender {
             if(img != null) {
                 int iconSize = render.scale(64);
                 int iconX = x + render.scale(20);
-                int iconY = startY + (height - iconSize) / 2;
+                int iconY = startY + (height - iconSize)/2;
 
                 g2.drawImage(img,
                         iconX,
@@ -460,7 +460,7 @@ public class MenuRender {
         if(BooleanService.canZoomIn) {
             int zoomWidth  = render.scale(RenderContext.BASE_WIDTH/2);
             int zoomHeight = render.scale(RenderContext.BASE_HEIGHT/2);
-            int zoomX = getCenterX(getTotalWidth(), zoomWidth);
+            int zoomX = getCenterX(totalWidth, zoomWidth);
             int zoomY = getCenterY(render.scale(RenderContext.BASE_HEIGHT), zoomHeight);
 
             UIService.drawBox(g2, STROKE,
@@ -483,8 +483,8 @@ public class MenuRender {
                             zoomHeight - padding * 2
                     );
 
-                    int imgX = zoomX + (zoomWidth - imgSize) / 2;
-                    int imgY = zoomY + (zoomHeight - imgSize) / 2;
+                    int imgX = zoomX + (zoomWidth - imgSize)/2;
+                    int imgY = zoomY + (zoomHeight - imgSize)/2;
 
                     g2.drawImage(zoomImg, imgX, imgY, imgSize, imgSize, null);
                 }
@@ -566,7 +566,7 @@ public class MenuRender {
         g2.setColor(Colorblindness.filter(Colors.getForeground()));
         String text = gameService.getState() == GameState.CHECKMATE ?
                 CHECKMATE : STALEMATE;
-        g2.drawString(text, getCenterX(getTotalWidth(), headerWidth),headerY);
+        g2.drawString(text, getCenterX(totalWidth, headerWidth),headerY);
     }
 
     public void showTooltip(Graphics2D g2) {

@@ -26,7 +26,7 @@ public class SaveManager {
     private static final Logger log = LoggerFactory.getLogger(SaveManager.class);
 
     public SaveManager() {
-        Path saveFolder = Path.of(System.getProperty("user.home"), ".vertex");
+        Path saveFolder = Path.of(System.getProperty("user.home"), ".lud");
         this.achievementsPath = saveFolder.resolve(ACHIEVEMENTS_FILE);
         RuntimeTypeAdapterFactory<Piece> pieceAdapter =
                 RuntimeTypeAdapterFactory

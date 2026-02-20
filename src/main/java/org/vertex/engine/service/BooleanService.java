@@ -15,7 +15,6 @@ public class BooleanService {
     public static boolean isStalemate;
     public static boolean isPromotionActive;
     public static boolean isTurn;
-    public static boolean isDarkMode;
     public static boolean isFullscreen;
     public static boolean isExitActive;
     public static boolean isMovesActive;
@@ -57,7 +56,6 @@ public class BooleanService {
         canDoChaos = false;
         canTheme = false;
         isFullscreen = true;
-        isDarkMode = false;
         isCheckmate = false;
         isExitActive = false;
         canType = false;

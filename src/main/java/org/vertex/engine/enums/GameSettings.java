@@ -1,6 +1,5 @@
 package org.vertex.engine.enums;
 
-import org.vertex.engine.gui.Colors;
 import org.vertex.engine.service.BooleanService;
 
 public enum GameSettings {
@@ -91,14 +90,6 @@ public enum GameSettings {
         @Override
         public void toggle() {
             BooleanService.canShowTick ^= true;
-        }
-    },
-    DARK_MODE("Dark Mode") {
-        public boolean get() {
-            return BooleanService.isDarkMode;
-        }
-        public void toggle() {
-            Colors.toggleDarkMode();
         }
     },
     THEMES("Themes") {
