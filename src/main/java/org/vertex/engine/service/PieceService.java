@@ -128,7 +128,7 @@ public class PieceService {
 
     public BufferedImage getSprite(Piece piece) {
         Games game = GameService.getGames();
-        if(game == Games.SHOGI || BooleanService.isSandboxEnabled) {
+        if(game == Games.SHOGI) {
             return getShogiSprite(piece);
         }
 
@@ -151,8 +151,9 @@ public class PieceService {
     private BufferedImage getShogiSprite(Piece piece) {
         String pieceName = piece.getClass().getSimpleName().toLowerCase();
         String suffix = "";
-        if(piece instanceof King && piece.getColor() == Tint.DARK) {
-            suffix = "_jeweled";
+        if(piece instanceof King && piece.getColor() == Tint.DARK) { suffix = "_jeweled"; }
+        if(piece.isPromoted()) {
+            if(piece instanceof Bishop || piece instanceof Rook) { suffix = "_promoted"; }
         }
         String path = "/pieces/shogi/shogi_" + pieceName + suffix;
         return getImage(path);
@@ -433,7 +434,8 @@ public class PieceService {
         return false;
     }
 
-    public static boolean isInPromotionZone(Tint color, int i) {
-        return false;
+    public static boolean isInPromotionZone(Tint color, int row) {
+        if(row < 0) { throw new IllegalStateException("Promotion zone must be between 0,1,2 and 6,7,8"); }
+        return (color == Tint.LIGHT && row >= 6) || (color == Tint.DARK && row <= 2);
     }
 }

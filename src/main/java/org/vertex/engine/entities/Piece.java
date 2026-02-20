@@ -13,6 +13,7 @@ public abstract class Piece {
 	private static long NEXT_ID = 1;
 	protected TypeID typeID;
 	protected TypeID shogiID;
+	protected TypeID promotionID;
 	private int x, y;
 	private int col, row, preCol, preRow;
 	private static final double DEFAULT_SCALE = 1.0;
@@ -20,8 +21,10 @@ public abstract class Piece {
 	private double scale = DEFAULT_SCALE;
 	private Tint color;
 	private Piece otherPiece;
+
 	private boolean hasMoved;
 	private boolean isTwoStepsAhead;
+	private boolean isPromotionMandatory;
 	private boolean isPromoted;
 
 	private static final Logger log = LoggerFactory.getLogger(Piece.class);
@@ -56,6 +59,14 @@ public abstract class Piece {
 
 	public void setShogiID(TypeID shogiID) {
 		this.shogiID = shogiID;
+	}
+
+	public TypeID getPromotionID() {
+		return promotionID;
+	}
+
+	public void setPromotionID(TypeID promotionID) {
+		this.promotionID = promotionID;
 	}
 
 	public int getPreCol() {
@@ -183,6 +194,14 @@ public abstract class Piece {
 
 	public void setPromoted(boolean promoted) {
 		isPromoted = promoted;
+	}
+
+	public boolean isPromotionMandatory() {
+		return isPromotionMandatory;
+	}
+
+	public void setPromotionMandatory(boolean promotionMandatory) {
+		isPromotionMandatory = promotionMandatory;
 	}
 
 	public boolean isWithinBoard(int targetCol, int targetRow) {

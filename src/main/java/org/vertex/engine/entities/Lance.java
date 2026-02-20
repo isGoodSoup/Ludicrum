@@ -11,11 +11,12 @@ public class Lance extends Piece implements GoldGeneral {
     public Lance(Tint color, int col, int row) {
         super(color, col, row);
         this.typeID = TypeID.LANCE;
+        setPromotionMandatory(true);
     }
 
     @Override
     public boolean canMove(int targetCol, int targetRow, List<Piece> board) {
-        if (isPromoted()) {
+        if(isPromoted()) {
             return canMoveLikeGold(this, targetCol, targetRow, board);
         }
 
@@ -23,7 +24,7 @@ public class Lance extends Piece implements GoldGeneral {
         int rowDiff = targetRow - getRow();
         int colDiff = targetCol - getCol();
 
-        if (colDiff == 0 && rowDiff * direction > 0) {
+        if(colDiff == 0 && rowDiff * direction > 0) {
             return isPathClear(this, targetCol, targetRow, board)
                     && isValidSquare(this, targetCol, targetRow, board);
         }

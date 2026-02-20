@@ -13,6 +13,8 @@ public class Pawn extends Piece {
 		super(color, col, row);
 		this.typeID = TypeID.PAWN;
 		this.shogiID = TypeID.PAWN_SHOGI;
+		this.promotionID = null;
+		setPromotionMandatory(true);
 	}
 
 	@Override

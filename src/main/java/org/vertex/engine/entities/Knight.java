@@ -13,6 +13,7 @@ public class Knight extends Piece implements GoldGeneral {
 		super(color, col, row);
 		this.typeID = TypeID.KNIGHT;
 		this.shogiID = TypeID.KNIGHT_SHOGI;
+		setPromotionMandatory(true);
 	}
 
 	@Override

@@ -118,6 +118,9 @@ public class GUIService {
 
     public static BufferedImage getLogo() {
         try {
+            if(BooleanService.isDarkMode) {
+                return getImage("/ui/logo/logo_final_v3");
+            }
             return switch(Colors.getTheme()) {
                 case DEFAULT -> logo = getImage("/ui/logo/logo_final_v2");
                 case BLACK -> logo = getImage("/ui/logo/logo_final_v3");

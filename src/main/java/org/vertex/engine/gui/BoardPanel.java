@@ -95,6 +95,7 @@ public class BoardPanel extends JPanel implements Runnable {
                 if(BooleanService.canDoSandbox) {
                     service.getRender().getMenuRender().drawSandboxMenu(g2);
                 }
+                service.getRender().getMenuRender().drawPromotions(g2);
                 renderTooltip(g2);
             }
             case RULES -> service.getRender().getMenuRender()

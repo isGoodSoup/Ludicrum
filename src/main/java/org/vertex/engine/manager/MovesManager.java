@@ -152,7 +152,7 @@ public class MovesManager {
         if(service.getPromotionService().checkPromotion(piece)) {
             BooleanService.isPromotionActive = true;
             service.getPromotionService().setPromotionColor(piece.getColor());
-            Piece promoted = service.getPromotionService().autoPromote(piece);
+            Piece promoted = service.getPromotionService().promote(piece);
             service.getPieceService().replacePiece(piece, promoted);
             log.info("Promoted piece");
             service.getKeyboardInput().setMoveX(promoted.getCol());

@@ -55,6 +55,7 @@ public class ServiceFactory {
         this.piece.setGameService(gs);
         this.board.setGameService(gs);
         this.promotion.setGameService(gs);
+        this.key.setBoardService(board);
         this.gs.setBoardService(board);
         this.piece.setBoardService(board);
         this.board.setService(this);
@@ -80,6 +81,7 @@ public class ServiceFactory {
         this.render.getMenuRender().setAnimationService(animation);
         this.render.getMenuRender().setAchievementService(achievement);
         this.render.getMenuRender().setPieceService(piece);
+        this.render.getMenuRender().setPromotionService(promotion);
         this.render.getMenuRender().setMouse(mouse);
         this.render.getMovesRender().setBoardService(board);
         this.render.getMovesRender().setGuiService(gui);

@@ -29,6 +29,7 @@ public class MenuRender {
     private static final int OPTION_Y = 160;
     private static final float SCALE = 1.5f;
     private static final int ARC = 32;
+    private static final int STROKE = 6;
     private transient BufferedImage TOGGLE_ON;
     private transient BufferedImage TOGGLE_OFF;
     private transient BufferedImage TOGGLE_ON_HIGHLIGHTED;
@@ -51,6 +52,7 @@ public class MenuRender {
     private AnimationService animationService;
     private AchievementService achievementService;
     private PieceService pieceService;
+    private PromotionService promotionService;
     private Mouse mouse;
     private AchievementSprites sprites;
 
@@ -139,6 +141,14 @@ public class MenuRender {
 
     public static void setCb(ColorblindType cb) {
         MenuRender.cb = cb;
+    }
+
+    public PromotionService getPromotionService() {
+        return promotionService;
+    }
+
+    public void setPromotionService(PromotionService promotionService) {
+        this.promotionService = promotionService;
     }
 
     public static int getCenterX(int containerWidth, int elementWidth) {
@@ -273,10 +283,9 @@ public class MenuRender {
         g2.setColor(Colorblindness.filter(Colors.getBackground()));
         g2.fillRect(0, 0, getTotalWidth(), render.scale(RenderContext.BASE_HEIGHT));
 
-        int stroke = 4;
         int x = 32, y = 32;
 
-        GUIService.drawBox(g2, stroke, x, y,
+        GUIService.drawBox(g2, STROKE, x, y,
                 render.scale(RenderContext.BASE_WIDTH - x * 2),
                 render.scale(RenderContext.BASE_HEIGHT - y * 2), ARC, ARC, true,
                 false, 255);
@@ -356,10 +365,9 @@ public class MenuRender {
         g2.fillRect(0, 0, getTotalWidth(), render.scale(RenderContext.BASE_HEIGHT));
 
         List<Achievement> list = achievementService.init();
-        int stroke = 4;
         int x = 32, y = 32;
 
-        GUIService.drawBox(g2, stroke, x, y,
+        GUIService.drawBox(g2, STROKE, x, y,
                 render.scale(RenderContext.BASE_WIDTH - x * 2),
                 render.scale(RenderContext.BASE_HEIGHT - y * 2), ARC, ARC, true,
                 false, 255);
@@ -400,12 +408,12 @@ public class MenuRender {
             g2.setFont(GUIService.getFont(GUIService.getMENU_FONT()));
 
             if(isSelected) {
-                GUIService.drawBox(g2, stroke, x, startY,
+                GUIService.drawBox(g2, STROKE, x, startY,
                         width, height, ARC, ARC, hasBackground,
                         true, 255);
                 g2.drawString(a.getId().getDescription(), textX, descY);
             } else {
-                GUIService.drawBox(g2, stroke, x, startY,
+                GUIService.drawBox(g2, STROKE, x, startY,
                         width, height, ARC, ARC, hasBackground,
                         false, 255);
                 g2.drawString(a.getId().getTitle(), textX, titleY);
@@ -437,7 +445,7 @@ public class MenuRender {
             int zoomX = getCenterX(getTotalWidth(), zoomWidth);
             int zoomY = getCenterY(render.scale(RenderContext.BASE_HEIGHT), zoomHeight);
 
-            GUIService.drawBox(g2, stroke,
+            GUIService.drawBox(g2, STROKE,
                     zoomX,
                     zoomY,
                     zoomWidth,
@@ -473,9 +481,35 @@ public class MenuRender {
 
     }
 
+    public void drawPromotions(Graphics2D g2) {
+        Piece hp = pieceService.getHoveredPiece();
+        if(hp == null || !hp.isPromoted()) { return; }
+
+        List<Piece> promotionOptions = promotionService.getPromotions(hp);
+
+        int squareSize = render.scale(Board.getSquare());
+        int menuWidth = promotionOptions.size() * squareSize;
+        int menuHeight = squareSize;
+
+        int screenWidth = RenderContext.BASE_WIDTH;
+        int screenHeight = RenderContext.BASE_HEIGHT;
+
+        int x = (screenWidth - menuWidth)/2;
+        int y = (screenHeight - menuHeight)/2;
+
+        GUIService.drawBox(g2, STROKE, x, y, menuWidth, menuHeight,
+                ARC, ARC, true, false, 180);
+
+        for(int i = 0; i < promotionOptions.size(); i++) {
+            Piece p = promotionOptions.get(i);
+            int optionX = x + i * squareSize;
+            BufferedImage sprite = pieceService.getSprite(p);
+            g2.drawImage(sprite, x, y, squareSize, squareSize, null);
+        }
+    }
+
     public void drawSandboxMenu(Graphics2D g2) {
         if(!BooleanService.isSandboxEnabled) { return; }
-        int stroke = 6;
         int boardX = render.getBoardRender().getBoardOriginX();
         int boardY = render.getBoardRender().getBoardOriginY();
         int boardWidth = Board.getSquare() * boardService.getBoard().getCol();
@@ -503,7 +537,7 @@ public class MenuRender {
         int textX = boxX + (boxWidth - textWidth)/2;
         int textY = boxY + (boxHeight + fm.getAscent() - fm.getDescent())/2;
 
-        GUIService.drawBox(g2, stroke, boxX, boxY, boxWidth,
+        GUIService.drawBox(g2, STROKE, boxX, boxY, boxWidth,
                 boxHeight, ARC, ARC, true, false, 255);
 
         g2.setColor(Colorblindness.filter(Colors.getForeground()));
