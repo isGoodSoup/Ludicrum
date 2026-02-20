@@ -19,7 +19,7 @@ public class Rook extends Piece {
 	public boolean canMove(int targetCol, int targetRow, List<Piece> board) {
 		if(isWithinBoard(targetCol, targetRow) && !isSameSquare(this, targetCol,
 				targetRow)) {
-			switch(GameService.getGames()) {
+			switch(GameService.getGame()) {
                 case CHESS -> {
 					if(targetCol == getPreCol() || targetRow == getPreRow()) {
 						return isValidSquare(this, targetCol, targetRow, board)

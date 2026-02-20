@@ -26,6 +26,7 @@ public abstract class Piece {
 	private boolean isTwoStepsAhead;
 	private boolean isPromotionMandatory;
 	private boolean isPromoted;
+	private boolean isPickedUp;
 
 	private static final Logger log = LoggerFactory.getLogger(Piece.class);
 
@@ -202,6 +203,14 @@ public abstract class Piece {
 
 	public void setPromotionMandatory(boolean promotionMandatory) {
 		isPromotionMandatory = promotionMandatory;
+	}
+
+	public boolean isPickedUp() {
+		return isPickedUp;
+	}
+
+	public void setPickedUp(boolean pickedUp) {
+		isPickedUp = pickedUp;
 	}
 
 	public boolean isWithinBoard(int targetCol, int targetRow) {

@@ -6,7 +6,7 @@ import org.vertex.engine.manager.MovesManager;
 import org.vertex.engine.records.Move;
 import org.vertex.engine.service.BoardService;
 import org.vertex.engine.service.BooleanService;
-import org.vertex.engine.service.GUIService;
+import org.vertex.engine.service.UIService;
 
 import java.awt.*;
 import java.util.List;
@@ -14,7 +14,7 @@ import java.util.List;
 public class MovesRender {
     private RenderContext render;
     private BoardService boardService;
-    private GUIService guiService;
+    private UIService UIService;
     private MovesManager movesManager;
 
     public MovesRender(RenderContext render, MovesManager movesManager) {
@@ -38,12 +38,12 @@ public class MovesRender {
         this.boardService = boardService;
     }
 
-    public GUIService getGuiService() {
-        return guiService;
+    public UIService getGuiService() {
+        return UIService;
     }
 
-    public void setGuiService(GUIService guiService) {
-        this.guiService = guiService;
+    public void setGuiService(UIService UIService) {
+        this.UIService = UIService;
     }
 
     public RenderContext getRender() {
@@ -59,7 +59,7 @@ public class MovesRender {
         int boardWidth = render.scale(RenderContext.BASE_WIDTH) - Board.getSquare() * 8;
         int totalHeight = render.scale(RenderContext.BASE_HEIGHT);
 
-        g2.setFont(GUIService.getFontBold(24));
+        g2.setFont(UIService.getFontBold(24));
         FontMetrics fm = g2.getFontMetrics();
         int lineHeight = render.scale(fm.getHeight() + 8);
 
@@ -67,11 +67,9 @@ public class MovesRender {
         int boardX = render.getBoardRender().getBoardOriginX();
         int boardY = render.getBoardRender().getBoardOriginY();
         int boardSize = Board.getSquare() * boardService.getBoard().getCol();
-        int arcWidth = 32;
-        int arcHeight = 32;
         boolean hasBackground = true;
 
-        int padding = render.scale(GUIService.getPADDING() - 30);
+        int padding = render.scale(UIService.getPADDING() - 30);
         int innerPadding = render.scale(24);
 
         int availableWidth = render.scale(RenderContext.BASE_WIDTH) - boardSize - padding * 4;
@@ -83,15 +81,15 @@ public class MovesRender {
         int leftY = boardY + innerPadding + fm.getAscent();
         int rightY = boardY + innerPadding + fm.getAscent();
 
-        GUIService.drawBox(g2, stroke, boardX - boxWidth - padding,
-                boardY, boxWidth, boxHeight, arcWidth, arcHeight,
+        UIService.drawBox(g2, stroke, boardX - boxWidth - padding,
+                boardY, boxWidth, boxHeight, MenuRender.getARC(),
                 hasBackground, false, 255);
-        GUIService.drawBox(g2, stroke, boardX + boardSize + padding,
-                boardY, boxWidth, boxHeight, arcWidth, arcHeight,
+        UIService.drawBox(g2, stroke, boardX + boardSize + padding,
+                boardY, boxWidth, boxHeight, MenuRender.getARC(),
                 hasBackground, true, 255);
 
         List<Move> moves = movesManager.getMoves();
-        int startIndex = Math.max(0, moves.size() - GUIService.getMOVES_CAP());
+        int startIndex = Math.max(0, moves.size() - UIService.getMOVES_CAP());
 
         for (int i = startIndex; i < moves.size(); i++) {
             Move move = moves.get(i);

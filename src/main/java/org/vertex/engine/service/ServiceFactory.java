@@ -20,7 +20,7 @@ public class ServiceFactory {
     private final Mouse mouse;
     private final MouseInput mouseInput;
     private final Sound sound;
-    private final GUIService gui;
+    private final UIService gui;
     private final GameService gs;
     private final PromotionService promotion;
     private final MovesManager movesManager;
@@ -63,8 +63,8 @@ public class ServiceFactory {
         this.gs.setServiceFactory(this);
         this.gs.setSaveManager(saveManager);
         this.timer = new TimerService();
-        this.gui = new GUIService(render, piece, board, gs, promotion,
-                model, movesManager, timer);
+        this.gui = new UIService(render, piece, board, gs, promotion,
+                model, movesManager, timer, mouse);
         this.achievement = new AchievementService(eventBus);
         this.achievement.setService(this);
         this.achievement.setAnimationService(animation);
@@ -74,7 +74,7 @@ public class ServiceFactory {
         this.render.getBoardRender().setGuiService(gui);
         this.render.getBoardRender().setPromotionService(promotion);
         this.render.getMenuRender().setBoardService(board);
-        this.render.getMenuRender().setGuiService(gui);
+        this.render.getMenuRender().setUIService(gui);
         this.render.getMenuRender().setGameService(gs);
         this.render.getMenuRender().setMoveManager(movesManager);
         this.render.getMenuRender().setKeyUI(key);
@@ -121,7 +121,7 @@ public class ServiceFactory {
         return mouseInput;
     }
 
-    public GUIService getGuiService() {
+    public UIService getGuiService() {
         return gui;
     }
 

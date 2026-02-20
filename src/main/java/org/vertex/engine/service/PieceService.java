@@ -127,7 +127,7 @@ public class PieceService {
     }
 
     public BufferedImage getSprite(Piece piece) {
-        Games game = GameService.getGames();
+        Games game = GameService.getGame();
         if(game == Games.SHOGI) {
             return getShogiSprite(piece);
         }
@@ -222,7 +222,7 @@ public class PieceService {
 
     public Piece getKing(Tint color) {
         if(BooleanService.isSandboxEnabled) { return null; }
-        if(GameService.getGames() == Games.CHESS || GameService.getGames() == Games.SHOGI) {
+        if(GameService.getGame() == Games.CHESS || GameService.getGame() == Games.SHOGI) {
             for(Piece p : pieces) {
                 if(p instanceof King && p.getColor() == color) {
                     return p;
@@ -374,7 +374,7 @@ public class PieceService {
 
     public boolean isKingInCheck(Tint kingColor) {
         if(BooleanService.isSandboxEnabled) { return false; }
-        if(GameService.getGames() == Games.CHESS || GameService.getGames() == Games.SHOGI) {
+        if(GameService.getGame() == Games.CHESS || GameService.getGame() == Games.SHOGI) {
             Piece king = getKing(kingColor);
 
             for(Piece p : pieces) {
@@ -415,7 +415,7 @@ public class PieceService {
         simPiece.setCol(targetCol);
         simPiece.setRow(targetRow);
 
-        if(GameService.getGames() == Games.CHESS || GameService.getGames() == Games.SHOGI) {
+        if(GameService.getGame() == Games.CHESS || GameService.getGame() == Games.SHOGI) {
             if(!BooleanService.isSandboxEnabled && !BooleanService.canType) {
                 Piece king = simPieces.stream()
                         .filter(p -> p instanceof King

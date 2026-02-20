@@ -20,7 +20,7 @@ public enum Games {
 
         @Override
         public int getBoardSize(Board board, GameService gameService) {
-            return board.getGrids().get(GameService.getGames());
+            return board.getGrids().get(GameService.getGame());
         }
 
         @Override
@@ -44,7 +44,7 @@ public enum Games {
 
         @Override
         public int getBoardSize(Board board, GameService gameService) {
-            return board.getGrids().get(GameService.getGames());
+            return board.getGrids().get(GameService.getGame());
         }
 
         @Override
@@ -67,7 +67,7 @@ public enum Games {
 
         @Override
         public int getBoardSize(Board board, GameService gameService) {
-            return board.getGrids().get(GameService.getGames());
+            return board.getGrids().get(GameService.getGame());
         }
 
         @Override

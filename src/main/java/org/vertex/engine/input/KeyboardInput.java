@@ -1,5 +1,7 @@
 package org.vertex.engine.input;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.vertex.engine.entities.Piece;
 import org.vertex.engine.enums.*;
 import org.vertex.engine.events.ToggleEvent;
@@ -17,6 +19,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class KeyboardInput {
+    private static final Logger log = LoggerFactory.getLogger(KeyboardInput.class);
     private int moveX = 4;
     private int moveY = 6;
     private int selectedIndexY;
@@ -112,7 +115,8 @@ public class KeyboardInput {
             Piece piece = PieceService.getPieceAt(moveX, moveY,
                     service.getPieceService().getPieces());
 
-            if(piece != null && piece.getColor() == service.getGameService().getCurrentTurn()) {
+            if(piece != null && (BooleanService.isSandboxEnabled
+                    || piece.getColor() == service.getGameService().getCurrentTurn())) {
                 service.getMovesManager().setSelectedPiece(piece);
             }
         } else {
@@ -131,16 +135,22 @@ public class KeyboardInput {
         if (selectedPiece == null) {
             Piece hoveredPiece = PieceService.getPieceAt(moveX, moveY,
                     service.getPieceService().getPieces());
-            if (hoveredPiece != null && hoveredPiece.getColor() == service.getGameService().getCurrentTurn()) {
+            if (hoveredPiece != null &&
+                    (BooleanService.isSandboxEnabled ||
+                            hoveredPiece.getColor() == service.getGameService().getCurrentTurn())) {
                 service.getPieceService().setHoveredPieceKeyboard(hoveredPiece);
             } else {
                 service.getPieceService().setHoveredPieceKeyboard(null);
             }
             BooleanService.isLegal = false;
         } else {
-            BooleanService.isLegal = selectedPiece.canMove(moveX, moveY,
-                    service.getPieceService().getPieces())
-                    && !service.getPieceService().wouldLeaveKingInCheck(selectedPiece, moveX, moveY);
+            if(BooleanService.isSandboxEnabled) {
+                BooleanService.isLegal = true;
+            } else {
+                BooleanService.isLegal = selectedPiece.canMove(moveX, moveY,
+                        service.getPieceService().getPieces())
+                        && !service.getPieceService().wouldLeaveKingInCheck(selectedPiece, moveX, moveY);
+            }
         }
     }
 
@@ -248,18 +258,23 @@ public class KeyboardInput {
     }
 
     private void sandboxCommands(Keyboard keyboard) {
-        if(!BooleanService.isSandboxEnabled) return;
+        if(!BooleanService.isSandboxEnabled) { return; }
 
         if(keyboard.isComboPressed(KeyEvent.VK_CONTROL, KeyEvent.VK_ENTER)) {
+            BooleanService.canType = true;
             String fullInput = keyboard.consumeText().trim();
-            if(fullInput.isEmpty()) return;
+            if(fullInput.isEmpty()) { return; }
 
             String[] parts = fullInput.split("\\s+");
             String commandName = parts[0];
             String[] args = Arrays.copyOfRange(parts, 1, parts.length);
             Console consoleCommand = Console.fromString(commandName);
-            if(consoleCommand != null) consoleCommand.run(service, args);
-            else System.out.println("Unknown command: " + commandName);
+            if(consoleCommand != null) {
+                consoleCommand.run(service, args);
+            } else {
+                log.error("Unknown command: {}", commandName);
+            }
+            BooleanService.canType = false;
         }
     }
 
@@ -300,12 +315,13 @@ public class KeyboardInput {
     }
 
     private void boardInput(Keyboard keyboard, long now, MovesManager move) {
-        if(keyboard.isComboPressed(KeyEvent.VK_CONTROL, KeyEvent.VK_S) && BooleanService.isSandboxEnabled) {
-            BooleanService.canDoSandbox ^= true;
-            BooleanService.canType ^= true;
+        if(keyboard.isComboPressed(KeyEvent.VK_CONTROL, KeyEvent.VK_S)) {
+            service.getBoardService().toggleSandboxMode();
             service.getSound().playFX(0);
+            return;
         }
-        if(BooleanService.canDoSandbox) return;
+
+        if(BooleanService.canType) { return; }
 
         if(keyboard.wasCancelPressed()) { move.cancelMove(); service.getSound().playFX(1); }
         if(keyboard.wasSelectPressed()) { activate(GameState.BOARD); service.getSound().playFX(0); }
@@ -314,6 +330,8 @@ public class KeyboardInput {
         repeatKeyCheck(keyboard.wasDownPressed(), () -> move(Direction.DOWN), now, () -> lastDownTime = now);
         repeatKeyCheck(keyboard.wasLeftPressed(), () -> move(Direction.LEFT), now, () -> lastLeftTime = now);
         repeatKeyCheck(keyboard.wasRightPressed(), () -> move(Direction.RIGHT), now, () -> lastRightTime = now);
+
+        keyboardMove();
 
         if(keyboard.isComboPressed(KeyEvent.VK_CONTROL, KeyEvent.VK_Z) && BooleanService.canUndoMoves) {
             move.undoLastMove(move.getSelectedPiece());

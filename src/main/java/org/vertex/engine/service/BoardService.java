@@ -79,7 +79,7 @@ public class BoardService {
     }
 
     public void prepBoard() {
-        Games game = GameService.getGames();
+        Games game = GameService.getGame();
         if (game == null) {
             throw new IllegalStateException("Game must be selected before starting the board");
         }
@@ -102,7 +102,7 @@ public class BoardService {
         }
     }
 
-    public void restoreSprites(Save save, GUIService guiService) {
+    public void restoreSprites(Save save, UIService UIService) {
         List<Piece> loadedPieces = save.pieces();
         Piece[][] boardArray = new Piece[board.getRow()][board.getCol()];
         for(Piece p : loadedPieces) {
@@ -137,12 +137,7 @@ public class BoardService {
     }
 
     public void startBoard() {
-        if(BooleanService.canDoSandbox) {
-            BooleanService.canType = true;
-            BooleanService.isSandboxEnabled ^= true;
-            clearBoard();
-        }
-        else if(BooleanService.canDoChaos) { setPiecesChaos(); }
+        if(BooleanService.canDoChaos) { setPiecesChaos(); }
         else { setPieces(); }
 
         if(!BooleanService.canDoSandbox) {
@@ -162,13 +157,6 @@ public class BoardService {
         }
     }
 
-    public void clearBoard() {
-        List<Piece> pieces = pieceService.getPieces();
-        for (int i = pieces.size() - 1; i >= 0; i--) {
-            pieceService.removePiece(pieces.get(i));
-        }
-    }
-
     public void resetBoard() {
         if(BooleanService.canResetTable) {
             getService().getGameService().startNewGame();
@@ -176,10 +164,10 @@ public class BoardService {
     }
 
     public void setPieces() {
-        Games game = GameService.getGames();
+        Games game = GameService.getGame();
 
-        if(game != GameService.getGames()) {
-            log.debug("Current game: {}", GameService.getGames());
+        if(game != GameService.getGame()) {
+            log.debug("Current game: {}", GameService.getGame());
             lastLoggedGame = game;
         }
 
@@ -331,7 +319,7 @@ public class BoardService {
             return;
         }
 
-        switch(GameService.getGames()) {
+        switch(GameService.getGame()) {
             case CHESS -> {
                 List<Piece> pieces = pieceService.getPieces();
                 columns.clear();
@@ -365,6 +353,32 @@ public class BoardService {
             }
             case CHECKERS -> {}
             case SHOGI -> {}
+        }
+    }
+
+    public void toggleSandboxMode() {
+        BooleanService.canDoSandbox = !BooleanService.canDoSandbox;
+        BooleanService.isSandboxEnabled = BooleanService.canDoSandbox;
+        BooleanService.canType = false;
+
+        if(!BooleanService.canDoSandbox) {
+            finalizeSandbox();
+        }
+    }
+
+    public void finalizeSandbox() {
+        BooleanService.isSandboxEnabled = false;
+        BooleanService.canDoSandbox = false;
+
+        Piece[][] state = new Piece[board.getRow()][board.getCol()];
+        for(Piece p : pieceService.getPieces()) {
+            if(p != null) {
+                state[p.getRow()][p.getCol()] = p;
+            }
+        }
+        boardState = state;
+        for(Piece p : pieceService.getPieces()) {
+            p.setPickedUp(false);
         }
     }
 }

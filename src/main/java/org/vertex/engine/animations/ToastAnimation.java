@@ -5,7 +5,7 @@ import org.vertex.engine.gui.Colors;
 import org.vertex.engine.interfaces.Animation;
 import org.vertex.engine.render.Colorblindness;
 import org.vertex.engine.render.RenderContext;
-import org.vertex.engine.service.GUIService;
+import org.vertex.engine.service.UIService;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -66,7 +66,7 @@ public class ToastAnimation implements Animation {
         }
 
         if(description == null) {
-            g2.setFont(GUIService.getFont(GUIService.getMENU_FONT()));
+            g2.setFont(UIService.getFont(UIService.getMENU_FONT()));
             g2.setColor(Colorblindness.filter(Colors.getHighlight()));
             FontMetrics fm = g2.getFontMetrics();
             int textX = x + 56;
@@ -76,7 +76,7 @@ public class ToastAnimation implements Animation {
             return;
         }
 
-        g2.setFont(GUIService.getFont(GUIService.getMENU_FONT()));
+        g2.setFont(UIService.getFont(UIService.getMENU_FONT()));
         g2.setColor(Colorblindness.filter(Colors.getHighlight()));
         FontMetrics fm = g2.getFontMetrics();
         int textX = x + 20 + (icon != null ? iconSize + 32 : 0);

@@ -12,7 +12,7 @@ import java.awt.image.BufferedImage;
 
 public class BoardRender {
     private RenderContext render;
-    private GUIService guiService;
+    private UIService UIService;
     private PieceService pieceService;
     private BoardService boardService;
     private PromotionService promotionService;
@@ -25,12 +25,12 @@ public class BoardRender {
         this.render = render;
     }
 
-    public GUIService getGuiService() {
-        return guiService;
+    public UIService getGuiService() {
+        return UIService;
     }
 
-    public void setGuiService(GUIService guiService) {
-        this.guiService = guiService;
+    public void setGuiService(UIService UIService) {
+        this.UIService = UIService;
     }
 
     public PieceService getPieceService() {
@@ -90,9 +90,11 @@ public class BoardRender {
 
         if (hoverX >= 0 && hoverY >= 0) {
             int squareSize = render.scale(Board.getSquare());
-            GUIService.drawBox(g2, 4, getBoardOriginX() + hoverX * squareSize,
+
+            UIService.drawBox(g2, 4, getBoardOriginX() + hoverX * squareSize,
                     getBoardOriginY() + hoverY * squareSize, squareSize,
-                    squareSize, 16, 16, true, false, 180);
+                    squareSize, MenuRender.getARC()/4,
+                    true, false, 180);
         }
 
         Piece selectedPiece = pieceService.getMoveManager() != null
@@ -142,7 +144,7 @@ public class BoardRender {
                         SQUARE
                 );
 
-                g2.setFont(GUIService.getFont(16));
+                g2.setFont(UIService.getFont(16));
 
                 if (col == 0) {
                     String number = String.valueOf(ROW - row);
@@ -180,7 +182,7 @@ public class BoardRender {
         int size = (int) (square * piece.getScale());
         int offset = (square - size)/2;
 
-        if(piece instanceof King && GameService.getGames() == Games.CHECKERS) {
+        if(piece instanceof King && GameService.getGame() == Games.CHECKERS) {
             override = pieceService.getKingSprites(piece);
         }
 

@@ -22,7 +22,7 @@ public class Knight extends Piece implements GoldGeneral {
 			return false;
 		}
 
-		switch(GameService.getGames()) {
+		switch(GameService.getGame()) {
             case CHESS -> {
 				int colDiff = Math.abs(targetCol - getCol());
 				int rowDiff = Math.abs(targetRow - getRow());

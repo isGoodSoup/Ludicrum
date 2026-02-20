@@ -86,7 +86,7 @@ public class ShogiRuleset implements Ruleset {
     }
 
     private Piece getPromotedPieceForEvaluation(Piece p) {
-        if(GameService.getGames() == Games.SHOGI) {
+        if(GameService.getGame() == Games.SHOGI) {
             if(p instanceof Pawn) return new Tokin(p.getColor(), p.getRow(), p.getCol());
             if(p instanceof Lance || p instanceof Silver || p instanceof Knight) {
                 p.setPromoted(true);

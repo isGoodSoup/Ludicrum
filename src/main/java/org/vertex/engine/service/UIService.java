@@ -5,8 +5,10 @@ import org.slf4j.LoggerFactory;
 import org.vertex.engine.entities.Board;
 import org.vertex.engine.enums.Theme;
 import org.vertex.engine.gui.Colors;
+import org.vertex.engine.input.Mouse;
 import org.vertex.engine.manager.MovesManager;
 import org.vertex.engine.render.Colorblindness;
+import org.vertex.engine.render.MenuRender;
 import org.vertex.engine.render.RenderContext;
 
 import javax.imageio.ImageIO;
@@ -16,7 +18,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
 
-public class GUIService {
+public class UIService {
     private static Font font;
     private static Font font_bold;
     private static BufferedImage logo;
@@ -38,23 +40,25 @@ public class GUIService {
     private final GameService gameService;
     private final ModelService modelService;
     private final TimerService timerService;
-    private static PromotionService promotionService;
+    private final Mouse mouse;
+    private PromotionService promotionService;
 
-    private static final Logger log = LoggerFactory.getLogger(GUIService.class);
+    private static final Logger log = LoggerFactory.getLogger(UIService.class);
 
-    public GUIService(RenderContext render, PieceService pieceService,
-                      BoardService boardService,
-                      GameService gameService,
-                      PromotionService promotionService,
-                      ModelService modelService,
-                      MovesManager movesManager, TimerService timerService) {
+    public UIService(RenderContext render, PieceService pieceService,
+                     BoardService boardService,
+                     GameService gameService,
+                     PromotionService promotionService,
+                     ModelService modelService,
+                     MovesManager movesManager, TimerService timerService, Mouse mouse) {
         this.render = render;
         this.pieceService = pieceService;
         this.boardService = boardService;
         this.gameService = gameService;
         this.modelService = modelService;
         this.timerService = timerService;
-        GUIService.promotionService = promotionService;
+        this.mouse = mouse;
+        this.promotionService = promotionService;
         logo = null;
         try {
             YES = getImage("/ticks/tick_yes");
@@ -144,7 +148,7 @@ public class GUIService {
     }
 
     public static BufferedImage getImage(String path) throws IOException {
-        InputStream stream = GUIService.class.getResourceAsStream(path + ".png");
+        InputStream stream = UIService.class.getResourceAsStream(path + ".png");
         if (stream == null) {
             log.error("Resource not found: {}.png", path);
             return null;
@@ -177,7 +181,8 @@ public class GUIService {
         int boxHeight = textHeight + 2 * innerPadding;
 
         drawBox(g2, 4, boxX, boxY, boxWidth,
-                boxHeight, 32, 32, true, false, 255);
+                boxHeight, MenuRender.getARC(),
+                true, false, 255);
         g2.setColor(filtered);
         g2.drawString(time, textX, textY);
     }
@@ -202,12 +207,11 @@ public class GUIService {
     }
 
     public static void drawBox(Graphics2D g2, int stroke, int x, int y, int width,
-                               int height, int arcWidth, int arcHeight,
-                               boolean hasBackground, boolean isHighlighted,
+                               int height, int arc, boolean hasBackground, boolean isHighlighted,
                                int alpha) {
         if(hasBackground) {
             g2.setColor(Colorblindness.filter(Colors.SETTINGS));
-            g2.fillRoundRect(x, y, width, height, arcWidth, arcHeight);
+            g2.fillRoundRect(x, y, width, height, arc, arc);
         }
 
         if(isHighlighted) {
@@ -217,10 +221,36 @@ public class GUIService {
         }
 
         g2.setStroke(new BasicStroke(stroke));
-        g2.drawRoundRect(x, y, width, height, arcWidth, arcHeight);
+        g2.drawRoundRect(x, y, width, height, arc, arc);
     }
 
-    public static Rectangle getHITBOX(int x, int y, int width, int height) {
-        return new Rectangle(x, y, width, height);
+    public void drawTooltip(Graphics2D g2, String text, int padding, int arc) {
+        int textWidth = g2.getFontMetrics().stringWidth(text);
+        int textHeight = g2.getFontMetrics().getHeight();
+
+        int boxX = mouse.getX();
+        int boxY = mouse.getY();
+        int boxWidth = textWidth + padding * 2;
+        int boxHeight = textHeight + padding * 2;
+
+        drawBox(g2, 4, boxX, boxY, boxWidth, boxHeight,
+                arc/4, true, false, 180
+        );
+        g2.setColor(Colorblindness.filter(Color.WHITE));
+        int textX = boxX + padding;
+        int textY = boxY + padding + g2.getFontMetrics().getAscent();
+        g2.drawString(text, textX, textY);
+    }
+
+    public void drawButton(Graphics2D g2, int x, int y,
+                           int width, int height, int arc, boolean isHighlighted) {
+        g2.setColor(Colorblindness.filter(isHighlighted ?
+                Colors.getHighlight() : Colors.getEdge()));
+        g2.fillRoundRect(x, y, width, height, arc, arc);
+    }
+
+    public void drawToggle(Graphics2D g2, BufferedImage image, int x, int y,
+                           int width, int height) {
+        g2.drawImage(image, x, y, width, height, null);
     }
 }

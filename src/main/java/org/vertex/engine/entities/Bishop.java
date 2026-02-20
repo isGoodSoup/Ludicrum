@@ -21,7 +21,7 @@ public class Bishop extends Piece {
 			return false;
 		}
 
-		switch(GameService.getGames()) {
+		switch(GameService.getGame()) {
             case CHESS -> {
 				int colDiff = targetCol - getCol();
 				int rowDiff = targetRow - getRow();

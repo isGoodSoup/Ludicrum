@@ -2,7 +2,6 @@ package org.vertex.engine.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.vertex.engine.animations.ToastAnimation;
 import org.vertex.engine.enums.*;
 import org.vertex.engine.interfaces.Ruleset;
 import org.vertex.engine.manager.SaveManager;
@@ -36,7 +35,7 @@ public class GameService {
     public void setGameMenu(GameMenu menu) { gameMenu = menu; }
 
     public void setGame(Games games) { GameService.games = games; }
-    public static Games getGames() { return games; }
+    public static Games getGame() { return games; }
 
     public GameState getState() { return state; }
     public void setState(GameState state) { this.state = state; }
@@ -54,6 +53,13 @@ public class GameService {
     public BoardService getBoardService() { return boardService; }
     public void setBoardService(BoardService boardService) { this.boardService = boardService; }
 
+    public String getTooltip(Games game, boolean hasSave) {
+        String base = hasSave
+                ? GameMenu.PLAY.getContinueTooltip()
+                : GameMenu.PLAY.getTooltip();
+        return base + game.getLabel();
+    }
+
     public void startNewGame() {
         setCurrentTurn(Tint.LIGHT);
         service.getMovesManager().setMoves(new ArrayList<>());
@@ -62,7 +68,7 @@ public class GameService {
         boardService.prepBoard();
         boardService.startBoard();
         Save newSave = new Save(
-                getGames(),
+                getGame(),
                 LocalDate.now().toString(),
                 getCurrentTurn(),
                 service.getPieceService().getPieces(),
@@ -87,7 +93,7 @@ public class GameService {
             startNewGame();
             return;
         }
-        if(loaded.game() != getGames()) {
+        if(loaded.game() != getGame()) {
             log.info("Switching game mode to match save: {}", loaded.game());
         }
         setGame(loaded.game());
@@ -98,7 +104,7 @@ public class GameService {
         service.getAchievementService().setUnlockedAchievements(loaded.achievements());
         setCurrentTurn(loaded.player());
 
-        Ruleset rule = service.getModelService().createRuleSet(getGames());
+        Ruleset rule = service.getModelService().createRuleSet(getGame());
         service.getModelService().setRule(rule);
 
         service.getTimerService().start();
@@ -108,14 +114,13 @@ public class GameService {
 
     public void autoSave() {
         Save save = new Save(
-                getGames(),
+                getGame(),
                 "autosave",
                 getCurrentTurn(),
                 service.getPieceService().getPieces(),
                 service.getAchievementService().getUnlockedAchievements()
         );
         saveManager.saveGame(save);
-        log.debug("Autosave triggered.");
     }
 
     public void nextGame() {
@@ -129,7 +134,7 @@ public class GameService {
         boardService.startBoard();
         setCurrentTurn(Tint.LIGHT);
         Save newSave = new Save(
-                getGames(),
+                getGame(),
                 LocalDate.now().toString(),
                 getCurrentTurn(),
                 service.getPieceService().getPieces(),
@@ -138,8 +143,5 @@ public class GameService {
         saveManager.saveGame(newSave);
         Ruleset rule = service.getModelService().createRuleSet(newGame);
         service.getModelService().setRule(rule);
-
-        service.getAnimationService()
-                .add(new ToastAnimation(newGame.getLabel()));
     }
 }

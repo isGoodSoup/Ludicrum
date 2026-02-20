@@ -25,7 +25,7 @@ public class Pawn extends Piece {
 		int direction = (getColor() == Tint.LIGHT) ? -1 : 1;
 		Piece pieceAtTarget = PieceService.getPieceAt(targetCol, targetRow, board);
 
-		switch(GameService.getGames()) {
+		switch(GameService.getGame()) {
 			case CHESS, CHECKERS -> {
 				if(targetCol == getCol() && targetRow == getRow() + direction) {
 					return pieceAtTarget == null;

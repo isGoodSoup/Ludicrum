@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vertex.engine.entities.Achievement;
 import org.vertex.engine.enums.Achievements;
-import org.vertex.engine.service.GUIService;
+import org.vertex.engine.service.UIService;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -26,7 +26,7 @@ public class AchievementSprites {
     private void loadSprites() {
         log.info("Loading achievement sprites...");
         try {
-            defaultSprite = GUIService.getImage("/achievements/a00_256x");
+            defaultSprite = UIService.getImage("/achievements/a00_256x");
         } catch (IOException e) {
             log.error("Default achievement sprite missing!");
             defaultSprite = new BufferedImage(128, 128, BufferedImage.TYPE_INT_ARGB);
@@ -40,7 +40,7 @@ public class AchievementSprites {
 
     private void load(Achievements type, String path) {
         try {
-            SPRITES.put(type, GUIService.getImage(path));
+            SPRITES.put(type, UIService.getImage(path));
         } catch (IOException e) {
             log.error("Missing achievement sprite: {}", path);
             SPRITES.put(type, defaultSprite);

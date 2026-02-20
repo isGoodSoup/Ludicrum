@@ -4,7 +4,7 @@ import org.vertex.engine.enums.ControlCategory;
 import org.vertex.engine.enums.ControlsHUD;
 import org.vertex.engine.gui.Colors;
 import org.vertex.engine.service.BooleanService;
-import org.vertex.engine.service.GUIService;
+import org.vertex.engine.service.UIService;
 import org.vertex.engine.service.ServiceFactory;
 
 import java.awt.*;
@@ -32,7 +32,7 @@ public class ControlsRender {
         int y = 400;
         int lineHeight = 32;
         g2.setColor(Colorblindness.filter(Colors.getForeground()));
-        g2.setFont(GUIService.getFont(GUIService.getMENU_FONT()));
+        g2.setFont(UIService.getFont(UIService.getMENU_FONT()));
 
         ControlCategory[] categories = switch(service.getGameService().getState()) {
             case BOARD -> new ControlCategory[]{ControlCategory.BOARD_KEYBOARD, ControlCategory.BOARD_MOUSE};
@@ -67,16 +67,16 @@ public class ControlsRender {
         try {
             return switch (key) {
                 case "arrow_up", "arrow_down", "arrow_left", "arrow_right" ->
-                        GUIService.getImage("/ui/keys/" + key);
-                case "ctrl" -> GUIService.getImage("/ui/keys/ctrl");
+                        UIService.getImage("/ui/keys/" + key);
+                case "ctrl" -> UIService.getImage("/ui/keys/ctrl");
                 case "q", "t", "g", "r", "z", "c", "h" ->
-                        GUIService.getImage("/ui/keys/" + key);
-                case "1", "2", "3" -> GUIService.getImage("/ui/keys/" + key);
-                case "enter" -> GUIService.getImage("/ui/keys/enter");
-                case "escape" -> GUIService.getImage("/ui/keys/escape");
-                case "f11" -> GUIService.getImage("/ui/keys/f11");
-                case "mouse_left" -> GUIService.getImage("/ui/mouse/mouse_left");
-                default -> GUIService.getImage("/ui/keys/blank");
+                        UIService.getImage("/ui/keys/" + key);
+                case "1", "2", "3" -> UIService.getImage("/ui/keys/" + key);
+                case "enter" -> UIService.getImage("/ui/keys/enter");
+                case "escape" -> UIService.getImage("/ui/keys/escape");
+                case "f11" -> UIService.getImage("/ui/keys/f11");
+                case "mouse_left" -> UIService.getImage("/ui/mouse/mouse_left");
+                default -> UIService.getImage("/ui/keys/blank");
             };
         } catch (IOException e) {
             throw new RuntimeException(e);

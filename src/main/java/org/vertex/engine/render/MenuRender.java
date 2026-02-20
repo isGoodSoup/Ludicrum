@@ -47,7 +47,7 @@ public class MenuRender {
     private GameService gameService;
     private BoardService boardService;
     private MovesManager movesManager;
-    private GUIService guiService;
+    private UIService uiService;
     private KeyboardInput keyUI;
     private AnimationService animationService;
     private AchievementService achievementService;
@@ -64,14 +64,14 @@ public class MenuRender {
     public void init() {
         this.sprites = new AchievementSprites();
         try {
-            TOGGLE_ON = GUIService.getImage("/ui/toggle_on");
-            TOGGLE_OFF = GUIService.getImage("/ui/toggle_off");
-            TOGGLE_ON_HIGHLIGHTED = GUIService.getImage("/ui/toggle_onh");
-            TOGGLE_OFF_HIGHLIGHTED = GUIService.getImage("/ui/toggle_offh");
-            DARK_MODE_ON = GUIService.getImage("/ui/dark-mode_on");
-            DARK_MODE_ON_HIGHLIGHTED = GUIService.getImage("/ui/dark-mode_onh");
-            HARD_MODE_ON = GUIService.getImage("/ui/hardmode_on");
-            HARD_MODE_ON_HIGHLIGHTED = GUIService.getImage("/ui/hardmode_onh");
+            TOGGLE_ON = UIService.getImage("/ui/toggle_on");
+            TOGGLE_OFF = UIService.getImage("/ui/toggle_off");
+            TOGGLE_ON_HIGHLIGHTED = UIService.getImage("/ui/toggle_onh");
+            TOGGLE_OFF_HIGHLIGHTED = UIService.getImage("/ui/toggle_offh");
+            DARK_MODE_ON = UIService.getImage("/ui/dark-mode_on");
+            DARK_MODE_ON_HIGHLIGHTED = UIService.getImage("/ui/dark-mode_onh");
+            HARD_MODE_ON = UIService.getImage("/ui/hardmode_on");
+            HARD_MODE_ON_HIGHLIGHTED = UIService.getImage("/ui/hardmode_onh");
 
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -119,12 +119,12 @@ public class MenuRender {
         this.movesManager = movesManager;
     }
 
-    public GUIService getGuiService() {
-        return guiService;
+    public UIService getGuiService() {
+        return uiService;
     }
 
-    public void setGuiService(GUIService guiService) {
-        this.guiService = guiService;
+    public void setUIService(UIService UIService) {
+        this.uiService = UIService;
     }
 
     public AnimationService getAnimationService() {
@@ -196,27 +196,19 @@ public class MenuRender {
         this.pieceService = pieceService;
     }
 
-    private void drawButton(Graphics2D g2, int x, int y,
-                            int width, int height, boolean isHighlighted) {
-        g2.setColor(Colorblindness.filter(isHighlighted ?
-                Colors.getHighlight() : Colors.getEdge()));
-        g2.fillRoundRect(x, y, width, height, ARC, ARC);
-    }
-
-    private void drawToggle(Graphics2D g2, BufferedImage image, int x, int y,
-                            int width, int height) {
-        g2.drawImage(image, x, y, width, height, null);
+    public static int getARC() {
+        return ARC;
     }
 
     private static void drawLogo(Graphics2D g2, int containerWidth) {
-        if(GUIService.getLogo() == null) { return; }
-        BufferedImage img = GUIService.getLogo();
+        if(UIService.getLogo() == null) { return; }
+        BufferedImage img = UIService.getLogo();
         int logoWidth = 0;
         int logoHeight = 0;
         img = Colorblindness.filter(img);
         int boardWidth = Board.getSquare() * 8;
-        logoWidth = (int) (GUIService.getLogo().getWidth()/SCALE);
-        logoHeight = (int) (GUIService.getLogo().getHeight()/SCALE);
+        logoWidth = (int) (UIService.getLogo().getWidth()/SCALE);
+        logoHeight = (int) (UIService.getLogo().getHeight()/SCALE);
         int boardCenterX = render.getOffsetX() + render.scale(
                 RenderContext.BASE_WIDTH) * 2 + boardWidth/2;
         int x = getCenterX(containerWidth, logoWidth);
@@ -229,13 +221,13 @@ public class MenuRender {
         g2.setColor(Colorblindness.filter(Colors.getBackground()));
         g2.fillRect(0, 0, getTotalWidth(), render.scale(RenderContext.BASE_HEIGHT));
 
-        Font baseFont = GUIService.getFont(GUIService.getMENU_FONT());
-        Font selectedFont = GUIService.getFontBold(GUIService.getMENU_FONT());
+        Font baseFont = UIService.getFont(UIService.getMENU_FONT());
+        Font selectedFont = UIService.getFontBold(UIService.getMENU_FONT());
 
         drawLogo(g2, getTotalWidth());
 
         int centerY = 800;
-        int spacing = render.scale(GUIService.getMENU_SPACING());
+        int spacing = render.scale(UIService.getMENU_SPACING());
         int centerX = render.getOffsetX() + getTotalWidth() / 2;
         int totalWidth = 0;
 
@@ -253,6 +245,10 @@ public class MenuRender {
         int startX = centerX - totalWidth/2 - 20;
         int currentX = startX;
 
+        GameMenu hoveredOption = null;
+        Rectangle hoveredHitbox = null;
+        String tooltip = "";
+
         for(int i = 0; i < options.length; i++) {
             GameMenu op = options[i];
             String option = op.getLabel();
@@ -269,13 +265,33 @@ public class MenuRender {
             Color textColor = isSelected ?
                     Colorblindness.filter(Colors.getEdge())
                     : Colorblindness.filter(Colors.getBackground());
-            drawButton(g2, currentX - 2, centerY,
-                    buttonWidth, buttonHeight, isSelected);
+
+            Rectangle hitbox = new Rectangle(currentX - 2, centerY,
+                    buttonWidth, buttonHeight);
+
+            uiService.drawButton(g2, currentX - 2, centerY,
+                    buttonWidth, buttonHeight, ARC, isSelected);
+
             int textX = currentX + (buttonWidth - textWidth) / 2;
             int textY = centerY + (buttonHeight - textHeight) / 2 + ascent;
             g2.setColor(textColor);
             g2.drawString(option, textX, textY);
+
+            if(hitbox.contains(mouse.getX(), mouse.getY())) {
+                hoveredOption = op;
+                hoveredHitbox = hitbox;
+            }
             currentX += buttonWidth + spacing;
+        }
+
+        if(hoveredOption != null) {
+            if(hoveredOption == GameMenu.PLAY) {
+                tooltip = gameService.getTooltip(GameService.getGame(),
+                        gameService.getSaveManager().autosaveExists());
+            } else {
+                tooltip = hoveredOption.getTooltip();
+            }
+            uiService.drawTooltip(g2, tooltip, 16, ARC/2);
         }
     }
 
@@ -285,12 +301,12 @@ public class MenuRender {
 
         int x = 32, y = 32;
 
-        GUIService.drawBox(g2, STROKE, x, y,
+        UIService.drawBox(g2, STROKE, x, y,
                 render.scale(RenderContext.BASE_WIDTH - x * 2),
-                render.scale(RenderContext.BASE_HEIGHT - y * 2), ARC, ARC, true,
+                render.scale(RenderContext.BASE_HEIGHT - y * 2), ARC, true,
                 false, 255);
 
-        g2.setFont(GUIService.getFont(GUIService.getMENU_FONT()));
+        g2.setFont(UIService.getFont(UIService.getMENU_FONT()));
 
         String header = SETTINGS;
         int headerY = render.getOffsetY() + render.scale(OPTION_Y);
@@ -308,7 +324,7 @@ public class MenuRender {
 
         int gap = render.scale(100);
         int maxRowWidth = 0;
-        g2.setFont(GUIService.getFont(GUIService.getMENU_FONT()));
+        g2.setFont(UIService.getFont(UIService.getMENU_FONT()));
 
         for(int i = startIndex; i < endIndex; i++) {
             GameSettings option = options[i];
@@ -353,7 +369,7 @@ public class MenuRender {
                         ? (isSelected ? TOGGLE_ON_HIGHLIGHTED : TOGGLE_ON)
                         : (isSelected ? TOGGLE_OFF_HIGHLIGHTED : TOGGLE_OFF);
             }
-            drawToggle(g2, toggleImage, render.getOffsetX() + toggleX,
+            uiService.drawToggle(g2, toggleImage, render.getOffsetX() + toggleX,
                     render.getOffsetY() + toggleY, toggleWidth, toggleHeight);
 
             startY += lineHeight;
@@ -367,15 +383,15 @@ public class MenuRender {
         List<Achievement> list = achievementService.init();
         int x = 32, y = 32;
 
-        GUIService.drawBox(g2, STROKE, x, y,
+        UIService.drawBox(g2, STROKE, x, y,
                 render.scale(RenderContext.BASE_WIDTH - x * 2),
-                render.scale(RenderContext.BASE_HEIGHT - y * 2), ARC, ARC, true,
+                render.scale(RenderContext.BASE_HEIGHT - y * 2), ARC, true,
                 false, 255);
 
         String text = ACHIEVEMENTS;
         int headerY = render.getOffsetY() + render.scale(OPTION_Y);
         int headerWidth = g2.getFontMetrics().stringWidth(text);
-        g2.setFont(GUIService.getFont(GUIService.getMENU_FONT()));
+        g2.setFont(UIService.getFont(UIService.getMENU_FONT()));
         g2.setColor(Colorblindness.filter(Colors.getTheme() == Theme.DEFAULT
                 ? Color.WHITE : Colors.getForeground()));
         g2.drawString(text, getCenterX(getTotalWidth() - 150, headerWidth),
@@ -405,16 +421,16 @@ public class MenuRender {
             Theme currentTheme = Colors.getTheme();
             g2.setColor(Colorblindness.filter(Colors.getTheme() == Theme.DEFAULT
                     ? Color.WHITE : Colors.getForeground()));
-            g2.setFont(GUIService.getFont(GUIService.getMENU_FONT()));
+            g2.setFont(UIService.getFont(UIService.getMENU_FONT()));
 
             if(isSelected) {
-                GUIService.drawBox(g2, STROKE, x, startY,
-                        width, height, ARC, ARC, hasBackground,
+                UIService.drawBox(g2, STROKE, x, startY,
+                        width, height, ARC, hasBackground,
                         true, 255);
                 g2.drawString(a.getId().getDescription(), textX, descY);
             } else {
-                GUIService.drawBox(g2, STROKE, x, startY,
-                        width, height, ARC, ARC, hasBackground,
+                UIService.drawBox(g2, STROKE, x, startY,
+                        width, height, ARC, hasBackground,
                         false, 255);
                 g2.drawString(a.getId().getTitle(), textX, titleY);
             }
@@ -445,15 +461,9 @@ public class MenuRender {
             int zoomX = getCenterX(getTotalWidth(), zoomWidth);
             int zoomY = getCenterY(render.scale(RenderContext.BASE_HEIGHT), zoomHeight);
 
-            GUIService.drawBox(g2, STROKE,
-                    zoomX,
-                    zoomY,
-                    zoomWidth,
-                    zoomHeight,
-                    ARC,
-                    ARC,
-                    true,
-                    false,
+            UIService.drawBox(g2, STROKE,
+                    zoomX, zoomY, zoomWidth, zoomHeight,
+                    ARC, true, false,
                     180);
 
             int selectedIndex = keyUI.getSelectedIndexY();
@@ -497,8 +507,8 @@ public class MenuRender {
         int x = (screenWidth - menuWidth)/2;
         int y = (screenHeight - menuHeight)/2;
 
-        GUIService.drawBox(g2, STROKE, x, y, menuWidth, menuHeight,
-                ARC, ARC, true, false, 180);
+        UIService.drawBox(g2, STROKE, x, y, menuWidth, menuHeight,
+                ARC, true, false, 180);
 
         for(int i = 0; i < promotionOptions.size(); i++) {
             Piece p = promotionOptions.get(i);
@@ -516,7 +526,7 @@ public class MenuRender {
         int boardHeight = Board.getSquare() * boardService.getBoard().getRow();
         int boardBottom = boardY + boardHeight;
 
-        g2.setFont(GUIService.getFont(GUIService.getMENU_FONT()));
+        g2.setFont(UIService.getFont(UIService.getMENU_FONT()));
         FontMetrics fm = g2.getFontMetrics();
         Keyboard keyboard = boardService.getService().getKeyboard();
         String input = keyboard.getCurrentText();
@@ -537,8 +547,8 @@ public class MenuRender {
         int textX = boxX + (boxWidth - textWidth)/2;
         int textY = boxY + (boxHeight + fm.getAscent() - fm.getDescent())/2;
 
-        GUIService.drawBox(g2, STROKE, boxX, boxY, boxWidth,
-                boxHeight, ARC, ARC, true, false, 255);
+        UIService.drawBox(g2, STROKE, boxX, boxY, boxWidth,
+                boxHeight, ARC, true, false, 255);
 
         g2.setColor(Colorblindness.filter(Colors.getForeground()));
         g2.drawString(input, textX, textY);
@@ -546,7 +556,7 @@ public class MenuRender {
 
     public void drawCheckmate(Graphics2D g2) {
         if(gameService.getState() != GameState.CHECKMATE) { return; }
-        g2.setFont(GUIService.getFontBold(GUIService.getMENU_FONT()));
+        g2.setFont(UIService.getFontBold(UIService.getMENU_FONT()));
         FontMetrics fm = g2.getFontMetrics();
 
         int headerY = render.getOffsetY() + render.scale(200);
@@ -578,17 +588,14 @@ public class MenuRender {
             if(mouseCol == p.getCol() && mouseRow == p.getRow()) {
                 TypeID id = p.getTypeID();
                 TypeID shogiID = p.getShogiID();
-                if(shogiID != null && GameService.getGames() == Games.SHOGI) {
+                if(shogiID != null && GameService.getGame() == Games.SHOGI) {
                     id = shogiID;
                 }
-                g2.setFont(GUIService.getFont(24));
-                int textWidth = g2.getFontMetrics().stringWidth(id.name());
-                int textHeight = g2.getFontMetrics().getHeight();
-                GUIService.drawBox(g2, 4, mouse.getX(), mouse.getY(),
-                        textWidth + 20, textHeight + 15, ARC/4, ARC/4,
-                        true, false, 180);
-                g2.setColor(Colorblindness.filter(Color.WHITE));
-                g2.drawString(id.name(), mouse.getX() + 10, mouse.getY() + 30);
+                int padding = 16;
+                String square = boardService.getSquareNameAt(p.getCol(), p.getRow());
+                String text = id.name() + " " + square.toUpperCase();
+                g2.setFont(UIService.getFont(UIService.getMENU_FONT()));
+                uiService.drawTooltip(g2, text, padding, ARC);
             }
         }
     }

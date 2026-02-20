@@ -4,6 +4,7 @@ import org.vertex.engine.entities.Board;
 import org.vertex.engine.entities.Piece;
 import org.vertex.engine.enums.Games;
 import org.vertex.engine.render.RenderContext;
+import org.vertex.engine.service.BooleanService;
 import org.vertex.engine.service.GameService;
 import org.vertex.engine.service.PieceService;
 import org.vertex.engine.service.ServiceFactory;
@@ -49,7 +50,7 @@ public class MouseInput {
             int logicalMouseY = render.unscaleY(mouse.getY());
 
             int boardSize = Board.getSquare() *
-                    service.getBoardService().getBoard().getGrids().get(GameService.getGames());
+                    service.getBoardService().getBoard().getGrids().get(GameService.getGame());
             int boardX = (RenderContext.BASE_WIDTH - boardSize)/2;
             int boardY = (RenderContext.BASE_HEIGHT - boardSize)/2;
 
@@ -60,7 +61,8 @@ public class MouseInput {
                 int pieceX = p.getCol() * Board.getSquare();
                 int pieceY = p.getRow() * Board.getSquare();
 
-                if (p.getColor() == service.getGameService().getCurrentTurn()
+                if (BooleanService.isSandboxEnabled ||
+                        p.getColor() == service.getGameService().getCurrentTurn()
                         && mouseBoardX >= pieceX
                         && mouseBoardX < pieceX + Board.getSquare()
                         && mouseBoardY >= pieceY
@@ -81,7 +83,7 @@ public class MouseInput {
             int logicalMouseY = render.unscaleY(mouse.getY());
 
             int boardSize = Board.getSquare() *
-                    service.getBoardService().getBoard().getGrids().get(GameService.getGames());
+                    service.getBoardService().getBoard().getGrids().get(GameService.getGame());
             int boardX = (RenderContext.BASE_WIDTH - boardSize)/2;
             int boardY = (RenderContext.BASE_HEIGHT - boardSize)/2;
 
@@ -97,14 +99,14 @@ public class MouseInput {
         if(!mouse.wasPressed() && piece != null) {
             RenderContext render = service.getRender();
             int boardSize = Board.getSquare() *
-                    service.getBoardService().getBoard().getGrids().get(GameService.getGames());
+                    service.getBoardService().getBoard().getGrids().get(GameService.getGame());
             int boardX = (RenderContext.BASE_WIDTH - boardSize)/2;
             int boardY = (RenderContext.BASE_HEIGHT - boardSize)/2;
             int mouseBoardX = render.unscaleX(mouse.getX()) - boardX;
             int mouseBoardY = render.unscaleY(mouse.getY()) - boardY;
             int targetCol = mouseBoardX / Board.getSquare();
             int targetRow = mouseBoardY / Board.getSquare();
-            int maxIndex = (GameService.getGames() == Games.SHOGI) ? 8 : 7;
+            int maxIndex = (GameService.getGame() == Games.SHOGI) ? 8 : 7;
             targetCol = Math.max(0, Math.min(maxIndex, targetCol));
             targetRow = Math.max(0, Math.min(maxIndex, targetRow));
             service.getMovesManager().attemptMove(piece, targetCol, targetRow);
