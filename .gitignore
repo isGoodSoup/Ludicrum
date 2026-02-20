@@ -1,0 +1,11 @@
+# Compiled Java files
+*.class
+
+# IntelliJ stuff
+.idea/
+*.iml
+
+# Maven / Gradle build folders
+target/
+build/
+out/
