@@ -86,6 +86,7 @@ public class ServiceFactory {
         this.render.getMenuRender().setPromotionService(promotion);
         this.render.getMenuRender().setMouse(mouse);
         this.render.getMenuRender().setMouseInput(mouseInput);
+        this.render.getMenuRender().setSound(sound);
 
         this.render.getMovesRender().setBoardService(board);
         this.render.getMovesRender().setGuiService(gui);

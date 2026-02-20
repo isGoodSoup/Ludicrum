@@ -116,7 +116,6 @@ public class Sound {
 
     public void playFX(int i) {
         if(!BooleanService.canPlayFX) { return; }
-        play(i);
-        stop(i);
+        new Thread(() -> play(i)).start();
     }
 }

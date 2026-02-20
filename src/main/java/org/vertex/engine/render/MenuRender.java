@@ -2,6 +2,7 @@ package org.vertex.engine.render;
 
 import org.vertex.engine.entities.Achievement;
 import org.vertex.engine.entities.Board;
+import org.vertex.engine.entities.Button;
 import org.vertex.engine.entities.Piece;
 import org.vertex.engine.enums.*;
 import org.vertex.engine.gui.Colors;
@@ -12,6 +13,7 @@ import org.vertex.engine.input.MouseInput;
 import org.vertex.engine.interfaces.Clickable;
 import org.vertex.engine.manager.MovesManager;
 import org.vertex.engine.service.*;
+import org.vertex.engine.sound.Sound;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -25,9 +27,10 @@ public class MenuRender {
     public static final Games[] GAMES = Games.values();
     public static final GameSettings[] SETTINGS_MENU = GameSettings.values();
     public static String ENABLE = "Enable ";
+    private final Map<Clickable, Rectangle> buttons;
+    private final Map<Button, Boolean> buttonsClicked;
     private static final String SETTINGS = "SETTINGS";
     private static final String ACHIEVEMENTS = "ACHIEVEMENTS";
-    private final Map<Clickable, Rectangle> buttons;
     private static final String CHECKMATE = "Checkmate!";
     private static final String STALEMATE = "Stalemate";
     private static final int OPTION_X = 100;
@@ -41,12 +44,16 @@ public class MenuRender {
     private transient BufferedImage TOGGLE_OFF_HIGHLIGHTED;
     private transient BufferedImage HARD_MODE_ON;
     private transient BufferedImage HARD_MODE_ON_HIGHLIGHTED;
+    private transient BufferedImage NEXT_PAGE;
+    private transient BufferedImage NEXT_PAGE_ON;
+    private transient BufferedImage PREVIOUS_PAGE;
+    private transient BufferedImage PREVIOUS_PAGE_ON;
     private static ColorblindType cb;
     private int lastHoveredIndex = -1;
     private int scrollOffset = 0;
     private static int totalWidth;
 
-    private static RenderContext render;
+    private RenderContext render;
     private GameService gameService;
     private BoardService boardService;
     private MovesManager movesManager;
@@ -59,10 +66,12 @@ public class MenuRender {
     private Mouse mouse;
     private MouseInput mouseInput;
     private AchievementSprites sprites;
+    private Sound sound;
 
     public MenuRender(RenderContext render) {
-        MenuRender.render = render;
         this.buttons = new HashMap<>();
+        this.buttonsClicked = new HashMap<>();
+        this.render = render;
         cb = ColorblindType.PROTANOPIA;
     }
 
@@ -75,7 +84,10 @@ public class MenuRender {
             TOGGLE_OFF_HIGHLIGHTED = UIService.getImage("/ui/toggle_offh");
             HARD_MODE_ON = UIService.getImage("/ui/hardmode_on");
             HARD_MODE_ON_HIGHLIGHTED = UIService.getImage("/ui/hardmode_onh");
-
+            NEXT_PAGE = UIService.getImage("/ui/next_page");
+            NEXT_PAGE_ON = UIService.getImage("/ui/next_page_highlighted");
+            PREVIOUS_PAGE = UIService.getImage("/ui/previous_page");
+            PREVIOUS_PAGE_ON = UIService.getImage("/ui/previous_page_highlighted");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -85,6 +97,10 @@ public class MenuRender {
         TOGGLE_OFF_HIGHLIGHTED = Colorblindness.filter(TOGGLE_OFF_HIGHLIGHTED);
         HARD_MODE_ON = Colorblindness.filter(HARD_MODE_ON);
         HARD_MODE_ON_HIGHLIGHTED = Colorblindness.filter(HARD_MODE_ON_HIGHLIGHTED);
+        NEXT_PAGE = Colorblindness.filter(NEXT_PAGE);
+        NEXT_PAGE_ON = Colorblindness.filter(NEXT_PAGE_ON);
+        PREVIOUS_PAGE = Colorblindness.filter(PREVIOUS_PAGE);
+        PREVIOUS_PAGE_ON = Colorblindness.filter(PREVIOUS_PAGE_ON);
     }
 
     public KeyboardInput getKeyUI() {
@@ -151,7 +167,7 @@ public class MenuRender {
         this.promotionService = promotionService;
     }
 
-    public static int getCenterX(int containerWidth, int elementWidth) {
+    public int getCenterX(int containerWidth, int elementWidth) {
         return render.getOffsetX()
                 + (containerWidth - elementWidth)/2;
     }
@@ -212,15 +228,21 @@ public class MenuRender {
         return buttons;
     }
 
-    private static void drawLogo(Graphics2D g2, int containerWidth) {
+    public Sound getSound() {
+        return sound;
+    }
+
+    public void setSound(Sound sound) {
+        this.sound = sound;
+    }
+
+    private void drawLogo(Graphics2D g2, int containerWidth) {
         if(UIService.getLogo() == null) { return; }
         BufferedImage img = UIService.getLogo();
-        int logoWidth = 0;
-        int logoHeight = 0;
         img = Colorblindness.filter(img);
         int boardWidth = Board.getSquare() * 8;
-        logoWidth = UIService.getLogo().getWidth() * 2;
-        logoHeight = UIService.getLogo().getHeight() * 2;
+        int logoWidth = UIService.getLogo().getWidth() * 2;
+        int logoHeight = UIService.getLogo().getHeight() * 2;
         int boardCenterX = render.getOffsetX() + render.scale(
                 RenderContext.BASE_WIDTH) * 2 + boardWidth/2;
         int x = getCenterX(containerWidth, logoWidth);
@@ -346,7 +368,7 @@ public class MenuRender {
 
         int startY = headerY + render.scale(100);
         int lineHeight = g2.getFontMetrics().getHeight() + render.scale(10);
-        int itemsPerPage = 6;
+        int itemsPerPage = 8;
 
         int startIndex = keyUI.getCurrentPage() * itemsPerPage;
         int endIndex = Math.min(startIndex + itemsPerPage, options.length);
@@ -403,6 +425,38 @@ public class MenuRender {
                     render.getOffsetY() + toggleY, toggleWidth, toggleHeight);
             startY += lineHeight;
         }
+
+        x = totalWidth/2;
+        y = render.scale(500) + lineHeight * itemsPerPage;
+        int nextX = x;
+
+        Button nextButton = createButton(nextX, y, NEXT_PAGE.getWidth(), NEXT_PAGE.getHeight(),
+                () -> {
+                    int totalPages = (options.length + itemsPerPage - 1) / itemsPerPage - 1;
+                    int currentPage = keyUI.getCurrentPage() + 1;
+                    if(currentPage > totalPages) { currentPage = totalPages; }
+                    keyUI.setCurrentPage(currentPage);
+                });
+        buttons.put(nextButton, new Rectangle(nextX, y,
+                NEXT_PAGE.getWidth(), NEXT_PAGE.getHeight()));
+        g2.drawImage(NEXT_PAGE, nextX, y, null);
+
+        int prevX = x - render.scale(100);
+        Button prevButton = createButton(prevX, y, NEXT_PAGE.getWidth(), NEXT_PAGE.getHeight(),
+                () -> {
+                    int currentPage = keyUI.getCurrentPage() - 1;
+                    if(currentPage < 0) { currentPage = 0; }
+                    keyUI.setCurrentPage(currentPage);
+                });
+        buttons.put(prevButton, new Rectangle(prevX, y,
+                PREVIOUS_PAGE.getWidth(), PREVIOUS_PAGE.getHeight()));
+        g2.drawImage(PREVIOUS_PAGE, prevX, y, null);
+    }
+
+    private Button createButton(int x, int y, int w, int h, Runnable action) {
+        Button b = new Button(x, y, w, h, action);
+        buttons.put(b, new Rectangle(x, y, w, h));
+        return b;
     }
 
     public void drawAchievementsMenu(Graphics2D g2) {
