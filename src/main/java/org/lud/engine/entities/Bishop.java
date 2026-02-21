@@ -1,0 +1,86 @@
+package org.lud.engine.entities;
+
+import org.lud.engine.enums.Tint;
+import org.lud.engine.enums.TypeID;
+import org.lud.engine.service.GameService;
+
+import java.util.List;
+
+public class Bishop extends Piece {
+
+	public Bishop(Tint color, int col, int row) {
+		super(color, col, row);
+		this.typeID = TypeID.BISHOP;
+		this.shogiID = TypeID.BISHOP_SHOGI;
+	}
+
+	@Override
+	public boolean canMove(int targetCol, int targetRow, List<Piece> board) {
+		if(!isWithinBoard(targetCol, targetRow)
+				|| isSameSquare(this, targetCol, targetRow)) {
+			return false;
+		}
+
+		switch(GameService.getGame()) {
+			case CHESS, SANDBOX -> {
+				int colDiff = targetCol - getCol();
+				int rowDiff = targetRow - getRow();
+
+				if(Math.abs(colDiff) != Math.abs(rowDiff)) {
+					return false;
+				}
+
+				if(!isPathClear(this, targetCol, targetRow, board)) {
+					return false;
+				}
+
+				Piece target = null;
+				for(Piece p : board) {
+					if(p.getCol() == targetCol && p.getRow() == targetRow) {
+						target = p;
+						break;
+					}
+				}
+				return target == null || target.getColor() != getColor();
+			}
+            case SHOGI -> {
+				if(isPromoted()) {
+					int colDiff = Math.abs(targetCol - getCol());
+					int rowDiff = Math.abs(targetRow - getRow());
+
+					if((colDiff + rowDiff == 1) || (colDiff * rowDiff == 1)) {
+						return isValidSquare(this, targetCol, targetRow, board);
+					}
+				}
+
+				int colDiff = targetCol - getCol();
+				int rowDiff = targetRow - getRow();
+
+				if(Math.abs(colDiff) != Math.abs(rowDiff)) {
+					return false;
+				}
+
+				if(!isPathClear(this, targetCol, targetRow, board)) {
+					return false;
+				}
+
+				Piece target = null;
+				for(Piece p : board) {
+					if(p.getCol() == targetCol && p.getRow() == targetRow) {
+						target = p;
+						break;
+					}
+				}
+				return target == null || target.getColor() != getColor();
+            }
+        }
+        return false;
+    }
+
+	@Override
+	public Piece copy() {
+		Bishop p = new Bishop(getColor(), getCol(), getRow());
+		p.setHasMoved(hasMoved());
+		return p;
+	}
+}

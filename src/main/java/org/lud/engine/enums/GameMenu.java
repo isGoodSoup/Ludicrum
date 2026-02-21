@@ -1,0 +1,64 @@
+package org.lud.engine.enums;
+
+import org.lud.engine.interfaces.Clickable;
+import org.lud.engine.service.GameService;
+
+public enum GameMenu implements Clickable {
+    PLAY("", "Start a match of ", "Continue match of ") {
+        @Override
+        public void run(GameService gameService) {
+            GameService.getGame().setup(gameService);
+        }
+    },
+    SETTINGS("SETTINGS", "Settings, themes, toggles", "") {
+        @Override
+        public void run(GameService gameService) {
+            gameService.setState(GameState.SETTINGS);
+        }
+    },
+    ADVANCEMENTS("ACHIEVEMENTS", "Track your progress", "") {
+        @Override
+        public void run(GameService gameService) {
+            gameService.setState(GameState.ACHIEVEMENTS);
+        }
+    },
+    EXIT("EXIT", "Leave?", "") {
+        @Override
+        public void run(GameService gameService) {
+            System.exit(0);
+        }
+    };
+
+    private final String label;
+    private final String tooltip;
+    private final String continueTooltip;
+
+    GameMenu(String label, String tooltip, String continueTooltip) {
+        this.label = label;
+        this.tooltip = tooltip;
+        this.continueTooltip = continueTooltip;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public String getTooltip() {
+        return tooltip;
+    }
+
+    public String getContinueTooltip() {
+        return continueTooltip;
+    }
+
+    public boolean isEnabled(GameService gameService) {
+        return true;
+    }
+
+    public abstract void run(GameService gameService);
+
+    @Override
+    public void onClick(GameService gameService) {
+        run(gameService);
+    }
+}
