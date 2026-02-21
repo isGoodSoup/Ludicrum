@@ -12,7 +12,9 @@ public enum GameMenu implements Clickable {
     },
     GAMES("GAMES", "", "Who knows, maybe there's more?") {
         @Override
-        public void run(GameService gameService) {}
+        public void run(GameService gameService) {
+            gameService.nextGame();
+        }
     },
     SETTINGS("SETTINGS", "Settings, themes, toggles", "") {
         @Override

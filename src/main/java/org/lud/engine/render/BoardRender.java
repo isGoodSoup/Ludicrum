@@ -115,8 +115,8 @@ public class BoardRender {
         int hoverX = pieceService.getHoveredSquareX();
         int hoverY = pieceService.getHoveredSquareY();
 
-        int buttonX = 32;
-        int buttonY = RenderContext.BASE_HEIGHT - 100;
+        int buttonX = 50;
+        int buttonY = render.scale(RenderContext.BASE_HEIGHT - 115);
         int offset = render.scale(80);
 
         drawBaseBoard(g2);

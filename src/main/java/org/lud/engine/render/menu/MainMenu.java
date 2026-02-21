@@ -179,10 +179,9 @@ public class MainMenu implements UI {
                 BufferedImage altImg = render.getMenuRender().getEXIT_HIGHLIGHTED();
                 int width = baseImg.getWidth();
                 int height = baseImg.getHeight();
-                x = startX; y = startY;
 
-                x += totalWidth/3 + render.scale(100);
-                y += render.scale(200);
+                x = render.scale((int) (RenderContext.BASE_WIDTH - width * 1.75f));
+                y = render.scale(RenderContext.BASE_HEIGHT - 115);
 
                 if(exitButton == null) {
                     exitButton = createButton(x, y, width, height, () ->
