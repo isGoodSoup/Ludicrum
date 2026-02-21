@@ -81,11 +81,6 @@ public class AchievementsMenu implements UI {
         List<Achievement> list = achievementService.init();
         int x = 32, y = 32;
 
-        UIService.drawBox(g2, STROKE, x, y,
-                render.scale(RenderContext.BASE_WIDTH - x*2),
-                render.scale(RenderContext.BASE_HEIGHT - y*2),
-                ARC, true, false, 255);
-
         String text = ACHIEVEMENTS;
         int headerY = render.getOffsetY() + render.scale(OPTION_Y);
         int headerWidth = g2.getFontMetrics().stringWidth(text);

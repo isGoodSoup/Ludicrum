@@ -394,9 +394,10 @@ public class MovesManager {
         Piece p = lastMove.piece();
         Piece captured = lastMove.captured();
 
-        p.setCol(lastMove.fromCol());
-        p.setRow(lastMove.fromRow());
-        boardState[lastMove.targetRow()][lastMove.targetCol()] = p;
+        p.setCol(p.getPreCol());
+        p.setRow(p.getPreRow());
+        PieceService.updatePos(p, false);
+        boardState[lastMove.fromRow()][lastMove.fromCol()] = p;
         
         log.info("Move undone: {} <- from {} [{}{}]",
                 service.getBoardService().getSquareNameAt(lastMove.targetCol(), lastMove.targetRow()),
