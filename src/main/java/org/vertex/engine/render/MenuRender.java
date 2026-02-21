@@ -429,8 +429,16 @@ public class MenuRender {
         }
 
         initButtons(options);
-        g2.drawImage(NEXT_PAGE, nextButton.getX(), nextButton.getY(), null);
-        g2.drawImage(PREVIOUS_PAGE, prevButton.getX(), prevButton.getY(), null);
+        boolean nextHovered = buttons.get(nextButton).contains(mouse.getX(), mouse.getY())
+                && !mouseInput.isClickingOption(nextButton);
+        BufferedImage nextImg = nextHovered ? NEXT_PAGE_ON : NEXT_PAGE;
+
+        boolean prevHovered = buttons.get(prevButton).contains(mouse.getX(), mouse.getY())
+                && !mouseInput.isClickingOption(prevButton);
+        BufferedImage prevImg = prevHovered ? PREVIOUS_PAGE_ON : PREVIOUS_PAGE;
+
+        g2.drawImage(nextImg, nextButton.getX(), nextButton.getY(), null);
+        g2.drawImage(prevImg, prevButton.getX(), prevButton.getY(), null);
     }
 
     private Button createButton(int x, int y, int w, int h, Runnable action) {
@@ -440,27 +448,36 @@ public class MenuRender {
     }
 
     private void initButtons(GameSettings[] options) {
-        int x = totalWidth/2;
-        int y = render.scale(500) + (UIService.getFont(UIService.getMENU_FONT()).getSize() + 10)
-                * KeyboardInput.getITEMS_PER_PAGE();
+        if(nextButton == null) {
+            int x = totalWidth/2;
+            int y = render.scale(500) + (UIService.getFont(UIService.getMENU_FONT()).getSize() + 10)
+                    * KeyboardInput.getITEMS_PER_PAGE();
 
-        nextButton = new Button(x, y, NEXT_PAGE.getWidth(), NEXT_PAGE.getHeight(), () -> {
-            int totalPages = (options.length + KeyboardInput.getITEMS_PER_PAGE() - 1)
-                   /KeyboardInput.getITEMS_PER_PAGE() - 1;
-            int currentPage = keyUI.getCurrentPage() + 1;
-            if(currentPage > totalPages) { currentPage = totalPages; }
-            keyUI.setCurrentPage(currentPage);
-        });
+            nextButton = new Button(x, y, NEXT_PAGE.getWidth(), NEXT_PAGE.getHeight(), () -> {
+                int totalPages = (options.length + KeyboardInput.getITEMS_PER_PAGE() - 1)
+                        / KeyboardInput.getITEMS_PER_PAGE() - 1;
+                int currentPage = keyUI.getCurrentPage() + 1;
+                if(currentPage > totalPages) { currentPage = totalPages; }
+                keyUI.setCurrentPage(currentPage);
+            });
+        }
 
-        prevButton = new Button(x - render.scale(100), y, PREVIOUS_PAGE.getWidth(),
-                PREVIOUS_PAGE.getHeight(), () -> {
-            int currentPage = keyUI.getCurrentPage() - 1;
-            if(currentPage < 0) { currentPage = 0; }
-            keyUI.setCurrentPage(currentPage);
-        });
+        if(prevButton == null) {
+            int x = totalWidth/2 - render.scale(100);
+            int y = render.scale(500) + (UIService.getFont(UIService.getMENU_FONT()).getSize() + 10)
+                    * KeyboardInput.getITEMS_PER_PAGE();
 
-        buttons.put(nextButton, new Rectangle(nextButton.getX(), nextButton.getY(), nextButton.getWidth(), nextButton.getHeight()));
-        buttons.put(prevButton, new Rectangle(prevButton.getX(), prevButton.getY(), prevButton.getWidth(), prevButton.getHeight()));
+            prevButton = new Button(x, y, PREVIOUS_PAGE.getWidth(), PREVIOUS_PAGE.getHeight(), () -> {
+                int currentPage = keyUI.getCurrentPage() - 1;
+                if(currentPage < 0) { currentPage = 0; }
+                keyUI.setCurrentPage(currentPage);
+            });
+        }
+
+        buttons.put(nextButton, new Rectangle(nextButton.getX(), nextButton.getY(),
+                nextButton.getWidth(), nextButton.getHeight()));
+        buttons.put(prevButton, new Rectangle(prevButton.getX(), prevButton.getY(),
+                prevButton.getWidth(), prevButton.getHeight()));
     }
 
     public void drawAchievementsMenu(Graphics2D g2) {
