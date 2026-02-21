@@ -9,7 +9,7 @@ import java.io.Serial;
 public class GameFrame extends JFrame {
 	@Serial
     private static final long serialVersionUID = -3130387824420425271L;
-	private final static String TITLE = "VertexEngine";
+	private final static String TITLE = "Ludicrum";
 	private final BoardPanel panel;
 	private final GraphicsDevice gd;
 	private Rectangle windowedBounds;
