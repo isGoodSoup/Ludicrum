@@ -2,10 +2,7 @@ package org.lud.engine.render.menu;
 
 import org.lud.engine.entities.Button;
 import org.lud.engine.entities.ButtonSprite;
-import org.lud.engine.enums.ButtonSize;
-import org.lud.engine.enums.GameMenu;
-import org.lud.engine.enums.GameState;
-import org.lud.engine.enums.Games;
+import org.lud.engine.enums.*;
 import org.lud.engine.gui.Colors;
 import org.lud.engine.input.KeyboardInput;
 import org.lud.engine.input.Mouse;
@@ -135,6 +132,10 @@ public class MainMenu implements UI {
                 drawButtonLayers(g2, bigButton, playButton, ButtonSize.BIG, x, y);
                 g2.setColor(textColor);
                 g2.drawString(game.getLabel(), textX, textY);
+
+                if(render.isHovered(playButton)) {
+                    drawTooltip(g2, showTooltip(option));
+                }
             }
 
             if(option == GameMenu.SETTINGS) {
@@ -156,6 +157,10 @@ public class MainMenu implements UI {
                         : render.getMenuRender().getColorblindSprite(baseImg);
                 drawButtonLayers(g2, smallButton, settingsButton, ButtonSize.SMALL, x, y);
                 g2.drawImage(img, x, y, null);
+
+                if(render.isHovered(settingsButton)) {
+                    drawTooltip(g2, showTooltip(option));
+                }
             }
 
             if(option == GameMenu.ADVANCEMENTS) {
@@ -177,6 +182,10 @@ public class MainMenu implements UI {
                         : render.getMenuRender().getColorblindSprite(baseImg);
                 drawButtonLayers(g2, smallButton, achievementsButton, ButtonSize.SMALL, x, y);
                 g2.drawImage(img, x, y, null);
+
+                if(render.isHovered(achievementsButton)) {
+                    drawTooltip(g2, showTooltip(option));
+                }
             }
 
             if(option == GameMenu.EXIT) {
@@ -199,6 +208,10 @@ public class MainMenu implements UI {
                         : render.getMenuRender().getColorblindSprite(baseImg);
                 drawButtonLayers(g2, smallButton, exitButton, ButtonSize.SMALL, x, y);
                 g2.drawImage(img, x, y, null);
+
+                if(render.isHovered(exitButton)) {
+                    drawTooltip(g2, showTooltip(option));
+                }
             }
 
             if(option == GameMenu.THEME) {
@@ -222,6 +235,10 @@ public class MainMenu implements UI {
                             : render.getMenuRender().getColorblindSprite(baseImg);
                     drawButtonLayers(g2, smallButton, themeButton, ButtonSize.SMALL, x, y);
                     g2.drawImage(img, x, y, null);
+
+                    if(render.isHovered(themeButton)) {
+                        drawTooltip(g2, showTooltip(option));
+                    }
                 }
             }
         }
@@ -255,8 +272,14 @@ public class MainMenu implements UI {
         g2.drawImage(frame, x, y, null);
     }
 
+    public void drawTooltip(Graphics2D g2, String text) {
+        int padding = 16;
+        g2.setFont(UIService.getFont(UIService.getMENU_FONT()/2));
+        uiService.drawTooltip(g2, text, padding, ARC);
+    }
+
     private String showTooltip(GameMenu op) {
-        if(op == GameMenu.PLAY) {
+        if(op.equals(GameMenu.PLAY)) {
             return gameService.getTooltip(GameService.getGame(),
                     gameService.getSaveManager().autosaveExists()
             );

@@ -153,7 +153,7 @@ public class AchievementService {
         if(!BooleanService.canDoAchievements) { return; }
         Achievement achievement = achievements.get(type);
 
-        if (unlockedIDs.contains(type.getId())) {
+        if(unlockedIDs.contains(type.getId())) {
             return;
         }
 
@@ -218,7 +218,7 @@ public class AchievementService {
             Achievements type = loaded.getId();
             Achievement existing = achievements.get(type);
 
-            if (existing != null) {
+            if(existing != null) {
                 existing.setUnlocked(true);
                 unlockedIDs.add(type.getId());
             }

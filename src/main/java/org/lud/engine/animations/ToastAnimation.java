@@ -18,8 +18,8 @@ public class ToastAnimation implements Animation {
     private static final double SLIDE_TIME = 0.3;
     private static final double STAY_TIME = 2.0;
     private static final int SLIDE_DISTANCE = 400;
-    private static final int WIDTH = 800;
-    private static final int HEIGHT = 125;
+    private static final int WIDTH = 1000;
+    private static final int HEIGHT = 150;
     private static final int ARC = 25;
     private int baseY;
 
@@ -80,11 +80,11 @@ public class ToastAnimation implements Animation {
         g2.setColor(Colorblindness.filter(Colors.getHighlight()));
         FontMetrics fm = g2.getFontMetrics();
         int textX = x + 20 + (icon != null ? iconSize + 32 : 0);
-        int textY = y + (HEIGHT + fm.getAscent()) / 2 - 24;
-        g2.drawString(title, textX, textY);
+        int textY = y + (HEIGHT + fm.getAscent())/2 - 24;
+        g2.drawString(title.toUpperCase(), textX, textY);
         g2.setColor(Colorblindness.filter(Theme.BLACK.getForeground()));
         if(description != null) {
-            g2.drawString(description, textX, textY + 40);
+            g2.drawString(description, textX, textY + 50);
         }
     }
 

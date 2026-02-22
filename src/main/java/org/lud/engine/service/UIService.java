@@ -208,21 +208,47 @@ public class UIService {
     }
 
     public void drawTooltip(Graphics2D g2, String text, int padding, int arc) {
-        int textWidth = g2.getFontMetrics().stringWidth(text);
-        int textHeight = g2.getFontMetrics().getHeight();
+
+        String[] lines = text.split("\n");
+
+        FontMetrics fm = g2.getFontMetrics();
+
+        int maxWidth = 0;
+        for(String line : lines) {
+            int lineWidth = fm.stringWidth(line);
+            if(lineWidth > maxWidth) {
+                maxWidth = lineWidth;
+            }
+        }
+
+        int lineHeight = fm.getHeight();
+        int totalTextHeight = lineHeight * lines.length;
 
         int boxX = mouse.getX();
         int boxY = mouse.getY();
-        int boxWidth = textWidth + padding * 2;
-        int boxHeight = textHeight + padding * 2;
+        int boxWidth = maxWidth + padding * 2;
+        int boxHeight = totalTextHeight + padding * 2;
+
+        if (boxX + boxWidth > RenderContext.BASE_WIDTH) {
+            boxX -= boxWidth;
+        }
+        if (boxY + boxHeight > RenderContext.BASE_HEIGHT) {
+            boxY -= boxHeight;
+        }
 
         drawBox(g2, 4, boxX, boxY, boxWidth, boxHeight,
-                arc/4, true, false, 180
+                arc / 4, true, false, 180
         );
+
         g2.setColor(Colorblindness.filter(Color.WHITE));
+
         int textX = boxX + padding;
-        int textY = boxY + padding + g2.getFontMetrics().getAscent();
-        g2.drawString(text, textX, textY);
+        int textY = boxY + padding + fm.getAscent();
+
+        for (String line : lines) {
+            g2.drawString(line, textX, textY);
+            textY += lineHeight;
+        }
     }
 
     public void drawButton(Graphics2D g2, int x, int y,

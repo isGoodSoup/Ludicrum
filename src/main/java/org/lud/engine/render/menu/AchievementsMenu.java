@@ -107,13 +107,14 @@ public class AchievementsMenu implements UI {
                 UIService.drawBox(g2, STROKE, x, startY,
                         width, height, ARC, hasBackground,
                         true, 255);
-                g2.drawString(a.getId().getDescription(), textX, descY);
+                uiService.drawTooltip(g2, a.getId().getDescription(), 16, ARC);
             } else {
                 UIService.drawBox(g2, STROKE, x, startY,
                         width, height, ARC, hasBackground,
                         false, 255);
-                g2.drawString(a.getId().getTitle().toUpperCase(), textX, titleY);
             }
+
+            g2.drawString(a.getId().getTitle(), textX, descY);
 
             img = AchievementSprites.getSprite(a);
             if(img != null && !a.isUnlocked()) {

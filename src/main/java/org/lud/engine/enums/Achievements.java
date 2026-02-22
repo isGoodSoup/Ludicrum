@@ -1,7 +1,7 @@
 package org.lud.engine.enums;
 
 public enum Achievements {
-    FIRST_CAPTURE           (1001L, "a01_first_steps",            "First Steps",            "Capture first chess piece"),
+    FIRST_CAPTURE           (1001L, "a01_first_steps",            "First Steps",            "Capture your first chess piece"),
     SECRET_TOGGLE           (1002L, "a02_toggles",                "The One To Rule 'Em All","Find the (secret) toggle"),
     CHECKMATE               (1003L, "a03_checkmate",              "Checkmate!",             "Win a game by checkmate"),
     CASTLING_MASTER         (1004L, "a04_castling_master",        "Oh My King",             "Castle at least 10 times"),
@@ -13,7 +13,8 @@ public enum Achievements {
     HARD_GAME               (1010L, "a10_that_was_easy",          "That Was Easy!",         "Win a hard chess game"),
     UNTOUCHABLE             (1011L, "a11_cant_touch_this",        "Can't Touch This",       "Win a game without getting checked"),
     MASTER_OF_NONE          (1012L, "a12_master_of_none",         "Master of None",         "Complete all Chess achievements"),
-    ROUND_CAPTURE           (2001L, "a13_first_capture",          "Wait A Second",          "Capture first checkers piece"),
+
+    ROUND_CAPTURE           (2001L, "a13_first_capture",          "Wait A Second",          "Capture your first checkers piece"),
     QUICK_START             (2002L, "a14_quick_start",            "Quick Start",            "Win in under 8 moves"),
     STRATEGIST              (2003L, "a15_strategist",             "Strategist",             "Win without losing a piece"),
     DOUBLE_JUMP             (2004L, "a16_graysons",               "The Grayson's",          "Double jump in one turn"),
@@ -41,6 +42,6 @@ public enum Achievements {
 
     public long getId() { return id; }
     public String getFile() { return file; }
-    public String getTitle() { return title; }
+    public String getTitle() { return title.toUpperCase(); }
     public String getDescription() { return description; }
 }
