@@ -186,8 +186,6 @@ public class MovesManager {
                 selectedPiece = null;
             }
             service.getPieceService().setHoveredPieceKeyboard(promoted);
-        } else {
-            service.getPieceService().switchTurns();
         }
 
         service.getModelService().triggerAIMove();
@@ -404,7 +402,6 @@ public class MovesManager {
                     p.getTypeID(), captured != null ? " capturing " + captured.getTypeID() : "");
             moves.removeLast();
         }
-        service.getPieceService().switchTurns();
     }
 
     private boolean isAIturn() {

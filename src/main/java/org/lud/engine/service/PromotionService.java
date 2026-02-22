@@ -104,8 +104,6 @@ public class PromotionService {
         if(piece instanceof Checker checker) {
             event.fire(new PromotionEvent(checker));
         }
-
-        pieceService.switchTurns();
         return promotedPiece;
     }
 

@@ -15,6 +15,7 @@ public enum ControlsHUD {
     SELECT(ControlCategory.MENU, "Select", new String[]{"enter"}),
     CANCEL(ControlCategory.MENU, "Back", new String[]{"escape"}),
 
+    SWITCH_TURNS(ControlCategory.BOARD_KEYBOARD, "Switch Turns", new String[]{"tab"}),
     RESET_BOARD(ControlCategory.BOARD_KEYBOARD, "Reset Board", new String[]{"ctrl", "r"}),
     UNDO_MOVE(ControlCategory.BOARD_KEYBOARD, "Undo Last Move", new String[]{"ctrl", "z"}),
     CANCEL_MOVE(ControlCategory.BOARD_KEYBOARD, "Cancel Move", new String[]{"c"}),

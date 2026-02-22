@@ -340,7 +340,7 @@ public class KeyboardInput {
 
         if(keyboard.wasCancelPressed()) { move.cancelMove(); service.getSound().playFX(1); }
         if(keyboard.wasSelectPressed()) { activate(GameState.BOARD); service.getSound().playFX(0); }
-
+        if(keyboard.wasTabPressed()) { service.getPieceService().switchTurns(); }
         repeatKeyCheck(keyboard.wasUpPressed(), () -> move(Direction.UP), now, lastUpTime, () -> lastUpTime = now);
         repeatKeyCheck(keyboard.wasDownPressed(), () -> move(Direction.DOWN), now, lastDownTime, () -> lastDownTime = now);
         repeatKeyCheck(keyboard.wasLeftPressed(), () -> move(Direction.LEFT), now, lastLeftTime, () -> lastLeftTime = now);
@@ -349,7 +349,6 @@ public class KeyboardInput {
         if(keyboard.isComboPressed(KeyEvent.VK_CONTROL, KeyEvent.VK_Z) && BooleanService.canUndoMoves) {
             move.undoLastMove();
             service.getSound().playFX(0);
-            lastRightTime = now;
         }
     }
 

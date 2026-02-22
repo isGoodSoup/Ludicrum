@@ -9,7 +9,8 @@ public enum UIButton {
     SETTINGS("settings"),
     EXIT("exit"),
     NEXT_PAGE("next_page"),
-    PREVIOUS_PAGE("previous_page");
+    PREVIOUS_PAGE("previous_page"),
+    PAUSE("pause");
 
     private final String suffix;
 

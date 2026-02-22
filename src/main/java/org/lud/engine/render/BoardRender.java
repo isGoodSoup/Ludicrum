@@ -17,6 +17,7 @@ public class BoardRender {
     private Button backButton;
     private Button undoButton;
     private Button resetButton;
+    private Button pauseButton;
     private RenderContext render;
     private UIService uiService;
     private PieceService pieceService;
@@ -124,13 +125,15 @@ public class BoardRender {
         buttonX += offset;
 
         undoButton = drawIconButton(g2, undoButton, "undo",
-                buttonX, buttonY, () -> render.getMovesManager().undoLastMove()
-        );
+                buttonX, buttonY, () -> render.getMovesManager().undoLastMove());
         buttonX += offset;
 
         resetButton = drawIconButton(g2, resetButton, "reset",
-                buttonX, buttonY, () -> boardService.resetBoard()
-        );
+                buttonX, buttonY, () -> boardService.resetBoard());
+        buttonX += offset;
+
+        pauseButton = drawIconButton(g2, pauseButton, "pause",
+                buttonX, buttonY, () -> pieceService.switchTurns());
 
         g2.setRenderingHint(
                 RenderingHints.KEY_INTERPOLATION,
@@ -163,7 +166,7 @@ public class BoardRender {
 
     public void drawBaseBoard(Graphics2D g2) {
         render.getMenuRender().clearButtons();
-        backButton = undoButton = resetButton = null;
+        backButton = undoButton = resetButton = pauseButton = null;
 
         g2.setColor(Colorblindness.filter(Colors.getBackground()));
         g2.fillRect(0, 0, RenderContext.BASE_WIDTH, RenderContext.BASE_HEIGHT);
