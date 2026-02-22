@@ -281,9 +281,7 @@ public class OptionsMenu implements UI {
                 ? Colorblindness.filter(previousPageOn)
                 : Colorblindness.filter(previousPage);
 
-        g2.drawImage(render.getMenuRender().defineButton(nextButton), nextButton.getX(), nextButton.getY(), null);
-        g2.drawImage(render.getMenuRender().defineButton(prevButton), prevButton.getX(), prevButton.getY(), null);
-        g2.drawImage(render.getMenuRender().defineButton(backButton), backButton.getX(), backButton.getY(), null);
+        render.getMenuRender().drawButtonsLayer(g2, nextButton, prevButton, backButton);
         g2.drawImage(nextImg, nextButton.getX(), nextButton.getY(), null);
         g2.drawImage(prevImg, prevButton.getX(), prevButton.getY(), null);
         g2.drawImage(backImg, backButton.getX(), backButton.getY(), null);

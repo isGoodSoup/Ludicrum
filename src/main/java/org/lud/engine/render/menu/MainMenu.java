@@ -1,6 +1,7 @@
 package org.lud.engine.render.menu;
 
 import org.lud.engine.entities.Button;
+import org.lud.engine.enums.ButtonSize;
 import org.lud.engine.enums.GameMenu;
 import org.lud.engine.enums.GameState;
 import org.lud.engine.enums.Games;
@@ -34,6 +35,9 @@ public class MainMenu implements UI {
     private final KeyboardInput keyUI;
     private final Mouse mouse;
 
+    private final BufferedImage smallButton;
+    private final BufferedImage bigButton;
+
     private final Map<Clickable, Rectangle> buttons;
     private Button playButton;
     private Button gameButton;
@@ -50,6 +54,10 @@ public class MainMenu implements UI {
         this.uiService = uiService;
         this.keyUI = keyUI;
         this.mouse = mouse;
+
+        this.smallButton = render.getMenuRender().getBUTTON_SMALL();
+        this.bigButton = render.getMenuRender().getBUTTON();
+
         this.buttons = new HashMap<>();
     }
 
@@ -127,7 +135,7 @@ public class MainMenu implements UI {
                 Games game = GameService.getGame();
                 int textX = x + (width - fm.stringWidth(game.getLabel()))/2;
                 int textY = y + (height - fm.getHeight())/2 + fm.getAscent();
-                g2.drawImage(img, x, y, null);
+                drawButtonLayers(g2, bigButton, playButton, ButtonSize.BIG, x, y);
                 g2.setColor(textColor);
                 g2.drawString(game.getLabel(), textX, textY);
             }
@@ -148,7 +156,7 @@ public class MainMenu implements UI {
                 BufferedImage img = render.isHovered(settingsButton)
                         ? render.getMenuRender().getColorblindSprite(altImg)
                         : render.getMenuRender().getColorblindSprite(baseImg);
-                g2.drawImage(render.getMenuRender().defineButton(settingsButton), x, y, null);
+                drawButtonLayers(g2, smallButton, settingsButton, ButtonSize.SMALL, x, y);
                 g2.drawImage(img, x, y, null);
             }
 
@@ -168,7 +176,7 @@ public class MainMenu implements UI {
                 BufferedImage img = render.isHovered(achievementsButton)
                         ? render.getMenuRender().getColorblindSprite(altImg)
                         : render.getMenuRender().getColorblindSprite(baseImg);
-                g2.drawImage(render.getMenuRender().defineButton(achievementsButton), x, y, null);
+                drawButtonLayers(g2, smallButton, achievementsButton, ButtonSize.SMALL, x, y);
                 g2.drawImage(img, x, y, null);
             }
 
@@ -189,7 +197,7 @@ public class MainMenu implements UI {
                 BufferedImage img = render.isHovered(exitButton)
                         ? render.getMenuRender().getColorblindSprite(altImg)
                         : render.getMenuRender().getColorblindSprite(baseImg);
-                g2.drawImage(render.getMenuRender().defineButton(exitButton), x, y, null);
+                drawButtonLayers(g2, smallButton, exitButton, ButtonSize.SMALL, x, y);
                 g2.drawImage(img, x, y, null);
             }
 
@@ -210,7 +218,7 @@ public class MainMenu implements UI {
                     BufferedImage img = render.isHovered(themeButton)
                             ? render.getMenuRender().getColorblindSprite(altImg)
                             : render.getMenuRender().getColorblindSprite(baseImg);
-                    g2.drawImage(render.getMenuRender().defineButton(themeButton), x, y, null);
+                    drawButtonLayers(g2, smallButton, themeButton, ButtonSize.SMALL, x, y);
                     g2.drawImage(img, x, y, null);
                 }
             }
@@ -227,6 +235,12 @@ public class MainMenu implements UI {
         Button b = new Button(x, y, w, h, action);
         render.getMenuRender().getButtons().put(b, new Rectangle(x, y, w, h));
         return b;
+    }
+
+    private void drawButtonLayers(Graphics2D g2, BufferedImage img, Button b, ButtonSize size, int x, int y) {
+        g2.drawImage(img, x, y, null);
+        BufferedImage frame = render.getMenuRender().defineButton(b, size);
+        g2.drawImage(frame, x, y, null);
     }
 
     private String showTooltip(GameMenu op) {

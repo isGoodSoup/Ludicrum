@@ -1,10 +1,7 @@
 package org.lud.engine.render;
 
 import org.lud.engine.entities.Button;
-import org.lud.engine.enums.ColorblindType;
-import org.lud.engine.enums.GameMenu;
-import org.lud.engine.enums.GameSettings;
-import org.lud.engine.enums.Games;
+import org.lud.engine.enums.*;
 import org.lud.engine.interfaces.Clickable;
 import org.lud.engine.interfaces.UI;
 import org.lud.engine.service.GameService;
@@ -245,9 +242,18 @@ public class MenuRender {
         return colorblindCache.getOrDefault(img, img);
     }
 
-    public BufferedImage defineButton(Clickable c) {
-        return render.isHovered(c)
-                ? getColorblindSprite(BUTTON_SMALL_HIGHLIGHTED)
-                : getColorblindSprite(BUTTON_SMALL);
+    public void drawButtonsLayer(Graphics2D g2, Button... buttons) {
+        for (Button b : buttons) {
+            g2.drawImage(BUTTON_SMALL, b.getX(), b.getY(), null);
+            BufferedImage frame = render.getMenuRender().defineButton(b, ButtonSize.SMALL);
+            g2.drawImage(frame, b.getX(), b.getY(), null);
+        }
+    }
+
+    public BufferedImage defineButton(Clickable c, ButtonSize size) {
+        return switch(size) {
+            case BIG -> render.isHovered(c) ? BUTTON_HIGHLIGHTED : null;
+            case SMALL -> render.isHovered(c) ? BUTTON_SMALL_HIGHLIGHTED : null;
+        };
     }
 }
