@@ -20,6 +20,8 @@ public class MouseInput {
     private int offsetY;
 
     public boolean isClicking = false;
+    private boolean wasPressedLastFrame = false;
+    private boolean wasJustDropped = false;
     private Clickable click = null;
 
     public MouseInput(Mouse mouse, ServiceFactory service) {
@@ -73,25 +75,29 @@ public class MouseInput {
     }
 
     private void updateMenus(Map<Clickable, Rectangle> buttons) {
+        boolean wasMousePressed = mouse.wasPressed();
         for(Map.Entry<Clickable, Rectangle> entry : buttons.entrySet()) {
-            if(entry.getValue().contains(mouse.getX(), mouse.getY()) && mouse.wasPressed()) {
-                if (!isClickingOption(entry.getKey())) {
-                    service.getSound().playFX(0);
-                    entry.getKey().onClick(service.getGameService());
-                    isClicking = true;
-                    click = entry.getKey();
-                }
-                break;
+            boolean hover = entry.getValue().contains(mouse.getX(), mouse.getY());
+            if(hover && wasMousePressed && !wasPressedLastFrame) {
+                service.getSound().playFX(0);
+                entry.getKey().onClick(service.getGameService());
+                isClicking = true;
+                click = entry.getKey();
             }
         }
 
-        if(!mouse.wasPressed()) {
+        wasPressedLastFrame = wasMousePressed;
+        if(!wasMousePressed) {
             isClicking = false;
             click = null;
         }
     }
 
     private void checkPiece() {
+        if(mouse.wasPressed()) {
+            wasJustDropped = false;
+        }
+
         if(mouse.wasPressed() && piece == null) {
             RenderContext render = service.getRender();
             int logicalMouseX = render.unscaleX(mouse.getX());
@@ -145,7 +151,7 @@ public class MouseInput {
     }
 
     private void dropPiece() {
-        if(!mouse.wasPressed() && piece != null) {
+        if(!mouse.wasPressed() && piece != null && !wasJustDropped) {
             RenderContext render = service.getRender();
             int boardSize = Board.getSquare() *
                     service.getBoardService().getBoard().getGrids().get(GameService.getGame());
@@ -161,6 +167,7 @@ public class MouseInput {
             service.getMovesManager().attemptMove(piece, targetCol, targetRow);
             service.getSound().playFX(0);
             piece = null;
+            wasJustDropped = true;
         }
     }
 }

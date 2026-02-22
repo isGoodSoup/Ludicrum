@@ -9,7 +9,6 @@ import org.lud.engine.enums.Games;
 import org.lud.engine.gui.Colors;
 import org.lud.engine.input.KeyboardInput;
 import org.lud.engine.input.Mouse;
-import org.lud.engine.interfaces.Clickable;
 import org.lud.engine.interfaces.State;
 import org.lud.engine.interfaces.UI;
 import org.lud.engine.render.Colorblindness;
@@ -23,8 +22,6 @@ import org.slf4j.LoggerFactory;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.HashMap;
-import java.util.Map;
 
 public class MainMenu implements UI {
     private static final int ARC = 32;
@@ -42,7 +39,6 @@ public class MainMenu implements UI {
     private BufferedImage smallButton;
     private BufferedImage bigButton;
 
-    private final Map<Clickable, Rectangle> buttons;
     private Button playButton;
     private Button gameButton;
     private Button achievementsButton;
@@ -58,11 +54,6 @@ public class MainMenu implements UI {
         this.uiService = uiService;
         this.keyUI = keyUI;
         this.mouse = mouse;
-        this.buttons = new HashMap<>();
-    }
-
-    public Map<Clickable, Rectangle> getButtons() {
-        return buttons;
     }
 
     private int getTotalWidth() {
@@ -96,7 +87,9 @@ public class MainMenu implements UI {
     }
 
     public void draw(Graphics2D g2, GameMenu[] options) {
-        buttons.clear();
+        render.getMenuRender().clearButtons();
+        playButton = settingsButton = achievementsButton = exitButton = themeButton = null;
+
         int totalWidth = getTotalWidth();
         g2.setColor(Colorblindness.filter(Colors.getBackground()));
         g2.fillRect(0, 0, totalWidth,
@@ -245,7 +238,7 @@ public class MainMenu implements UI {
     }
 
     private int[] getStart() {
-        int startX = getTotalWidth()/2 + 75;
+        int startX = getTotalWidth()/2 + 115;
         int startY = render.scale(RenderContext.BASE_HEIGHT - 300);
         return new int[]{startX, startY};
     }
@@ -273,8 +266,10 @@ public class MainMenu implements UI {
 
     private BufferedImage[] getSprites(String key) {
         ButtonSprite sprite = render.getMenuRender().getButtonRegistry().get(key);
-        BufferedImage baseImg = sprite.normal;
-        BufferedImage altImg = sprite.highlighted;
-        return new BufferedImage[]{baseImg, altImg};
+        if(sprite == null) {
+            log.warn("Button sprite not found for key: {}", key);
+            return new BufferedImage[]{null, null};
+        }
+        return new BufferedImage[]{sprite.normal, sprite.highlighted};
     }
 }

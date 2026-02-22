@@ -20,7 +20,6 @@ import org.lud.engine.service.UIService;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.HashMap;
 import java.util.Map;
 
 public class OptionsMenu implements UI {
@@ -44,8 +43,6 @@ public class OptionsMenu implements UI {
     private final BufferedImage hardModeOn;
     private final BufferedImage hardModeOnHighlighted;
 
-    private final Map<Clickable, Rectangle> buttons;
-
     private Button nextButton;
     private Button prevButton;
     private Button backButton;
@@ -60,7 +57,6 @@ public class OptionsMenu implements UI {
         this.keyUI = keyUI;
         this.mouse = mouse;
         this.mouseInput = mouseInput;
-        this.buttons = new HashMap<>();
 
         this.toggleOn = images[0];
         this.toggleOff = images[1];
@@ -68,10 +64,6 @@ public class OptionsMenu implements UI {
         this.toggleOffHighlighted = images[3];
         this.hardModeOn = images[4];
         this.hardModeOnHighlighted = images[5];
-    }
-
-    public Map<Clickable, Rectangle> getButtons() {
-        return buttons;
     }
 
     private int getTotalWidth() {
@@ -93,7 +85,7 @@ public class OptionsMenu implements UI {
     }
 
     public void draw(Graphics2D g2, GameSettings[] options) {
-        buttons.clear();
+        render.getMenuRender().clearButtons();
         int totalWidth = getTotalWidth();
         g2.setColor(Colorblindness.filter(Colors.getBackground()));
         g2.fillRect(0, 0, totalWidth,
@@ -160,7 +152,7 @@ public class OptionsMenu implements UI {
                     toggleHeight
             );
 
-            buttons.put(option, toggleHitbox);
+            render.getMenuRender().getButtons().put(option, toggleHitbox);
 
             boolean isEnabled = option.get();
             boolean isHovered = toggleHitbox.contains(
@@ -210,6 +202,7 @@ public class OptionsMenu implements UI {
 
     private void initButtons(GameSettings[] options, int totalWidth) {
         int baseY = render.scale(RenderContext.BASE_HEIGHT - 115);
+        Map<Clickable, Rectangle> buttons = render.getMenuRender().getButtons();
         if(nextButton == null) {
             int x = totalWidth/2;
             int y = baseY;
@@ -258,7 +251,6 @@ public class OptionsMenu implements UI {
 
         buttons.put(backButton, new Rectangle(backButton.getX(), backButton.getY(),
                         backButton.getWidth(), backButton.getHeight()));
-        render.getMenuRender().getButtons().putAll(buttons);
     }
 
     private void drawButtons(Graphics2D g2) {

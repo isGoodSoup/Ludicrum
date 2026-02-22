@@ -172,4 +172,8 @@ public class MenuRender {
         ButtonSprite sprite = buttonRegistry.get(key);
         return render.isHovered(c) ? sprite.highlighted : null;
     }
+
+    public void clearButtons() {
+        buttons.clear();
+    }
 }

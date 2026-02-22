@@ -94,8 +94,7 @@ public class BoardRender {
         int leftPanelWidth = render.scale(RenderContext.BASE_WIDTH/2);
         int totalBoardWidth = Board.getSquare() * boardService.getBoard().getCol();
         int scaledBoardWidth = render.scale(totalBoardWidth);
-        int middlePanelWidth =
-                render.scale(RenderContext.BASE_WIDTH - 2 * RenderContext.BASE_WIDTH/2);
+        int middlePanelWidth = render.scale(RenderContext.BASE_WIDTH - 2 * RenderContext.BASE_WIDTH/2);
         int centerOffset = (middlePanelWidth - scaledBoardWidth)/2;
         return render.getOffsetX() + leftPanelWidth + centerOffset;
     }
@@ -163,6 +162,9 @@ public class BoardRender {
     }
 
     public void drawBaseBoard(Graphics2D g2) {
+        render.getMenuRender().clearButtons();
+        backButton = undoButton = resetButton = null;
+
         g2.setColor(Colorblindness.filter(Colors.getBackground()));
         g2.fillRect(0, 0, RenderContext.BASE_WIDTH, RenderContext.BASE_HEIGHT);
 
@@ -246,9 +248,9 @@ public class BoardRender {
         );
     }
 
-    private Button createButton(int x, int y, int w, int h, Runnable action) {
-        Button b = new Button(x, y, w, h, action);
-        render.getMenuRender().getButtons().put(b, new Rectangle(x, y, w, h));
+    private Button createButton(int x, int y, int width, int height, Runnable action) {
+        Button b = new Button(x, y, width, height, action);
+        render.getMenuRender().getButtons().put(b, new Rectangle(x, y, width, height));
         return b;
     }
 
@@ -257,6 +259,7 @@ public class BoardRender {
         BufferedImage[] sprites = getSprites(spriteKey);
         BufferedImage base = sprites[0];
         BufferedImage highlighted = sprites[1];
+
         if(button == null) {
             button = createButton(x, y, base.getWidth(), base.getHeight(), action);
         }

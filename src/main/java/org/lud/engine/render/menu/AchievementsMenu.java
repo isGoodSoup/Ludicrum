@@ -5,7 +5,6 @@ import org.lud.engine.enums.GameState;
 import org.lud.engine.enums.Theme;
 import org.lud.engine.gui.Colors;
 import org.lud.engine.input.KeyboardInput;
-import org.lud.engine.interfaces.Clickable;
 import org.lud.engine.interfaces.State;
 import org.lud.engine.interfaces.UI;
 import org.lud.engine.render.AchievementLock;
@@ -18,9 +17,7 @@ import org.lud.engine.service.UIService;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class AchievementsMenu implements UI {
     private static final int ARC = 32;
@@ -33,8 +30,6 @@ public class AchievementsMenu implements UI {
     private final KeyboardInput keyUI;
     private final AchievementService achievementService;
 
-    private final Map<Clickable, Rectangle> buttons;
-
     public AchievementsMenu(RenderContext render,
                             UIService uiService,
                             KeyboardInput keyUI,
@@ -43,11 +38,6 @@ public class AchievementsMenu implements UI {
         this.uiService = uiService;
         this.keyUI = keyUI;
         this.achievementService = achievementService;
-        this.buttons = new HashMap<>();
-    }
-
-    public Map<Clickable, Rectangle> getButtons() {
-        return buttons;
     }
 
     private int getTotalWidth() {
@@ -73,6 +63,7 @@ public class AchievementsMenu implements UI {
     }
 
     public void draw(Graphics2D g2) {
+        render.getMenuRender().clearButtons();
         int totalWidth = getTotalWidth();
 
         g2.setColor(Colorblindness.filter(Colors.getBackground()));
@@ -114,9 +105,7 @@ public class AchievementsMenu implements UI {
                     ? Color.WHITE : Colors.getForeground()));
             g2.setFont(UIService.getFont(UIService.getMENU_FONT()));
 
-            buttons.put(a, new Rectangle(x, startY, width, height));
-            render.getMenuRender().getButtons().putAll(buttons);
-
+            render.getMenuRender().getButtons().put(a, new Rectangle(x, startY, width, height));
             if(isSelected || render.isHovered(a)) {
                 UIService.drawBox(g2, STROKE, x, startY,
                         width, height, ARC, hasBackground,
