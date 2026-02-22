@@ -5,6 +5,7 @@ import org.lud.engine.entities.Piece;
 import org.lud.engine.enums.Games;
 import org.lud.engine.interfaces.Clickable;
 import org.lud.engine.render.RenderContext;
+import org.lud.engine.service.BooleanService;
 import org.lud.engine.service.GameService;
 import org.lud.engine.service.PieceService;
 import org.lud.engine.service.ServiceFactory;
@@ -116,8 +117,8 @@ public class MouseInput {
                 int pieceY = p.getRow() * Board.getSquare();
 
                 boolean isSandbox = GameService.getGame() == Games.SANDBOX;
-                if((isSandbox ||
-                        p.getColor() == service.getGameService().getCurrentTurn())
+                if((isSandbox || (!BooleanService.isTurnLocked &&
+                        p.getColor() == service.getGameService().getCurrentTurn()))
                         && mouseBoardX >= pieceX
                         && mouseBoardX < pieceX + Board.getSquare()
                         && mouseBoardY >= pieceY
@@ -132,6 +133,7 @@ public class MouseInput {
     }
 
     private void pickUpPiece() {
+        if(BooleanService.isTurnLocked) { return; }
         if(piece != null) {
             RenderContext render = service.getRender();
             int logicalMouseX = render.unscaleX(mouse.getX());
@@ -151,6 +153,7 @@ public class MouseInput {
     }
 
     private void dropPiece() {
+        if(BooleanService.isTurnLocked) { return; }
         if(!mouse.wasPressed() && piece != null && !wasJustDropped) {
             RenderContext render = service.getRender();
             int boardSize = Board.getSquare() *

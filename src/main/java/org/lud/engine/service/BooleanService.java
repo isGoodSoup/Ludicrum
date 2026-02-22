@@ -45,7 +45,7 @@ public class BooleanService {
     public static void defaultToggles() {
         isTurnLocked = false;
         canSwitchTurns = true;
-        canDoAuto = true;
+        canDoAuto = false;
         canPlayFX = true;
         canUndoMoves = true;
         canDoMoves = true;

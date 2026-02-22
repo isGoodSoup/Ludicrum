@@ -190,12 +190,16 @@ public class MovesManager {
             service.getPieceService().setHoveredPieceKeyboard(promoted);
         }
 
-        if(isHumanMove && BooleanService.canDoAuto) {
+        if(BooleanService.canDoAuto) {
             commitMove();
         }
 
         if(isAIturn()) {
             service.getModelService().triggerAIMove();
+        }
+
+        if(isHumanTurn(service.getGameService().getCurrentTurn())) {
+            BooleanService.isTurnLocked = false;
         }
 
         if(isCheckmate()) {
@@ -374,8 +378,13 @@ public class MovesManager {
         if(isCommiting) { return; }
         isCommiting = true;
         Turn.nextTurn(service.getGameService());
+        BooleanService.isTurnLocked = true;
         service.getSound().playFX(0);
         isCommiting = false;
+
+        if(service.getGameService().getCurrentTurn() == Turn.DARK) {
+            service.getModelService().triggerAIMove();
+        }
     }
 
     public void cancelMove() {

@@ -60,6 +60,7 @@ public class ModelService {
                     executeMove(AIMove);
                     BoardService.getMovesManager().commitMove();
                     BooleanService.isAIMoving = false;
+                    BooleanService.isTurnLocked = false;
                 });
             } else {
                 BooleanService.isAIMoving = false;

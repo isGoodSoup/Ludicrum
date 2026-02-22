@@ -146,8 +146,8 @@ public class KeyboardInput {
                     service.getPieceService().getPieces());
 
             boolean isSandbox = GameService.getGame() == Games.SANDBOX;
-            boolean canSelect = isSandbox || Objects.requireNonNull(piece).getColor()
-                    == service.getGameService().getCurrentTurn();
+            boolean canSelect = !BooleanService.isTurnLocked && (isSandbox || Objects.requireNonNull(piece).getColor()
+                    == service.getGameService().getCurrentTurn());
 
             if(canSelect) {
                 service.getMovesManager().setSelectedPiece(piece);
@@ -344,7 +344,6 @@ public class KeyboardInput {
         if(keyboard.wasTabPressed() && !BooleanService.canDoAuto) {
             if(!BooleanService.isTurnLocked) {
                 service.getMovesManager().commitMove();
-                BooleanService.isTurnLocked = true;
             }
         }
         repeatKeyCheck(keyboard.wasUpPressed(), () -> move(Direction.UP), now, lastUpTime, () -> lastUpTime = now);
