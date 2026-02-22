@@ -28,6 +28,8 @@ public class AchievementService {
     private Set<Turn> kingsChecked;
 
     private int castlingCount = 0;
+    private int opponentPieces = 0;
+    private int piecesCounter = 0;
 
     private boolean isFirstCapture;
     private boolean isFirstToggle;
@@ -86,6 +88,10 @@ public class AchievementService {
                 unlock(Achievements.MASTER_OF_NONE);
             }
         });
+
+        eventBus.register(VictoryEvent.class, this::onVictory);
+        eventBus.register(StrategistEvent.class, this::onStrategist);
+
         eventBus.register(GrandmasterEvent.class, this::onGrandmaster);
     }
 
@@ -117,6 +123,30 @@ public class AchievementService {
 
     public void setAnimationService(AnimationService animationService) {
         this.animationService = animationService;
+    }
+
+    public int getOpponentPieces() {
+        return opponentPieces;
+    }
+
+    public void setOpponentPieces(int opponentPieces) {
+        this.opponentPieces = opponentPieces;
+    }
+
+    public void addOpponentPieces() {
+        this.opponentPieces += 1;
+    }
+
+    public int getPiecesCounter() {
+        return piecesCounter;
+    }
+
+    public void setPiecesCounter(int piecesCounter) {
+        this.piecesCounter = piecesCounter;
+    }
+
+    public void addPiecesCounter() {
+        this.piecesCounter += 1;
     }
 
     public void unlock(Achievements type) {
@@ -282,6 +312,15 @@ public class AchievementService {
         }
     }
 
+    private void onVictory(VictoryEvent event) {
+        if(GameService.getGame() != Games.CHECKERS) { return; }
+        Piece p = event.piece();
+
+        if(opponentPieces == 0) {
+            unlock(Achievements.QUICK_START);
+        }
+    }
+
     private void onHardGame(HardEvent event) {
         if(GameService.getGame() != Games.CHESS) { return; }
         Piece piece = event.piece();
@@ -295,6 +334,16 @@ public class AchievementService {
 
         if(promotionCount.get(piece.getID()) == 4) {
             unlock(Achievements.KING_PROMOTER);
+        }
+    }
+
+    private void onStrategist(StrategistEvent event) {
+        if(GameService.getGame() != Games.CHECKERS) { return; }
+        Piece p = event.piece();
+        Turn color = event.color();
+
+        if(piecesCounter == 12) {
+            unlock(Achievements.STRATEGIST);
         }
     }
 

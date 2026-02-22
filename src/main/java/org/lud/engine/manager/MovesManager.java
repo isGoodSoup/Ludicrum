@@ -202,18 +202,30 @@ public class MovesManager {
             BooleanService.isTurnLocked = false;
         }
 
-        if(isCheckmate()) {
-            eventBus.fire(new CheckmateEvent(piece,
-                    service.getPieceService().getKing(Turn.DARK)));
-            eventBus.fire(new TotalMovesEvent(piece));
+        if(GameService.getGame() == Games.CHESS) {
+            if(isCheckmate()) {
+                eventBus.fire(new CheckmateEvent(piece,
+                        service.getPieceService().getKing(Turn.DARK)));
+                eventBus.fire(new TotalMovesEvent(piece));
+            }
+
+            if(isCheckmate() && BooleanService.canDoHard) {
+                eventBus.fire(new HardEvent(piece));
+            }
+
+            if(isStalemate()) {
+                eventBus.fire(new StalemateEvent(piece));
+            }
         }
 
-        if(isCheckmate() && BooleanService.canDoHard) {
-            eventBus.fire(new HardEvent(piece));
-        }
+        if(GameService.getGame() == Games.CHECKERS) {
+            if(isVictory()) {
+                eventBus.fire(new VictoryEvent(piece));
+            }
 
-        if(isStalemate()) {
-            eventBus.fire(new StalemateEvent(piece));
+            if(isVictory() && noLoses()) {
+                eventBus.fire(new StrategistEvent(piece, piece.getColor()));
+            }
         }
     }
 
@@ -276,6 +288,28 @@ public class MovesManager {
             }
         }
         return false;
+    }
+
+    private boolean isVictory() {
+        int opponentPieces = service.getAchievementService().getOpponentPieces();
+        boolean hasLegalMove = false;
+        for (Piece p : service.getPieceService().getPieces()) {
+            if (p instanceof Checker && p.getColor() != service.getGameService().getCurrentTurn()) {
+                opponentPieces++;
+                for (int col = 0; col < service.getBoardService().getBoard().getCol(); col++) {
+                    for (int row = 0; row < service.getBoardService().getBoard().getRow(); row++) {
+                        if (p.canMove(col, row, service.getPieceService().getPieces())) {
+                            hasLegalMove = true;
+                            break;
+                        }
+                    }
+                    if (hasLegalMove) break;
+                }
+                if (hasLegalMove) break;
+            }
+        }
+        service.getAchievementService().setOpponentPieces(opponentPieces);
+        return service.getAchievementService().getOpponentPieces() == 0 || !hasLegalMove;
     }
 
     private void executeCastling(Piece currentPiece, int targetCol) {
@@ -372,6 +406,17 @@ public class MovesManager {
             }
         }
         return false;
+    }
+
+    private boolean noLoses() {
+        int piecesCounter = service.getAchievementService().getPiecesCounter();
+        for(Piece p : service.getPieceService().getPieces()) {
+            if(p instanceof Checker && p.getColor() == service.getGameService().getCurrentTurn()) {
+                piecesCounter++;
+            }
+        }
+        service.getAchievementService().setPiecesCounter(piecesCounter);
+        return service.getAchievementService().getPiecesCounter() == 12;
     }
 
     public void commitMove() {
