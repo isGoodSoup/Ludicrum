@@ -207,10 +207,9 @@ public class UIService {
         g2.drawRoundRect(x, y, width, height, arc, arc);
     }
 
-    public void drawTooltip(Graphics2D g2, String text, int padding, int arc) {
-
+    public void drawTooltip(Graphics2D g2, String text, int padding, int arc,
+                            boolean isMisplaced, int newX, int newY) {
         String[] lines = text.split("\n");
-
         FontMetrics fm = g2.getFontMetrics();
 
         int maxWidth = 0;
@@ -224,8 +223,17 @@ public class UIService {
         int lineHeight = fm.getHeight();
         int totalTextHeight = lineHeight * lines.length;
 
-        int boxX = mouse.getX();
-        int boxY = mouse.getY();
+        int boxX = 0;
+        int boxY = 0;
+
+        if(isMisplaced) {
+            boxX = newX;
+            boxY = newY;
+        } else {
+            boxX = mouse.getX();
+            boxY = mouse.getY();
+        }
+
         int boxWidth = maxWidth + padding * 2;
         int boxHeight = totalTextHeight + padding * 2;
 

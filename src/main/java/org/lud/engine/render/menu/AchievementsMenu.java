@@ -107,7 +107,10 @@ public class AchievementsMenu implements UI {
                 UIService.drawBox(g2, STROKE, x, startY,
                         width, height, ARC, hasBackground,
                         true, 255);
-                uiService.drawTooltip(g2, a.getId().getDescription(), 16, ARC);
+
+                uiService.drawTooltip(g2, a.getId().getDescription(),
+                        16, ARC, true, render.scale(RenderContext.BASE_WIDTH - 100),
+                        render.scale(RenderContext.BASE_HEIGHT - 50));
             } else {
                 UIService.drawBox(g2, STROKE, x, startY,
                         width, height, ARC, hasBackground,

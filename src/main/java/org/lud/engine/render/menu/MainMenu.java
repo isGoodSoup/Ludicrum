@@ -274,8 +274,10 @@ public class MainMenu implements UI {
 
     public void drawTooltip(Graphics2D g2, String text) {
         int padding = 16;
-        g2.setFont(UIService.getFont(UIService.getMENU_FONT()/2));
-        uiService.drawTooltip(g2, text, padding, ARC);
+        g2.setFont(UIService.getFont(UIService.getMENU_FONT()));
+        uiService.drawTooltip(g2, text, padding, ARC, true,
+                render.scale(RenderContext.BASE_WIDTH/2 - g2.getFontMetrics().stringWidth(text)/2 - 15),
+                render.scale(RenderContext.BASE_HEIGHT - 100));
     }
 
     private String showTooltip(GameMenu op) {
