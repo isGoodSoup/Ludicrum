@@ -61,6 +61,7 @@ public class ModelService {
                     BoardService.getMovesManager().commitMove();
                     BooleanService.isAIMoving = false;
                     BooleanService.isTurnLocked = false;
+                    BooleanService.wasTabPressed = false;
                 });
             } else {
                 BooleanService.isAIMoving = false;
@@ -76,10 +77,10 @@ public class ModelService {
         animationService.startMove(p, move.targetCol(), move.targetRow());
         boardService.getService().getSound().playFX(0);
 
-        BooleanService.canDoAuto = false;
+        BooleanService.cannotAutoCommit = true;
         BoardService.getMovesManager()
                 .attemptMove(move.piece(), move.targetCol(), move.targetRow());
-        BooleanService.canDoAuto = true;
+        BooleanService.cannotAutoCommit = false;
     }
 
     public Move getAiTurn() {

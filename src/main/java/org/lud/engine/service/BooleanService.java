@@ -21,7 +21,8 @@ public class BooleanService {
     public static boolean canType;
     public static boolean canPlayFX;
     public static boolean canZoomIn;
-    public static boolean canSwitchTurns;
+    public static boolean cannotAutoCommit;
+    public static boolean wasTabPressed;
 
     public static boolean canDoMoves;
     public static boolean canUndoMoves;
@@ -44,8 +45,8 @@ public class BooleanService {
 
     public static void defaultToggles() {
         isTurnLocked = false;
-        canSwitchTurns = true;
         canDoAuto = false;
+        cannotAutoCommit = false;
         canPlayFX = true;
         canUndoMoves = true;
         canDoMoves = true;
@@ -65,6 +66,7 @@ public class BooleanService {
         canType = false;
         canToggleHelp = false;
         isDragging = false;
+        wasTabPressed = false;
     }
 
     public static boolean getBoolean() {

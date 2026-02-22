@@ -190,7 +190,7 @@ public class MovesManager {
             service.getPieceService().setHoveredPieceKeyboard(promoted);
         }
 
-        if(BooleanService.canDoAuto) {
+        if(BooleanService.canDoAuto && !BooleanService.cannotAutoCommit) {
             commitMove();
         }
 
@@ -377,14 +377,19 @@ public class MovesManager {
     public void commitMove() {
         if(isCommiting) { return; }
         isCommiting = true;
+        BooleanService.cannotAutoCommit = true;
+
         Turn.nextTurn(service.getGameService());
         BooleanService.isTurnLocked = true;
-        service.getSound().playFX(0);
-        isCommiting = false;
 
         if(service.getGameService().getCurrentTurn() == Turn.DARK) {
             service.getModelService().triggerAIMove();
+            BooleanService.wasTabPressed = true;
         }
+
+        service.getSound().playFX(0);
+        isCommiting = false;
+        BooleanService.cannotAutoCommit = false;
     }
 
     public void cancelMove() {

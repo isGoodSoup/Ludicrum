@@ -330,6 +330,7 @@ public class KeyboardInput {
         if(keyboard.wasRightPressed()) { nextPage(achievements.size()); selectedIndexY = 0; service.getSound().playFX(2); lastRightTime = now; }
     }
 
+    @SuppressWarnings("StatementWithEmptyBody")
     private void boardInput(Keyboard keyboard, long now, MovesManager move) {
         if(keyboard.isComboPressed(KeyEvent.VK_CONTROL, KeyEvent.VK_S)) {
             service.getBoardService().toggleSandboxMode();
@@ -342,9 +343,9 @@ public class KeyboardInput {
         if(keyboard.wasCancelPressed()) { move.cancelMove(); service.getSound().playFX(1); }
         if(keyboard.wasSelectPressed()) { activate(GameState.BOARD); service.getSound().playFX(0); }
         if(keyboard.wasTabPressed() && !BooleanService.canDoAuto) {
-            if(!BooleanService.isTurnLocked) {
+            if(!BooleanService.isTurnLocked && !BooleanService.wasTabPressed) {
                 service.getMovesManager().commitMove();
-            }
+            } else {}
         }
         repeatKeyCheck(keyboard.wasUpPressed(), () -> move(Direction.UP), now, lastUpTime, () -> lastUpTime = now);
         repeatKeyCheck(keyboard.wasDownPressed(), () -> move(Direction.DOWN), now, lastDownTime, () -> lastDownTime = now);

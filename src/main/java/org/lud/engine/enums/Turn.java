@@ -16,6 +16,5 @@ public enum Turn {
 		Turn[] turns = Turn.values();
 		int nextIndex = (gameService.getCurrentTurn().ordinal() + 1) % turns.length;
 		gameService.setCurrentTurn(turns[nextIndex]);
-		log.info("Changed turns to {}", gameService.getCurrentTurn());
 	}
 }
