@@ -85,7 +85,6 @@ public class OptionsMenu implements UI {
     }
 
     public void draw(Graphics2D g2, GameSettings[] options) {
-        render.getMenuRender().clearButtons();
         int totalWidth = getTotalWidth();
         g2.setColor(Colorblindness.filter(Colors.getBackground()));
         g2.fillRect(0, 0, totalWidth,
@@ -203,64 +202,61 @@ public class OptionsMenu implements UI {
     private void initButtons(GameSettings[] options, int totalWidth) {
         int baseY = render.scale(RenderContext.BASE_HEIGHT - 115);
         Map<Clickable, Rectangle> buttons = render.getMenuRender().getButtons();
-        if(nextButton == null) {
-            int x = totalWidth/2;
+
+        if(backButton == null) {
+            int x = render.scale(50);
             int y = baseY;
 
-            nextButton = new Button(x, y, getSprites()[2].getWidth(),
-                    getSprites()[2].getHeight(), () -> {
-                        int totalPages =
-                                (options.length
-                                        + KeyboardInput.getITEMS_PER_PAGE() - 1)
-                                        / KeyboardInput.getITEMS_PER_PAGE() - 1;
-
-                        int page = keyUI.getCurrentPage() + 1;
-                        if(page > totalPages)
-                            page = totalPages;
-
-                        keyUI.setCurrentPage(page);
-                    });
+            backButton = createButton(x, y, getSprites()[0].getWidth(), getSprites()[0].getHeight(),
+                    () -> gameService.setState(GameState.MENU));
         }
 
         if(prevButton == null) {
             int x = totalWidth/2 - render.scale(80);
             int y = baseY;
 
-            prevButton = new Button(x, y, getSprites()[0].getWidth(),
-                    getSprites()[0].getHeight(), () -> {
+            prevButton = createButton(x, y, getSprites()[0].getWidth(), getSprites()[0].getHeight(),
+                    () -> {
                         int page = keyUI.getCurrentPage() - 1;
-                        if(page < 0)
+                        if (page < 0) {
                             page = 0;
+                        }
                         keyUI.setCurrentPage(page);
                     });
         }
 
-        if(backButton == null) {
-            int x = 50;
+        if(nextButton == null) {
+            int x = totalWidth/2;
             int y = baseY;
 
-            backButton = new Button(x, y, getSprites()[0].getWidth(),
-                    getSprites()[0].getHeight(), () -> gameService.setState(GameState.MENU));
+            nextButton = createButton(x, y, getSprites()[0].getWidth(), getSprites()[0].getHeight(),
+                    () -> {
+                        int totalPages = (options.length + KeyboardInput.getITEMS_PER_PAGE() - 1)
+                                        / KeyboardInput.getITEMS_PER_PAGE() - 1;
+
+                        int page = keyUI.getCurrentPage() + 1;
+                        if(page > totalPages) {
+                            page = totalPages;
+                        }
+                        keyUI.setCurrentPage(page);
+                    });
         }
+    }
 
-        buttons.put(nextButton, new Rectangle(nextButton.getX(), nextButton.getY(),
-                        nextButton.getWidth(), nextButton.getHeight()));
-
-        buttons.put(prevButton, new Rectangle(prevButton.getX(), prevButton.getY(),
-                        prevButton.getWidth(), prevButton.getHeight()));
-
-        buttons.put(backButton, new Rectangle(backButton.getX(), backButton.getY(),
-                        backButton.getWidth(), backButton.getHeight()));
+    private Button createButton(int x, int y, int width, int height, Runnable action) {
+        Button b = new Button(x, y, width, height, action);
+        render.getMenuRender().getButtons().put(b, new Rectangle(x, y, width, height));
+        return b;
     }
 
     private void drawButtons(Graphics2D g2) {
         BufferedImage nextImg = render.isHovered(nextButton)
-                        ? Colorblindness.filter(getSprites()[3])
-                        : Colorblindness.filter(getSprites()[2]);
+                ? Colorblindness.filter(getSprites()[3])
+                : Colorblindness.filter(getSprites()[2]);
 
         BufferedImage prevImg = render.isHovered(prevButton)
-                        ? Colorblindness.filter(getSprites()[1])
-                        : Colorblindness.filter(getSprites()[0]);
+                ? Colorblindness.filter(getSprites()[1])
+                : Colorblindness.filter(getSprites()[0]);
 
         BufferedImage backImg = render.isHovered(backButton)
                 ? Colorblindness.filter(getSprites()[1])

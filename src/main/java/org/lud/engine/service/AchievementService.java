@@ -317,7 +317,7 @@ public class AchievementService {
         Piece p = event.piece();
 
         if(opponentPieces == 0) {
-            unlock(Achievements.QUICK_START);
+            unlock(Achievements.CLEAN_SWEEP);
         }
     }
 
