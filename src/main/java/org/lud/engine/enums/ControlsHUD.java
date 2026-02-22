@@ -15,11 +15,11 @@ public enum ControlsHUD {
     SELECT(ControlCategory.MENU, "Select", new String[]{"enter"}),
     CANCEL(ControlCategory.MENU, "Back", new String[]{"escape"}),
 
-    SWITCH_TURNS(ControlCategory.BOARD_KEYBOARD, "Switch Turns", new String[]{"tab"}),
+    SWITCH_TURNS(ControlCategory.BOARD_KEYBOARD, "Switch", new String[]{"tab"}),
     RESET_BOARD(ControlCategory.BOARD_KEYBOARD, "Reset Board", new String[]{"ctrl", "r"}),
     UNDO_MOVE(ControlCategory.BOARD_KEYBOARD, "Undo Last Move", new String[]{"ctrl", "z"}),
     CANCEL_MOVE(ControlCategory.BOARD_KEYBOARD, "Cancel Move", new String[]{"c"}),
-    TOGGLE_MOVES_LIST(ControlCategory.BOARD_KEYBOARD, "Toggle Moves", new String[]{"ctrl", "h"}),
+    TOGGLE_MOVES_LIST(ControlCategory.BOARD_KEYBOARD, "Toggle", new String[]{"ctrl", "h"}),
 
     DRAG_PIECE(ControlCategory.BOARD_MOUSE, "Move Piece", new String[]{"mouse_left"}),
 

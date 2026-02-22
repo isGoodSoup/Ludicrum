@@ -188,6 +188,10 @@ public class MovesManager {
             service.getPieceService().setHoveredPieceKeyboard(promoted);
         }
 
+        if(BooleanService.canDoAuto) {
+            commitMove(false);
+        }
+
         if(isCheckmate()) {
             eventBus.fire(new CheckmateEvent(piece,
                     service.getPieceService().getKing(Tint.DARK)));
@@ -364,15 +368,23 @@ public class MovesManager {
         return false;
     }
 
-    public void commitMove() {
+    public void commitMove(boolean force) {
         service.getTimerService().pause();
-        if(!(GameService.getGame() == Games.SANDBOX) && BooleanService.canSwitchTurns) {
+
+        boolean shouldSwitch = force || BooleanService.canDoAuto;
+        if(!(GameService.getGame() == Games.SANDBOX)
+                && (BooleanService.canSwitchTurns || shouldSwitch)) {
             service.getGameService().setCurrentTurn(
-                    service.getGameService().getCurrentTurn() == Tint.LIGHT ? Tint.DARK : Tint.LIGHT
+                    service.getGameService().getCurrentTurn()
+                            == Tint.LIGHT ? Tint.DARK : Tint.LIGHT
             );
         }
 
-        if(service.getGameService().getCurrentTurn() == Tint.DARK) {
+        service.getSound().playFX(0);
+
+        if(BooleanService.canDoAuto
+                && service.getGameService().getCurrentTurn() == Tint.DARK &&
+                !BooleanService.isAIMoving) {
             service.getModelService().triggerAIMove();
         }
     }

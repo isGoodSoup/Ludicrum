@@ -54,6 +54,7 @@ public class ServiceFactory {
         this.promotion = new PromotionService(piece, eventBus);
         this.model = new ModelService(piece, animation, promotion);
         this.movesManager = new MovesManager();
+        this.promotion.setMovesManager(movesManager);
         this.piece.setMoveManager(movesManager);
         this.render.setMovesManager(movesManager);
         this.saveManager = new SaveManager();

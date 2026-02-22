@@ -38,11 +38,13 @@ public class BooleanService {
     public static boolean canTheme;
     public static boolean canShowTick;
     public static boolean canToggleHelp;
+    public static boolean canDoAuto;
 
     private static final Random random = new Random();
 
     public static void defaultToggles() {
         canSwitchTurns = true;
+        canDoAuto = false;
         canPlayFX = true;
         canUndoMoves = true;
         canDoMoves = true;

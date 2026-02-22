@@ -1,6 +1,7 @@
 package org.lud.engine.service;
 
 import org.lud.engine.entities.*;
+import org.lud.engine.manager.MovesManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.lud.engine.enums.Games;
@@ -17,6 +18,7 @@ public class PromotionService {
 
     private final PieceService pieceService;
     private GameService gameService;
+    private MovesManager movesManager;
     private final EventBus event;
 
     private boolean isPromoted;
@@ -49,6 +51,14 @@ public class PromotionService {
 
     public void setGameService(GameService gameService) {
         this.gameService = gameService;
+    }
+
+    public MovesManager getMovesManager() {
+        return movesManager;
+    }
+
+    public void setMovesManager(MovesManager movesManager) {
+        this.movesManager = movesManager;
     }
 
     public boolean checkPromotion(Piece p) {
@@ -127,6 +137,7 @@ public class PromotionService {
             piece.setPromoted(true);
             return piece;
         }
+        if(BooleanService.canDoAuto) { movesManager.commitMove(false); }
         return piece;
     }
 

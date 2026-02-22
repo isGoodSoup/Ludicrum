@@ -63,24 +63,25 @@ public class ModelService {
     public void executeMove(Move move) {
         if(move == null) { return; }
         Piece p = move.piece();
-        if(p.getColor() == Tint.DARK) {
-            animationService.startMove(p, move.targetCol(), move.targetRow());
-            boardService.getService().getSound().playFX(0);
-        }
+
+        animationService.startMove(p, move.targetCol(), move.targetRow());
+        boardService.getService().getSound().playFX(0);
+
         BoardService.getMovesManager()
                 .attemptMove(move.piece(), move.targetCol(), move.targetRow());
-        BoardService.getMovesManager().commitMove();
     }
 
     public void triggerAIMove() {
         if(!BooleanService.canAIPlay ||
                 boardService.getService().getGameService().getCurrentTurn() != Tint.DARK ||
                 BooleanService.isAIMoving) return;
+        BooleanService.isAIMoving = true;
         new Thread(() -> {
             Move AIMove = getAiTurn();
             if(AIMove != null) {
                 SwingUtilities.invokeLater(() -> {
                     executeMove(AIMove);
+                    pieceService.getMoveManager().commitMove(false);
                     BooleanService.isAIMoving = false;
                 });
             } else {

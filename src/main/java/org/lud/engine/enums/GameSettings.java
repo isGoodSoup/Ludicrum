@@ -60,6 +60,18 @@ public enum GameSettings implements Clickable {
         }
     },
 
+    AUTOMATIC("Automatic Switch") {
+        @Override
+        public boolean get() {
+            return BooleanService.canDoAuto;
+        }
+
+        @Override
+        public void toggle() {
+            BooleanService.canDoAuto ^= true;
+        }
+    },
+
     UNDO_MOVES("Undo Moves") {
         public boolean get() { return BooleanService.canUndoMoves; }
         public void toggle() {
