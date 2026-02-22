@@ -1,7 +1,7 @@
 package org.lud.engine.render;
 
 import org.lud.engine.entities.Board;
-import org.lud.engine.enums.Tint;
+import org.lud.engine.enums.Turn;
 import org.lud.engine.manager.MovesManager;
 import org.lud.engine.records.Move;
 import org.lud.engine.service.BoardService;
@@ -70,10 +70,10 @@ public class MovesRender {
         boolean hasBackground = true;
 
         int padding = render.scale(UIService.getPADDING() - 30);
-        int innerPadding = render.scale(24);
+        int innerPadding = render.scale(30);
 
         int availableWidth = render.scale(RenderContext.BASE_WIDTH) - boardSize - padding * 4;
-        int boxWidth = availableWidth/7;
+        int boxWidth = availableWidth/5;
         int boxHeight = boardSize - 20;
 
         int leftX = boardX - boxWidth - padding + innerPadding;
@@ -98,7 +98,7 @@ public class MovesRender {
             String moveText = boardService.getSquareNameAt(move.fromRow(),
                     move.fromCol()) + " > " + boardService.getSquareNameAt(move.targetCol(), move.targetRow());
 
-            if (move.color() == Tint.LIGHT) {
+            if (move.color() == Turn.LIGHT) {
                 g2.setColor(isLast ? Color.YELLOW : Color.WHITE);
                 g2.drawString(moveText, rightX, rightY);
                 rightY += fm.getHeight() + render.scale(4);

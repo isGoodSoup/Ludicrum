@@ -2,7 +2,7 @@ package org.lud.engine.entities;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.lud.engine.enums.Tint;
+import org.lud.engine.enums.Turn;
 import org.lud.engine.enums.TypeID;
 import org.lud.engine.service.PieceService;
 
@@ -19,7 +19,7 @@ public abstract class Piece {
 	private static final double DEFAULT_SCALE = 1.0;
 	private static final float MORE_SCALE = 0.5f;
 	private double scale = DEFAULT_SCALE;
-	private Tint color;
+	private Turn color;
 	private Piece otherPiece;
 
 	private boolean hasMoved;
@@ -30,7 +30,7 @@ public abstract class Piece {
 
 	private static final Logger log = LoggerFactory.getLogger(Piece.class);
 
-	public Piece(Tint color, int col, int row) {
+	public Piece(Turn color, int col, int row) {
 		super();
 		this.col = col;
 		this.row = row;
@@ -100,11 +100,11 @@ public abstract class Piece {
 
 	public float getMORE_SCALE() { return MORE_SCALE; }
 
-	public Tint getColor() {
+	public Turn getColor() {
 		return color;
 	}
 
-	public void setColor(Tint color) {
+	public void setColor(Turn color) {
 		this.color = color;
 	}
 
@@ -235,7 +235,7 @@ public abstract class Piece {
 		return PieceService.isValidSquare(piece, targetCol, targetRow, board);
 	}
 
-	public boolean isInPromotionZone(Tint color, int i) {
+	public boolean isInPromotionZone(Turn color, int i) {
 		return PieceService.isInPromotionZone(color, i);
 	}
 }

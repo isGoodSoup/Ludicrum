@@ -43,6 +43,7 @@ public class ServiceFactory {
         this.keyboard = new Keyboard();
         this.key = new KeyboardInput();
         this.key.setGameFrame(gameFrame);
+        this.render.setKeyUI(key);
         this.mouse = new Mouse();
         this.mouseInput = new MouseInput(mouse, this);
         this.render.setMouse(mouse);

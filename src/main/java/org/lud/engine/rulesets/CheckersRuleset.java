@@ -3,7 +3,7 @@ package org.lud.engine.rulesets;
 import org.lud.engine.entities.Board;
 import org.lud.engine.entities.Checker;
 import org.lud.engine.entities.Piece;
-import org.lud.engine.enums.Tint;
+import org.lud.engine.enums.Turn;
 import org.lud.engine.interfaces.Ruleset;
 import org.lud.engine.records.Move;
 import org.lud.engine.records.MoveScore;
@@ -49,7 +49,7 @@ public class CheckersRuleset implements Ruleset {
             score += 3;
         }
 
-        if (move.targetRow() == (p.getColor() == Tint.LIGHT ? 0 : 7)
+        if (move.targetRow() == (p.getColor() == Turn.LIGHT ? 0 : 7)
                 && p instanceof Checker c && !c.isKing()) {
             score += 5;
         }
@@ -57,7 +57,7 @@ public class CheckersRuleset implements Ruleset {
     }
 
     @Override
-    public List<MoveScore> getAllLegalMoves(Tint color) {
+    public List<MoveScore> getAllLegalMoves(Turn color) {
         List<MoveScore> allMoves = new ArrayList<>();
         List<MoveScore> captureMoves = new ArrayList<>();
         for (Piece p : pieceService.getPieces()) {
@@ -100,7 +100,7 @@ public class CheckersRuleset implements Ruleset {
         p.setY(move.targetRow() * Board.getSquare());
 
         if (p instanceof Checker c) {
-            if ((c.getColor() == Tint.LIGHT && c.getRow() == 0) || (c.getColor() == Tint.DARK && c.getRow() == 7)) {
+            if ((c.getColor() == Turn.LIGHT && c.getRow() == 0) || (c.getColor() == Turn.DARK && c.getRow() == 7)) {
                 c.promoteToKing();
             }
         }

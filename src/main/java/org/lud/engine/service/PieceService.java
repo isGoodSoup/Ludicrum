@@ -5,7 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.lud.engine.enums.Games;
 import org.lud.engine.enums.Theme;
-import org.lud.engine.enums.Tint;
+import org.lud.engine.enums.Turn;
 import org.lud.engine.enums.TypeID;
 import org.lud.engine.events.CheckEvent;
 import org.lud.engine.gui.Colors;
@@ -173,7 +173,7 @@ public class PieceService {
             return getThemedSprite(piece);
         }
 
-        if(piece instanceof King && piece.getColor() == Tint.DARK) {
+        if(piece instanceof King && piece.getColor() == Turn.DARK) {
             suffix = "_jeweled";
         }
         if(piece.isPromoted()) {
@@ -245,7 +245,7 @@ public class PieceService {
         return false;
     }
 
-    public Piece getRandomPiece(Tint color, int col, int row) {
+    public Piece getRandomPiece(Turn color, int col, int row) {
         int index = BooleanService.getRandom(1, 6);
         return switch(index) {
             case 1 -> new Pawn(color, col, row);
@@ -258,7 +258,7 @@ public class PieceService {
         };
     }
 
-    public Piece getKing(Tint color) {
+    public Piece getKing(Turn color) {
         if(GameService.getGame() == Games.SANDBOX) { return null; }
         if(GameService.getGame() == Games.CHESS || GameService.getGame() == Games.SHOGI) {
             for (Piece p : pieces) {
@@ -413,7 +413,7 @@ public class PieceService {
         return true;
     }
 
-    public boolean isKingInCheck(Tint kingColor) {
+    public boolean isKingInCheck(Turn kingColor) {
         if(GameService.getGame() == Games.SANDBOX) { return false; }
         if(GameService.getGame() == Games.CHESS || GameService.getGame() == Games.SHOGI) {
             Piece king = getKing(kingColor);
@@ -481,8 +481,8 @@ public class PieceService {
         return false;
     }
 
-    public static boolean isInPromotionZone(Tint color, int row) {
+    public static boolean isInPromotionZone(Turn color, int row) {
         if(row < 0) { throw new IllegalStateException("Promotion zone must be between 0,1,2 and 6,7,8"); }
-        return (color == Tint.LIGHT && row >= 6) || (color == Tint.DARK && row <= 2);
+        return (color == Turn.LIGHT && row >= 6) || (color == Turn.DARK && row <= 2);
     }
 }

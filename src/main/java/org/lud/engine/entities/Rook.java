@@ -1,6 +1,6 @@
 package org.lud.engine.entities;
 
-import org.lud.engine.enums.Tint;
+import org.lud.engine.enums.Turn;
 import org.lud.engine.enums.TypeID;
 import org.lud.engine.service.GameService;
 import org.lud.engine.service.PieceService;
@@ -9,7 +9,7 @@ import java.util.List;
 
 public class Rook extends Piece {
 
-	public Rook(Tint color, int col, int row) {
+	public Rook(Turn color, int col, int row) {
 		super(color, col, row);
 		this.typeID = TypeID.ROOK;
 		this.shogiID = TypeID.ROOK_SHOGI;

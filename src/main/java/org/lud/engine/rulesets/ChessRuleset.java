@@ -1,7 +1,7 @@
 package org.lud.engine.rulesets;
 
 import org.lud.engine.entities.Piece;
-import org.lud.engine.enums.Tint;
+import org.lud.engine.enums.Turn;
 import org.lud.engine.interfaces.Ruleset;
 import org.lud.engine.records.Move;
 import org.lud.engine.records.MoveScore;
@@ -21,7 +21,7 @@ public class ChessRuleset implements Ruleset {
     }
 
     @Override
-    public List<MoveScore> getAllLegalMoves(Tint color) {
+    public List<MoveScore> getAllLegalMoves(Turn color) {
         List<MoveScore> moves = new ArrayList<>();
         for(Piece p : pieceService.getPieces()) {
             if(p.getColor() != color) { continue; }

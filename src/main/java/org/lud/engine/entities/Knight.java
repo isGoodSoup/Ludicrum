@@ -1,6 +1,6 @@
 package org.lud.engine.entities;
 
-import org.lud.engine.enums.Tint;
+import org.lud.engine.enums.Turn;
 import org.lud.engine.enums.TypeID;
 import org.lud.engine.interfaces.GoldGeneral;
 import org.lud.engine.service.GameService;
@@ -9,7 +9,7 @@ import java.util.List;
 
 public class Knight extends Piece implements GoldGeneral {
 
-	public Knight(Tint color, int col, int row) {
+	public Knight(Turn color, int col, int row) {
 		super(color, col, row);
 		this.typeID = TypeID.KNIGHT;
 		this.shogiID = TypeID.KNIGHT_SHOGI;
@@ -36,7 +36,7 @@ public class Knight extends Piece implements GoldGeneral {
 					return canMoveLikeGold(this, targetCol, targetRow, board);
 				}
 
-				int direction = getColor() == Tint.LIGHT ? 1 : -1;
+				int direction = getColor() == Turn.LIGHT ? 1 : -1;
 				int rowDiff = targetRow - getRow();
 				int colDiff = targetCol - getCol();
 

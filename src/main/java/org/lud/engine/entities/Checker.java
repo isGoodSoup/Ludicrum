@@ -1,6 +1,6 @@
 package org.lud.engine.entities;
 
-import org.lud.engine.enums.Tint;
+import org.lud.engine.enums.Turn;
 import org.lud.engine.enums.TypeID;
 
 import java.util.List;
@@ -8,7 +8,7 @@ import java.util.List;
 public class Checker extends Piece {
     private boolean isKing;
 
-    public Checker(Tint color, int col, int row) {
+    public Checker(Turn color, int col, int row) {
         super(color, col, row);
         this.typeID = TypeID.CHECKER;
     }
@@ -32,8 +32,8 @@ public class Checker extends Piece {
 
         Piece target = isColliding(targetCol, targetRow, board);
         if (absColDiff == 1 && absRowDiff == 1) {
-            if (isKing() || (getColor() == Tint.LIGHT && rowDiff == -1)
-                    || (getColor() == Tint.DARK && rowDiff == 1)) {
+            if (isKing() || (getColor() == Turn.LIGHT && rowDiff == -1)
+                    || (getColor() == Turn.DARK && rowDiff == 1)) {
                 return target == null;
             }
         }

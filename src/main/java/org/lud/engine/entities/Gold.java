@@ -1,6 +1,6 @@
 package org.lud.engine.entities;
 
-import org.lud.engine.enums.Tint;
+import org.lud.engine.enums.Turn;
 import org.lud.engine.enums.TypeID;
 import org.lud.engine.interfaces.GoldGeneral;
 
@@ -8,7 +8,7 @@ import java.util.List;
 
 public class Gold extends Piece implements GoldGeneral {
 
-    public Gold(Tint color, int col, int row) {
+    public Gold(Turn color, int col, int row) {
         super(color, col, row);
         this.typeID = TypeID.GOLD;
     }

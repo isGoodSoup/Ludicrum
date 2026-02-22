@@ -75,8 +75,8 @@ public enum Theme {
         this.highlight = highlight;
     }
 
-    public String getColor(Tint tint) {
-        return tint == Tint.LIGHT ? lightName : darkName;
+    public String getColor(Turn turn) {
+        return turn == Turn.LIGHT ? lightName : darkName;
     }
 
     public Color getBackground() { return background; }

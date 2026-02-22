@@ -1,6 +1,6 @@
 package org.lud.engine.entities;
 
-import org.lud.engine.enums.Tint;
+import org.lud.engine.enums.Turn;
 import org.lud.engine.enums.TypeID;
 import org.lud.engine.service.GameService;
 
@@ -8,7 +8,7 @@ import java.util.List;
 
 public class Bishop extends Piece {
 
-	public Bishop(Tint color, int col, int row) {
+	public Bishop(Turn color, int col, int row) {
 		super(color, col, row);
 		this.typeID = TypeID.BISHOP;
 		this.shogiID = TypeID.BISHOP_SHOGI;

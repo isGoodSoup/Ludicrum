@@ -1,7 +1,7 @@
 package org.lud.engine.interfaces;
 
 import org.lud.engine.entities.Piece;
-import org.lud.engine.enums.Tint;
+import org.lud.engine.enums.Turn;
 import org.lud.engine.service.PieceService;
 
 import java.util.List;
@@ -10,7 +10,7 @@ public interface GoldGeneral {
     default boolean canMoveLikeGold(Piece piece, int targetCol, int targetRow, List<Piece> board) {
         int col = piece.getCol();
         int row = piece.getRow();
-        int forward = (piece.getColor() == Tint.LIGHT) ? -1 : 1;
+        int forward = (piece.getColor() == Turn.LIGHT) ? -1 : 1;
 
         int[][] directions = {
                 {0, forward}, {-1, forward}, {1, forward},

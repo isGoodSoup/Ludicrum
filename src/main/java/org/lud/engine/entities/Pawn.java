@@ -1,6 +1,6 @@
 package org.lud.engine.entities;
 
-import org.lud.engine.enums.Tint;
+import org.lud.engine.enums.Turn;
 import org.lud.engine.enums.TypeID;
 import org.lud.engine.service.GameService;
 import org.lud.engine.service.PieceService;
@@ -9,7 +9,7 @@ import java.util.List;
 
 public class Pawn extends Piece {
 
-	public Pawn(Tint color, int col, int row) {
+	public Pawn(Turn color, int col, int row) {
 		super(color, col, row);
 		this.typeID = TypeID.PAWN;
 		this.shogiID = TypeID.PAWN_SHOGI;
@@ -22,7 +22,7 @@ public class Pawn extends Piece {
 		if(!isWithinBoard(targetCol, targetRow) || isSameSquare(this, targetCol, targetRow))
 			return false;
 
-		int direction = (getColor() == Tint.LIGHT) ? -1 : 1;
+		int direction = (getColor() == Turn.LIGHT) ? -1 : 1;
 		Piece pieceAtTarget = PieceService.getPieceAt(targetCol, targetRow, board);
 
 		switch(GameService.getGame()) {

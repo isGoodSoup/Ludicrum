@@ -2,7 +2,6 @@ package org.lud.engine.service;
 
 import org.lud.engine.entities.Piece;
 import org.lud.engine.enums.Games;
-import org.lud.engine.enums.Tint;
 import org.lud.engine.interfaces.Ruleset;
 import org.lud.engine.records.Move;
 import org.lud.engine.records.MoveScore;
@@ -11,6 +10,7 @@ import org.lud.engine.rulesets.ChessRuleset;
 import org.lud.engine.rulesets.ShogiRuleset;
 
 import javax.swing.*;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -50,14 +50,22 @@ public class ModelService {
         };
     }
 
-    public Move getAiTurn() {
-        if(rule == null) {
-            throw new IllegalStateException("Invalid ruleset: not set or null");
-        }
-        List<MoveScore> moves = rule.getAllLegalMoves(boardService.getService().getGameService().getCurrentTurn());
-        if(moves.isEmpty()) { return null; }
-        moves.sort(Comparator.comparingInt(MoveScore::score).reversed());
-        return moves.getFirst().move();
+    public void triggerAIMove() {
+        if(!BooleanService.canAIPlay || BooleanService.isAIMoving) return;
+        BooleanService.isAIMoving = true;
+        new Thread(() -> {
+            Move AIMove = getAiTurn();
+            if(AIMove != null) {
+                SwingUtilities.invokeLater(() -> {
+                    executeMove(AIMove);
+                    BoardService.getMovesManager().commitMove();
+                    BooleanService.isAIMoving = false;
+                });
+            } else {
+                BooleanService.isAIMoving = false;
+                BooleanService.isTurnLocked = false;
+            }
+        }).start();
     }
 
     public void executeMove(Move move) {
@@ -67,26 +75,20 @@ public class ModelService {
         animationService.startMove(p, move.targetCol(), move.targetRow());
         boardService.getService().getSound().playFX(0);
 
+        BooleanService.canDoAuto = false;
         BoardService.getMovesManager()
                 .attemptMove(move.piece(), move.targetCol(), move.targetRow());
+        BooleanService.canDoAuto = true;
     }
 
-    public void triggerAIMove() {
-        if(!BooleanService.canAIPlay ||
-                boardService.getService().getGameService().getCurrentTurn() != Tint.DARK ||
-                BooleanService.isAIMoving) return;
-        BooleanService.isAIMoving = true;
-        new Thread(() -> {
-            Move AIMove = getAiTurn();
-            if(AIMove != null) {
-                SwingUtilities.invokeLater(() -> {
-                    executeMove(AIMove);
-                    pieceService.getMoveManager().commitMove(false);
-                    BooleanService.isAIMoving = false;
-                });
-            } else {
-                BooleanService.isAIMoving = false;
-            }
-        }).start();
+    public Move getAiTurn() {
+        if(rule == null) {
+            throw new IllegalStateException("Invalid ruleset: not set or null");
+        }
+        List<MoveScore> moves = rule.getAllLegalMoves(boardService.getService().getGameService().getCurrentTurn());
+        if(moves.isEmpty()) { return null; }
+        moves.sort(Comparator.comparingInt(MoveScore::score).reversed());
+        Collections.shuffle(moves);
+        return moves.getFirst().move();
     }
 }

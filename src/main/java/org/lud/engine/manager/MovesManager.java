@@ -7,7 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.lud.engine.enums.GameState;
 import org.lud.engine.enums.Games;
-import org.lud.engine.enums.Tint;
+import org.lud.engine.enums.Turn;
 import org.lud.engine.records.Move;
 
 import java.util.ArrayList;
@@ -23,6 +23,8 @@ public class MovesManager {
     private EventBus eventBus;
     private static final Logger log =
             LoggerFactory.getLogger(MovesManager.class);
+
+    private boolean isCommiting = false;
 
     public MovesManager() {}
 
@@ -188,13 +190,17 @@ public class MovesManager {
             service.getPieceService().setHoveredPieceKeyboard(promoted);
         }
 
-        if(BooleanService.canDoAuto) {
-            commitMove(false);
+        if(isHumanMove && BooleanService.canDoAuto) {
+            commitMove();
+        }
+
+        if(isAIturn()) {
+            service.getModelService().triggerAIMove();
         }
 
         if(isCheckmate()) {
             eventBus.fire(new CheckmateEvent(piece,
-                    service.getPieceService().getKing(Tint.DARK)));
+                    service.getPieceService().getKing(Turn.DARK)));
             eventBus.fire(new TotalMovesEvent(piece));
         }
 
@@ -205,18 +211,14 @@ public class MovesManager {
         if(isStalemate()) {
             eventBus.fire(new StalemateEvent(piece));
         }
-
-        if(isHumanMove) {
-            service.getTimerService().resume();
-        }
     }
 
-    private boolean isHumanTurn(Tint turn) {
-        return turn == Tint.LIGHT;
+    private boolean isHumanTurn(Turn turn) {
+        return turn == Turn.LIGHT;
     }
 
     private boolean isAIturn() {
-        return service.getGameService().getCurrentTurn() == Tint.DARK;
+        return service.getGameService().getCurrentTurn() == Turn.DARK;
     }
 
     private boolean isCheckmate() {
@@ -316,7 +318,7 @@ public class MovesManager {
         int movedSquares = Math.abs(targetRow - oldRow);
 
         if(captured == null && Math.abs(targetCol - currentPiece.getPreCol()) == 1) {
-            int dir = (currentPiece.getColor() == Tint.LIGHT) ? -1 : 1;
+            int dir = (currentPiece.getColor() == Turn.LIGHT) ? -1 : 1;
             if(targetRow - oldRow == dir) {
                 for(Piece p : service.getPieceService().getPieces()) {
                     if(p instanceof Pawn &&
@@ -368,25 +370,12 @@ public class MovesManager {
         return false;
     }
 
-    public void commitMove(boolean force) {
-        service.getTimerService().pause();
-
-        boolean shouldSwitch = force || BooleanService.canDoAuto;
-        if(!(GameService.getGame() == Games.SANDBOX)
-                && (BooleanService.canSwitchTurns || shouldSwitch)) {
-            service.getGameService().setCurrentTurn(
-                    service.getGameService().getCurrentTurn()
-                            == Tint.LIGHT ? Tint.DARK : Tint.LIGHT
-            );
-        }
-
+    public void commitMove() {
+        if(isCommiting) { return; }
+        isCommiting = true;
+        Turn.nextTurn(service.getGameService());
         service.getSound().playFX(0);
-
-        if(BooleanService.canDoAuto
-                && service.getGameService().getCurrentTurn() == Tint.DARK &&
-                !BooleanService.isAIMoving) {
-            service.getModelService().triggerAIMove();
-        }
+        isCommiting = false;
     }
 
     public void cancelMove() {
@@ -404,7 +393,7 @@ public class MovesManager {
     public void undoLastMove() {
         if(!BooleanService.canUndoMoves || moves.isEmpty()) { return; }
 
-        Tint turn = moves.getLast().currentTurn();
+        Turn turn = moves.getLast().currentTurn();
         while(!moves.isEmpty() && moves.getLast().currentTurn() == turn) {
             Piece[][] boardState = BoardService.getBoardState();
             Move lastMove = moves.getLast();

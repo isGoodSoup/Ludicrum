@@ -1,6 +1,6 @@
 package org.lud.engine.entities;
 
-import org.lud.engine.enums.Tint;
+import org.lud.engine.enums.Turn;
 import org.lud.engine.enums.TypeID;
 import org.lud.engine.service.PieceService;
 
@@ -9,7 +9,7 @@ import java.util.Objects;
 
 public class Queen extends Piece {
 
-	public Queen(Tint color, int col, int row) {
+	public Queen(Turn color, int col, int row) {
 		super(color, col, row);
 		this.typeID = TypeID.QUEEN;
 	}

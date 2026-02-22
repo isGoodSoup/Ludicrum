@@ -78,7 +78,6 @@ public class AchievementsMenu implements UI {
         g2.setFont(UIService.getFont(UIService.getMENU_FONT()));
         g2.setColor(Colorblindness.filter(Colors.getTheme() == Theme.DEFAULT
                 ? Color.WHITE : Colors.getForeground()));
-        g2.drawString(text, getCenterX(totalWidth - 150, headerWidth), headerY);
 
         int spacing = 25;
         int startY = headerY + spacing * 2;
@@ -94,8 +93,6 @@ public class AchievementsMenu implements UI {
         BufferedImage img = null;
         for(int i = start; i < end; i++) {
             Achievement a = list.get(i);
-            int relativeIndex = i - start;
-            boolean isSelected = relativeIndex == keyUI.getSelectedIndexY();
 
             int textX = x + render.scale(110);
             int titleY = startY + render.scale(70);
@@ -106,7 +103,7 @@ public class AchievementsMenu implements UI {
             g2.setFont(UIService.getFont(UIService.getMENU_FONT()));
 
             render.getMenuRender().getButtons().put(a, new Rectangle(x, startY, width, height));
-            if(isSelected || render.isHovered(a)) {
+            if(render.isHovered(a)) {
                 UIService.drawBox(g2, STROKE, x, startY,
                         width, height, ARC, hasBackground,
                         true, 255);

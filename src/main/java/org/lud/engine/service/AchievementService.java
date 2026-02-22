@@ -5,7 +5,7 @@ import org.lud.engine.entities.Achievement;
 import org.lud.engine.entities.Piece;
 import org.lud.engine.enums.Achievements;
 import org.lud.engine.enums.Games;
-import org.lud.engine.enums.Tint;
+import org.lud.engine.enums.Turn;
 import org.lud.engine.events.*;
 import org.lud.engine.manager.EventBus;
 import org.lud.engine.manager.SaveManager;
@@ -25,7 +25,7 @@ public class AchievementService {
     private Map<Long, Integer> checkCount;
 
     private Set<Long> unlockedIDs;
-    private Set<Tint> kingsChecked;
+    private Set<Turn> kingsChecked;
 
     private int castlingCount = 0;
 
@@ -222,7 +222,7 @@ public class AchievementService {
     private void onCapture(CaptureEvent event) {
         Piece attacker = event.piece();
         Piece captured = event.captured();
-        if(attacker.getColor() != Tint.LIGHT) return;
+        if(attacker.getColor() != Turn.LIGHT) return;
 
         if(GameService.getGame() == Games.CHESS && isFirstCapture) {
             unlock(Achievements.FIRST_CAPTURE);
@@ -277,7 +277,7 @@ public class AchievementService {
             unlock(Achievements.HEAVY_CROWN);
         }
 
-        if(!kingsChecked.contains(Tint.LIGHT)) {
+        if(!kingsChecked.contains(Turn.LIGHT)) {
             unlock(Achievements.UNTOUCHABLE);
         }
     }

@@ -17,7 +17,7 @@ public class GameService {
     private PlayState mode;
     private static Games games;
     private Games previousGame;
-    private Tint currentTurn;
+    private Turn currentTurn;
     private RenderContext render;
     private BoardService boardService;
     private ServiceFactory service;
@@ -45,8 +45,8 @@ public class GameService {
     public void setState(GameState state) { this.state = state; }
 
     public PlayState getMode() { return mode; }
-    public Tint getCurrentTurn() { return currentTurn; }
-    public void setCurrentTurn(Tint tint) { currentTurn = tint; }
+    public Turn getCurrentTurn() { return currentTurn; }
+    public void setCurrentTurn(Turn turn) { currentTurn = turn; }
 
     public ServiceFactory getServiceFactory() { return service; }
     public void setServiceFactory(ServiceFactory service) { this.service = service; }
@@ -65,7 +65,7 @@ public class GameService {
     }
 
     public void startNewGame() {
-        setCurrentTurn(Tint.LIGHT);
+        setCurrentTurn(Turn.LIGHT);
         service.getMovesManager().setMoves(new ArrayList<>());
         BooleanService.isCheckmate = false;
         BooleanService.isPromotionActive = false;
@@ -142,7 +142,7 @@ public class GameService {
 
         boardService.prepBoard();
         boardService.startBoard();
-        setCurrentTurn(Tint.LIGHT);
+        setCurrentTurn(Turn.LIGHT);
         Save newSave = new Save(
                 getGame(),
                 LocalDate.now().toString(),

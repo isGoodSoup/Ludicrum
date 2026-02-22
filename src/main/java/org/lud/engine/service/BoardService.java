@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.lud.engine.enums.GameState;
 import org.lud.engine.enums.Games;
 import org.lud.engine.enums.Time;
-import org.lud.engine.enums.Tint;
+import org.lud.engine.enums.Turn;
 import org.lud.engine.manager.MovesManager;
 import org.lud.engine.manager.SaveManager;
 import org.lud.engine.records.Save;
@@ -190,37 +190,37 @@ public class BoardService {
                 clearBoardState();
 
                 for(int col = 0; col < 8; col++) {
-                    Pawn whitePawn = new Pawn(Tint.LIGHT, col, 6);
-                    Pawn blackPawn = new Pawn(Tint.DARK, col, 1);
+                    Pawn whitePawn = new Pawn(Turn.LIGHT, col, 6);
+                    Pawn blackPawn = new Pawn(Turn.DARK, col, 1);
                     pieces.add(whitePawn);
                     pieces.add(blackPawn);
                 }
 
-                Rook wR1 = new Rook(Tint.LIGHT, 0, 7);
-                Rook wR2 = new Rook(Tint.LIGHT, 7, 7);
-                Rook bR1 = new Rook(Tint.DARK, 0, 0);
-                Rook bR2 = new Rook(Tint.DARK, 7, 0);
+                Rook wR1 = new Rook(Turn.LIGHT, 0, 7);
+                Rook wR2 = new Rook(Turn.LIGHT, 7, 7);
+                Rook bR1 = new Rook(Turn.DARK, 0, 0);
+                Rook bR2 = new Rook(Turn.DARK, 7, 0);
                 pieces.addAll(List.of(wR1, wR2, bR1, bR2));
 
-                Knight wN1 = new Knight(Tint.LIGHT, 1, 7);
-                Knight wN2 = new Knight(Tint.LIGHT, 6, 7);
-                Knight bN1 = new Knight(Tint.DARK, 1, 0);
-                Knight bN2 = new Knight(Tint.DARK, 6, 0);
+                Knight wN1 = new Knight(Turn.LIGHT, 1, 7);
+                Knight wN2 = new Knight(Turn.LIGHT, 6, 7);
+                Knight bN1 = new Knight(Turn.DARK, 1, 0);
+                Knight bN2 = new Knight(Turn.DARK, 6, 0);
                 pieces.addAll(List.of(wN1, wN2, bN1, bN2));
 
-                Bishop wB1 = new Bishop(Tint.LIGHT, 2, 7);
-                Bishop wB2 = new Bishop(Tint.LIGHT, 5, 7);
-                Bishop bB1 = new Bishop(Tint.DARK, 2, 0);
-                Bishop bB2 = new Bishop(Tint.DARK, 5, 0);
+                Bishop wB1 = new Bishop(Turn.LIGHT, 2, 7);
+                Bishop wB2 = new Bishop(Turn.LIGHT, 5, 7);
+                Bishop bB1 = new Bishop(Turn.DARK, 2, 0);
+                Bishop bB2 = new Bishop(Turn.DARK, 5, 0);
                 pieces.addAll(List.of(wB1, wB2, bB1, bB2));
 
-                Queen wQ = new Queen(Tint.LIGHT, 3, 7);
-                Queen bQ = new Queen(Tint.DARK, 3, 0);
+                Queen wQ = new Queen(Turn.LIGHT, 3, 7);
+                Queen bQ = new Queen(Turn.DARK, 3, 0);
                 pieces.add(wQ);
                 pieces.add(bQ);
 
-                King wK = new King(Tint.LIGHT, 4, 7);
-                King bK = new King(Tint.DARK, 4, 0);
+                King wK = new King(Turn.LIGHT, 4, 7);
+                King bK = new King(Turn.DARK, 4, 0);
                 pieces.add(wK);
                 pieces.add(bK);
 
@@ -231,7 +231,7 @@ public class BoardService {
                     p.setY(p.getRow() * squareSize);
                 }
 
-                service.getGameService().setCurrentTurn(Tint.LIGHT);
+                service.getGameService().setCurrentTurn(Turn.LIGHT);
                 PieceService.nullThisPiece();
             }
             case CHECKERS -> {
@@ -242,7 +242,7 @@ public class BoardService {
                 for (int row = 0; row <= 2; row++) {
                     for (int col = 0; col < 8; col++) {
                         if ((row + col) % 2 != 0) {
-                            Checker black = new Checker(Tint.DARK, col, row);
+                            Checker black = new Checker(Turn.DARK, col, row);
                             pieces.add(black);
                             boardState[row][col] = black;
                         }
@@ -252,7 +252,7 @@ public class BoardService {
                 for (int row = 5; row <= 7; row++) {
                     for (int col = 0; col < 8; col++) {
                         if ((row + col) % 2 != 0) {
-                            Checker white = new Checker(Tint.LIGHT, col, row);
+                            Checker white = new Checker(Turn.LIGHT, col, row);
                             pieces.add(white);
                             boardState[row][col] = white;
                         }
@@ -264,7 +264,7 @@ public class BoardService {
                     p.setX(p.getCol() * squareSize);
                     p.setY(p.getRow() * squareSize);
                 }
-                service.getGameService().setCurrentTurn(Tint.LIGHT);
+                service.getGameService().setCurrentTurn(Turn.LIGHT);
                 PieceService.nullThisPiece();
             }
             case SHOGI -> {
@@ -273,41 +273,41 @@ public class BoardService {
                 clearBoardState();
 
                 for(int col = 0; col < 9; col++) {
-                    Pawn lightPawn = new Pawn(Tint.LIGHT, col, 6);
-                    Pawn darkPawn  = new Pawn(Tint.DARK, col, 2);
+                    Pawn lightPawn = new Pawn(Turn.LIGHT, col, 6);
+                    Pawn darkPawn  = new Pawn(Turn.DARK, col, 2);
                     pieces.add(lightPawn);
                     pieces.add(darkPawn);
                 }
 
                 pieces.addAll(List.of(
-                        new Lance(Tint.LIGHT, 0, 8),
-                        new Knight(Tint.LIGHT, 1, 8),
-                        new Silver(Tint.LIGHT, 2, 8),
-                        new Gold(Tint.LIGHT, 3, 8),
-                        new King(Tint.LIGHT, 4, 8),
-                        new Gold(Tint.LIGHT, 5, 8),
-                        new Silver(Tint.LIGHT, 6, 8),
-                        new Knight(Tint.LIGHT, 7, 8),
-                        new Lance(Tint.LIGHT, 8, 8)
+                        new Lance(Turn.LIGHT, 0, 8),
+                        new Knight(Turn.LIGHT, 1, 8),
+                        new Silver(Turn.LIGHT, 2, 8),
+                        new Gold(Turn.LIGHT, 3, 8),
+                        new King(Turn.LIGHT, 4, 8),
+                        new Gold(Turn.LIGHT, 5, 8),
+                        new Silver(Turn.LIGHT, 6, 8),
+                        new Knight(Turn.LIGHT, 7, 8),
+                        new Lance(Turn.LIGHT, 8, 8)
                 ));
 
-                pieces.add(new Bishop(Tint.LIGHT, 1, 7));
-                pieces.add(new Rook(Tint.LIGHT, 7, 7));
+                pieces.add(new Bishop(Turn.LIGHT, 1, 7));
+                pieces.add(new Rook(Turn.LIGHT, 7, 7));
 
                 pieces.addAll(List.of(
-                        new Lance(Tint.DARK, 0, 0),
-                        new Knight(Tint.DARK, 1, 0),
-                        new Silver(Tint.DARK, 2, 0),
-                        new Gold(Tint.DARK, 3, 0),
-                        new King(Tint.DARK, 4, 0),
-                        new Gold(Tint.DARK, 5, 0),
-                        new Silver(Tint.DARK, 6, 0),
-                        new Knight(Tint.DARK, 7, 0),
-                        new Lance(Tint.DARK, 8, 0)
+                        new Lance(Turn.DARK, 0, 0),
+                        new Knight(Turn.DARK, 1, 0),
+                        new Silver(Turn.DARK, 2, 0),
+                        new Gold(Turn.DARK, 3, 0),
+                        new King(Turn.DARK, 4, 0),
+                        new Gold(Turn.DARK, 5, 0),
+                        new Silver(Turn.DARK, 6, 0),
+                        new Knight(Turn.DARK, 7, 0),
+                        new Lance(Turn.DARK, 8, 0)
                 ));
 
-                pieces.add(new Bishop(Tint.DARK, 7, 1));
-                pieces.add(new Rook(Tint.DARK, 1, 1));
+                pieces.add(new Bishop(Turn.DARK, 7, 1));
+                pieces.add(new Rook(Turn.DARK, 1, 1));
 
                 for(Piece p : pieces) {
                     boardState[p.getRow()][p.getCol()] = p;
@@ -316,7 +316,7 @@ public class BoardService {
                     p.setY(p.getRow() * squareSize);
                 }
 
-                service.getGameService().setCurrentTurn(Tint.LIGHT);
+                service.getGameService().setCurrentTurn(Turn.LIGHT);
                 PieceService.nullThisPiece();
             }
         }
@@ -346,18 +346,18 @@ public class BoardService {
                     List<Integer> back = entry.getValue();
 
                     for(int col : front) {
-                        pieces.add(pieceService.getRandomPiece(Tint.LIGHT, col, 6));
-                        pieces.add(pieceService.getRandomPiece(Tint.DARK, col, 1));
+                        pieces.add(pieceService.getRandomPiece(Turn.LIGHT, col, 6));
+                        pieces.add(pieceService.getRandomPiece(Turn.DARK, col, 1));
                     }
 
                     for(int col : back) {
                         if(col == 4) { continue; }
-                        pieces.add(pieceService.getRandomPiece(Tint.LIGHT, col, 7));
-                        pieces.add(pieceService.getRandomPiece(Tint.DARK, col, 0));
+                        pieces.add(pieceService.getRandomPiece(Turn.LIGHT, col, 7));
+                        pieces.add(pieceService.getRandomPiece(Turn.DARK, col, 0));
                     }
                 }
-                pieces.add(new King(Tint.LIGHT, 4, 7));
-                pieces.add(new King(Tint.DARK, 4, 0));
+                pieces.add(new King(Turn.LIGHT, 4, 7));
+                pieces.add(new King(Turn.DARK, 4, 0));
             }
             case CHECKERS -> {}
             case SHOGI -> {}
@@ -384,7 +384,7 @@ public class BoardService {
             gameService.setState(GameState.BOARD);
             service.getMovesManager().setSelectedPiece(null);
             service.getPieceService().setHoveredPieceKeyboard(null);
-            service.getGameService().setCurrentTurn(Tint.LIGHT);
+            service.getGameService().setCurrentTurn(Turn.LIGHT);
         }
     }
 

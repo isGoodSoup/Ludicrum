@@ -31,10 +31,10 @@ public enum Console {
                 return;
             }
 
-            Tint tone;
+            Turn tone;
             switch(colorStr) {
-                case "DARK" -> tone = Tint.DARK;
-                case "LIGHT" -> tone = Tint.LIGHT;
+                case "DARK" -> tone = Turn.DARK;
+                case "LIGHT" -> tone = Turn.LIGHT;
                 default -> {
                     log.error("Invalid color: {}", colorStr);
                     return;

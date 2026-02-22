@@ -5,7 +5,7 @@ import org.lud.engine.manager.MovesManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.lud.engine.enums.Games;
-import org.lud.engine.enums.Tint;
+import org.lud.engine.enums.Turn;
 import org.lud.engine.events.PromotionEvent;
 import org.lud.engine.manager.EventBus;
 
@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PromotionService {
-    private Tint promotionColor;
+    private Turn promotionColor;
     private Piece promotingPawn;
 
     private final PieceService pieceService;
@@ -29,11 +29,11 @@ public class PromotionService {
         this.event = event;
     }
 
-    public Tint getPromotionColor() {
+    public Turn getPromotionColor() {
         return promotionColor;
     }
 
-    public void setPromotionColor(Tint promotionColor) {
+    public void setPromotionColor(Turn promotionColor) {
         this.promotionColor = promotionColor;
     }
 
@@ -70,15 +70,15 @@ public class PromotionService {
         }
 
         if(p instanceof Pawn) {
-            if ((p.getColor() == Tint.LIGHT && p.getRow() == 0) ||
-                    (p.getColor() == Tint.DARK && p.getRow() == 7)) {
+            if ((p.getColor() == Turn.LIGHT && p.getRow() == 0) ||
+                    (p.getColor() == Turn.DARK && p.getRow() == 7)) {
                 return true;
             }
         }
 
         if(p instanceof Checker) {
-            if ((p.getColor() == Tint.LIGHT && p.getRow() == 0) ||
-                    (p.getColor() == Tint.DARK && p.getRow() == 7)) {
+            if ((p.getColor() == Turn.LIGHT && p.getRow() == 0) ||
+                    (p.getColor() == Turn.DARK && p.getRow() == 7)) {
                 return true;
             }
         }
@@ -137,7 +137,7 @@ public class PromotionService {
             piece.setPromoted(true);
             return piece;
         }
-        if(BooleanService.canDoAuto) { movesManager.commitMove(false); }
+        if(BooleanService.canDoAuto) { movesManager.commitMove(); }
         return piece;
     }
 
@@ -145,7 +145,7 @@ public class PromotionService {
         List<Piece> options = new ArrayList<>();
         int row = p.getRow();
         int col = p.getCol();
-        Tint color = p.getColor();
+        Turn color = p.getColor();
 
         if(p instanceof Pawn) {
             if (GameService.getGame() == Games.SHOGI) {

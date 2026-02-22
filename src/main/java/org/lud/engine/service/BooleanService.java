@@ -1,7 +1,7 @@
 package org.lud.engine.service;
 
 import org.lud.engine.entities.*;
-import org.lud.engine.enums.Tint;
+import org.lud.engine.enums.Turn;
 
 import java.util.Random;
 
@@ -14,10 +14,10 @@ public class BooleanService {
     public static boolean isCheckmate;
     public static boolean isStalemate;
     public static boolean isPromotionActive;
-    public static boolean isTurn;
     public static boolean isFullscreen;
     public static boolean isExitActive;
     public static boolean isMovesActive;
+    public static boolean isTurnLocked;
     public static boolean canType;
     public static boolean canPlayFX;
     public static boolean canZoomIn;
@@ -43,8 +43,9 @@ public class BooleanService {
     private static final Random random = new Random();
 
     public static void defaultToggles() {
+        isTurnLocked = false;
         canSwitchTurns = true;
-        canDoAuto = false;
+        canDoAuto = true;
         canPlayFX = true;
         canUndoMoves = true;
         canDoMoves = true;
@@ -78,7 +79,7 @@ public class BooleanService {
         return random.nextInt(i);
     }
 
-    public static Piece getRandomPiece(Piece pawn, Tint color) {
+    public static Piece getRandomPiece(Piece pawn, Turn color) {
         int index = getRandom(0, 3);
         switch(index) {
             case 0 -> pawn = new Rook(color, pawn.getCol(), pawn.getRow());

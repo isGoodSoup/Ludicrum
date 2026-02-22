@@ -1,6 +1,6 @@
 package org.lud.engine.entities;
 
-import org.lud.engine.enums.Tint;
+import org.lud.engine.enums.Turn;
 import org.lud.engine.enums.TypeID;
 import org.lud.engine.interfaces.GoldGeneral;
 
@@ -8,7 +8,7 @@ import java.util.List;
 
 public class Silver extends Piece implements GoldGeneral {
 
-    public Silver(Tint color, int col, int row) {
+    public Silver(Turn color, int col, int row) {
         super(color, col, row);
         this.typeID = TypeID.SILVER;
     }
@@ -19,7 +19,7 @@ public class Silver extends Piece implements GoldGeneral {
             return canMoveLikeGold(this, targetCol, targetRow, board);
         }
 
-        int direction = getColor() == Tint.LIGHT ? 1 : -1;
+        int direction = getColor() == Turn.LIGHT ? 1 : -1;
         int colDiff = targetCol - getCol();
         int rowDiff = targetRow - getRow();
 

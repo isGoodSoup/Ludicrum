@@ -1,5 +1,6 @@
 package org.lud.engine.render;
 
+import org.lud.engine.input.KeyboardInput;
 import org.lud.engine.input.Mouse;
 import org.lud.engine.input.MouseInput;
 import org.lud.engine.interfaces.Clickable;
@@ -23,6 +24,7 @@ public class RenderContext {
     private ControlsRender controlsRender;
 
     private MovesManager movesManager;
+    private KeyboardInput keyUI;
     private Mouse mouse;
     private MouseInput mouseInput;
 
@@ -90,6 +92,14 @@ public class RenderContext {
         this.mouseInput = mouseInput;
     }
 
+    public KeyboardInput getKeyUI() {
+        return keyUI;
+    }
+
+    public void setKeyUI(KeyboardInput keyUI) {
+        this.keyUI = keyUI;
+    }
+
     public void updateTransform(int windowWidth, int windowHeight) {
         double scaleX = windowWidth/(double) BASE_WIDTH;
         double scaleY = windowHeight/(double) BASE_HEIGHT;
@@ -111,6 +121,12 @@ public class RenderContext {
     public boolean isHovered(Clickable param) {
         return menuRender.getButtons().get(param).contains(mouse.getX(), mouse.getY())
                 && !mouseInput.isClickingOption(param);
+    }
+
+    public boolean isSelected(Clickable param) {
+        List<Clickable> buttons = new ArrayList<>(menuRender.getButtons().keySet());
+        int index = buttons.indexOf(param);
+        return index == keyUI.getSelectedIndexY();
     }
 
     public double getScale() {
