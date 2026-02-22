@@ -44,6 +44,7 @@ public class BoardPanel extends JPanel implements Runnable {
         addKeyListener(service.getKeyboard());
         addMouseListener(service.getMouse());
         addMouseMotionListener(service.getMouse());
+        setFocusTraversalKeysEnabled(false);
         setFocusable(true);
 	}
 

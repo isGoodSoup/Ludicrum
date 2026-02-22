@@ -133,7 +133,7 @@ public class BoardRender {
         buttonX += offset;
 
         pauseButton = drawIconButton(g2, pauseButton, "pause",
-                buttonX, buttonY, () -> pieceService.switchTurns());
+                buttonX, buttonY, () -> render.getMovesManager().commitMove());
 
         g2.setRenderingHint(
                 RenderingHints.KEY_INTERPOLATION,

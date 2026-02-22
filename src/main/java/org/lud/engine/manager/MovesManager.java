@@ -188,8 +188,6 @@ public class MovesManager {
             service.getPieceService().setHoveredPieceKeyboard(promoted);
         }
 
-        service.getModelService().triggerAIMove();
-
         if(isCheckmate()) {
             eventBus.fire(new CheckmateEvent(piece,
                     service.getPieceService().getKing(Tint.DARK)));
@@ -211,6 +209,10 @@ public class MovesManager {
 
     private boolean isHumanTurn(Tint turn) {
         return turn == Tint.LIGHT;
+    }
+
+    private boolean isAIturn() {
+        return service.getGameService().getCurrentTurn() == Tint.DARK;
     }
 
     private boolean isCheckmate() {
@@ -362,6 +364,19 @@ public class MovesManager {
         return false;
     }
 
+    public void commitMove() {
+        service.getTimerService().pause();
+        if(!(GameService.getGame() == Games.SANDBOX) && BooleanService.canSwitchTurns) {
+            service.getGameService().setCurrentTurn(
+                    service.getGameService().getCurrentTurn() == Tint.LIGHT ? Tint.DARK : Tint.LIGHT
+            );
+        }
+
+        if(service.getGameService().getCurrentTurn() == Tint.DARK) {
+            service.getModelService().triggerAIMove();
+        }
+    }
+
     public void cancelMove() {
         if(selectedPiece != null) {
             selectedPiece.setCol(selectedPiece.getPreCol());
@@ -402,9 +417,5 @@ public class MovesManager {
                     p.getTypeID(), captured != null ? " capturing " + captured.getTypeID() : "");
             moves.removeLast();
         }
-    }
-
-    private boolean isAIturn() {
-        return service.getGameService().getCurrentTurn() == Tint.DARK;
     }
 }

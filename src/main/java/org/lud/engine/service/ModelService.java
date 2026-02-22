@@ -69,6 +69,7 @@ public class ModelService {
         }
         BoardService.getMovesManager()
                 .attemptMove(move.piece(), move.targetCol(), move.targetRow());
+        BoardService.getMovesManager().commitMove();
     }
 
     public void triggerAIMove() {

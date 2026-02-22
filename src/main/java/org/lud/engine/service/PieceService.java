@@ -355,14 +355,6 @@ public class PieceService {
         updatePos(piece, false);
     }
 
-    public void switchTurns() {
-        if(!(GameService.getGame() == Games.SANDBOX) && BooleanService.canSwitchTurns) {
-            gameService.setCurrentTurn(
-                    gameService.getCurrentTurn() == Tint.LIGHT ? Tint.DARK : Tint.LIGHT
-            );
-        }
-    }
-
     public static boolean isWithinBoard(int targetCol, int targetRow) {
         return targetCol >= 0 && targetCol <= 7 && targetRow >= 0 && targetRow <= 7;
     }
