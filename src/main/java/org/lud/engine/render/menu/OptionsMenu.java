@@ -1,6 +1,7 @@
 package org.lud.engine.render.menu;
 
 import org.lud.engine.entities.Button;
+import org.lud.engine.entities.ButtonSprite;
 import org.lud.engine.enums.GameSettings;
 import org.lud.engine.enums.GameState;
 import org.lud.engine.enums.Theme;
@@ -42,10 +43,6 @@ public class OptionsMenu implements UI {
     private final BufferedImage toggleOffHighlighted;
     private final BufferedImage hardModeOn;
     private final BufferedImage hardModeOnHighlighted;
-    private final BufferedImage nextPage;
-    private final BufferedImage nextPageOn;
-    private final BufferedImage previousPage;
-    private final BufferedImage previousPageOn;
 
     private final Map<Clickable, Rectangle> buttons;
 
@@ -71,10 +68,6 @@ public class OptionsMenu implements UI {
         this.toggleOffHighlighted = images[3];
         this.hardModeOn = images[4];
         this.hardModeOnHighlighted = images[5];
-        this.nextPage = images[6];
-        this.nextPageOn = images[7];
-        this.previousPage = images[8];
-        this.previousPageOn = images[9];
     }
 
     public Map<Clickable, Rectangle> getButtons() {
@@ -221,8 +214,8 @@ public class OptionsMenu implements UI {
             int x = totalWidth/2;
             int y = baseY;
 
-            nextButton = new Button(x, y, nextPage.getWidth(),
-                    nextPage.getHeight(), () -> {
+            nextButton = new Button(x, y, getSprites()[2].getWidth(),
+                    getSprites()[2].getHeight(), () -> {
                         int totalPages =
                                 (options.length
                                         + KeyboardInput.getITEMS_PER_PAGE() - 1)
@@ -240,8 +233,8 @@ public class OptionsMenu implements UI {
             int x = totalWidth/2 - render.scale(80);
             int y = baseY;
 
-            prevButton = new Button(x, y, previousPage.getWidth(),
-                    previousPage.getHeight(), () -> {
+            prevButton = new Button(x, y, getSprites()[0].getWidth(),
+                    getSprites()[0].getHeight(), () -> {
                         int page = keyUI.getCurrentPage() - 1;
                         if(page < 0)
                             page = 0;
@@ -253,8 +246,8 @@ public class OptionsMenu implements UI {
             int x = 50;
             int y = baseY;
 
-            backButton = new Button(x, y, previousPage.getWidth(),
-                    previousPage.getHeight(), () -> gameService.setState(GameState.MENU));
+            backButton = new Button(x, y, getSprites()[0].getWidth(),
+                    getSprites()[0].getHeight(), () -> gameService.setState(GameState.MENU));
         }
 
         buttons.put(nextButton, new Rectangle(nextButton.getX(), nextButton.getY(),
@@ -270,20 +263,31 @@ public class OptionsMenu implements UI {
 
     private void drawButtons(Graphics2D g2) {
         BufferedImage nextImg = render.isHovered(nextButton)
-                        ? Colorblindness.filter(nextPageOn)
-                        : Colorblindness.filter(nextPage);
+                        ? Colorblindness.filter(getSprites()[3])
+                        : Colorblindness.filter(getSprites()[2]);
 
         BufferedImage prevImg = render.isHovered(prevButton)
-                        ? Colorblindness.filter(previousPageOn)
-                        : Colorblindness.filter(previousPage);
+                        ? Colorblindness.filter(getSprites()[1])
+                        : Colorblindness.filter(getSprites()[0]);
 
         BufferedImage backImg = render.isHovered(backButton)
-                ? Colorblindness.filter(previousPageOn)
-                : Colorblindness.filter(previousPage);
+                ? Colorblindness.filter(getSprites()[1])
+                : Colorblindness.filter(getSprites()[0]);
 
         render.getMenuRender().drawButtonsLayer(g2, nextButton, prevButton, backButton);
         g2.drawImage(nextImg, nextButton.getX(), nextButton.getY(), null);
         g2.drawImage(prevImg, prevButton.getX(), prevButton.getY(), null);
         g2.drawImage(backImg, backButton.getX(), backButton.getY(), null);
+    }
+
+    private BufferedImage[] getSprites() {
+        ButtonSprite sprite1 = render.getMenuRender().getButtonRegistry().get("previous_page");
+        ButtonSprite sprite2 = render.getMenuRender().getButtonRegistry().get("next_page");
+
+        BufferedImage previousPage = sprite1.normal;
+        BufferedImage nextPage = sprite2.normal;
+        BufferedImage previousPageOn = sprite1.highlighted;
+        BufferedImage nextPageOn = sprite2.highlighted;
+        return new BufferedImage[]{previousPage, previousPageOn, nextPage, nextPageOn};
     }
 }

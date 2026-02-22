@@ -1,6 +1,7 @@
 package org.lud.engine.render.menu;
 
 import org.lud.engine.entities.Button;
+import org.lud.engine.entities.ButtonSprite;
 import org.lud.engine.enums.ButtonSize;
 import org.lud.engine.enums.GameMenu;
 import org.lud.engine.enums.GameState;
@@ -17,6 +18,8 @@ import org.lud.engine.render.RenderContext;
 import org.lud.engine.service.BooleanService;
 import org.lud.engine.service.GameService;
 import org.lud.engine.service.UIService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -28,6 +31,7 @@ public class MainMenu implements UI {
     private static final int CENTER_Y = 800;
     private static final int PADDING_X = 25;
     private static final int PADDING_Y = 25;
+    private static final Logger log = LoggerFactory.getLogger(MainMenu.class);
 
     private final RenderContext render;
     private final GameService gameService;
@@ -35,8 +39,8 @@ public class MainMenu implements UI {
     private final KeyboardInput keyUI;
     private final Mouse mouse;
 
-    private final BufferedImage smallButton;
-    private final BufferedImage bigButton;
+    private BufferedImage smallButton;
+    private BufferedImage bigButton;
 
     private final Map<Clickable, Rectangle> buttons;
     private Button playButton;
@@ -54,10 +58,6 @@ public class MainMenu implements UI {
         this.uiService = uiService;
         this.keyUI = keyUI;
         this.mouse = mouse;
-
-        this.smallButton = render.getMenuRender().getBUTTON_SMALL();
-        this.bigButton = render.getMenuRender().getBUTTON();
-
         this.buttons = new HashMap<>();
     }
 
@@ -109,11 +109,15 @@ public class MainMenu implements UI {
         int x = startX, y = startY;
         int padding = 100;
 
+        smallButton = render.getMenuRender().getButtonRegistry().get("button_small").normal;
+        bigButton = render.getMenuRender().getButtonRegistry().get("button").normal;
+
         g2.setFont(UIService.getFont(UIService.getMENU_FONT()));
         for(GameMenu option : options) {
             if(option == GameMenu.PLAY) {
-                BufferedImage baseImg = render.getMenuRender().getBUTTON();
-                BufferedImage altImg = render.getMenuRender().getBUTTON_HIGHLIGHTED();
+                String key = "button";
+                BufferedImage baseImg = getSprites(key)[0];
+                BufferedImage altImg = getSprites(key)[1];
                 int width = baseImg.getWidth();
                 int height = baseImg.getHeight();
                 x = startX; y = startY;
@@ -141,8 +145,9 @@ public class MainMenu implements UI {
             }
 
             if(option == GameMenu.SETTINGS) {
-                BufferedImage baseImg = render.getMenuRender().getSETTINGS();
-                BufferedImage altImg = render.getMenuRender().getSETTINGS_HIGHLIGHTED();
+                String key = "settings";
+                BufferedImage baseImg = getSprites(key)[0];
+                BufferedImage altImg = getSprites(key)[1];
                 int width = baseImg.getWidth();
                 int height = baseImg.getHeight();
                 x = startX; y = startY;
@@ -161,8 +166,9 @@ public class MainMenu implements UI {
             }
 
             if(option == GameMenu.ADVANCEMENTS) {
-                BufferedImage baseImg = render.getMenuRender().getACHIEVEMENTS();
-                BufferedImage altImg = render.getMenuRender().getACHIEVEMENTS_HIGHLIGHTED();
+                String key = "achievements";
+                BufferedImage baseImg = getSprites(key)[0];
+                BufferedImage altImg = getSprites(key)[1];
                 int width = baseImg.getWidth();
                 int height = baseImg.getHeight();
                 x = startX; y = startY;
@@ -181,8 +187,9 @@ public class MainMenu implements UI {
             }
 
             if(option == GameMenu.EXIT) {
-                BufferedImage baseImg = render.getMenuRender().getEXIT();
-                BufferedImage altImg = render.getMenuRender().getEXIT_HIGHLIGHTED();
+                String key = "exit";
+                BufferedImage baseImg = getSprites(key)[0];
+                BufferedImage altImg = getSprites(key)[1];
                 int width = baseImg.getWidth();
                 int height = baseImg.getHeight();
 
@@ -203,8 +210,10 @@ public class MainMenu implements UI {
 
             if(option == GameMenu.THEME) {
                 if(BooleanService.canTheme) {
-                    BufferedImage baseImg = render.getMenuRender().getRESET();
-                    BufferedImage altImg = render.getMenuRender().getRESET_HIGHLIGHTED();
+                    String key = "reset";
+                    BufferedImage baseImg = getSprites(key)[0];
+                    BufferedImage altImg = getSprites(key)[1];
+
                     int width = baseImg.getWidth();
                     int height = baseImg.getHeight();
 
@@ -223,6 +232,16 @@ public class MainMenu implements UI {
                 }
             }
         }
+    }
+
+    private BufferedImage getSmallButton() {
+        ButtonSprite sprite = render.getMenuRender().getButtonRegistry().get("button_small");
+        return sprite != null ? sprite.normal : null;
+    }
+
+    private BufferedImage getBigButton() {
+        ButtonSprite sprite = render.getMenuRender().getButtonRegistry().get("button");
+        return sprite != null ? sprite.normal : null;
     }
 
     private int[] getStart() {
@@ -250,5 +269,12 @@ public class MainMenu implements UI {
             );
         }
         return op.getTooltip();
+    }
+
+    private BufferedImage[] getSprites(String key) {
+        ButtonSprite sprite = render.getMenuRender().getButtonRegistry().get(key);
+        BufferedImage baseImg = sprite.normal;
+        BufferedImage altImg = sprite.highlighted;
+        return new BufferedImage[]{baseImg, altImg};
     }
 }

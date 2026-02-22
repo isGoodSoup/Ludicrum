@@ -1,9 +1,8 @@
 package org.lud.engine.render;
 
-import org.lud.engine.entities.Board;
+import org.lud.engine.entities.*;
 import org.lud.engine.entities.Button;
-import org.lud.engine.entities.King;
-import org.lud.engine.entities.Piece;
+import org.lud.engine.enums.ButtonSize;
 import org.lud.engine.enums.GameState;
 import org.lud.engine.enums.Games;
 import org.lud.engine.gui.Colors;
@@ -115,36 +114,23 @@ public class BoardRender {
         int hoverX = pieceService.getHoveredSquareX();
         int hoverY = pieceService.getHoveredSquareY();
 
-        int buttonWidth = render.getMenuRender().getACHIEVEMENTS().getWidth();
+        drawBaseBoard(g2);
+        int buttonWidth = getSprites("previous_page")[0].getWidth();
         int buttonX = 50;
         int buttonY = render.scale(RenderContext.BASE_HEIGHT - 115);
         int offset = render.scale(buttonWidth);
 
-        drawBaseBoard(g2);
-        g2.drawImage(
-                initButton(backButton, buttonX, buttonY,
-                        render.getMenuRender().getPREVIOUS_PAGE(),
-                        render.getMenuRender().getPREVIOUS_PAGE_ON(),
-                        () -> gameService.setState(GameState.MENU)),
-                buttonX, buttonY, null
+        backButton = drawIconButton(g2, backButton, "previous_page",
+                buttonX, buttonY, () -> gameService.setState(GameState.MENU));
+        buttonX += offset;
+
+        undoButton = drawIconButton(g2, undoButton, "undo",
+                buttonX, buttonY, () -> render.getMovesManager().undoLastMove()
         );
         buttonX += offset;
 
-        g2.drawImage(
-                initButton(undoButton, buttonX, buttonY,
-                        render.getMenuRender().getUNDO(),
-                        render.getMenuRender().getUNDO_HIGHLIGHTED(),
-                        () -> render.getMovesManager().undoLastMove()),
-                buttonX, buttonY, null
-        );
-        buttonX += offset;
-
-        g2.drawImage(
-                initButton(resetButton, buttonX, buttonY,
-                        render.getMenuRender().getRESET(),
-                        render.getMenuRender().getRESET_HIGHLIGHTED(),
-                        () -> boardService.resetBoard()),
-                buttonX, buttonY, null
+        resetButton = drawIconButton(g2, resetButton, "reset",
+                buttonX, buttonY, () -> boardService.resetBoard()
         );
 
         g2.setRenderingHint(
@@ -266,11 +252,32 @@ public class BoardRender {
         return b;
     }
 
-    private BufferedImage initButton(Button button, int buttonX, int buttonY,
-                                     BufferedImage baseImg, BufferedImage altImg, Runnable action) {
+    private Button drawIconButton(Graphics2D g2, Button button, String spriteKey,
+                                  int x, int y, Runnable action) {
+        BufferedImage[] sprites = getSprites(spriteKey);
+        BufferedImage base = sprites[0];
+        BufferedImage highlighted = sprites[1];
         if(button == null) {
-            button = createButton(buttonX, buttonY, baseImg.getWidth(), baseImg.getHeight(), action);
+            button = createButton(x, y, base.getWidth(), base.getHeight(), action);
         }
-        return render.isHovered(button) ? altImg : baseImg;
+
+        g2.drawImage(render.getMenuRender().getButtonRegistry()
+                .get("button_small").normal, x, y, null);
+
+        BufferedImage img = render.isHovered(button) ? highlighted : base;
+
+        g2.drawImage(img, x, y, null);
+        BufferedImage frame = render.getMenuRender().defineButton(button, ButtonSize.SMALL);
+        if(frame != null) {
+            g2.drawImage(frame, x, y, null);
+        }
+        return button;
+    }
+
+    private BufferedImage[] getSprites(String key) {
+        ButtonSprite sprite = render.getMenuRender().getButtonRegistry().get(key);
+        BufferedImage baseImg = sprite.normal;
+        BufferedImage altImg = sprite.highlighted;
+        return new BufferedImage[]{baseImg, altImg};
     }
 }
