@@ -14,8 +14,8 @@ public class Sound {
     private final transient Clip[] clips = new Clip[30];
     private final transient URL[] soundURL = new URL[30];
     private final transient FloatControl[] controls = new FloatControl[30];
-    private int volumeScale = 3;
-    private float volume;
+    private static final float[] VOLUME_LEVELS = {-80f, -40f, -32f, -24f, -18f, -12f, -8f, -4f, -2f, 0f};
+    private int volumeScale = 2;
 
     private static final Logger log = LoggerFactory.getLogger(Sound.class);
 
@@ -44,14 +44,6 @@ public class Sound {
         return controls;
     }
 
-    public int getVolumeScale() {
-        return volumeScale;
-    }
-
-    public float getVolume() {
-        return volume;
-    }
-
     private void setSound(int i, String name) {
         String path = "/fx/";
         soundURL[i] = getClass().getResource(path + name + ".wav");
@@ -76,8 +68,8 @@ public class Sound {
 
     public void play(int i) {
         Clip c = clips[i];
-        if (c == null) return;
-        if (c.isRunning()) c.stop();
+        if(c == null) { return; }
+        if(c.isRunning()) { c.stop(); }
         c.setFramePosition(0);
         c.start();
     }
@@ -92,35 +84,42 @@ public class Sound {
 
     public void stop(int i) {
         Clip c = clips[i];
-        if (c != null && c.isRunning()) c.stop();
+        if(c != null && c.isRunning()) { c.stop(); }
     }
 
-    public void checkVolume() {
-        switch(volumeScale) {
-            case 0 -> volume = -80f;
-            case 1 -> volume = -20f;
-            case 2 -> volume = -12f;
-            case 3 -> volume = -5f;
-            case 4 -> volume = 1f;
-            case 5 -> volume = 6f;
-        }
-
-        for (FloatControl c : controls) {
-            if (c != null) c.setValue(volume);
+    public void volumeUp() {
+        if(volumeScale < VOLUME_LEVELS.length - 1) {
+            volumeScale++;
+            updateVolume();
+            log.debug("Volume scale increased to {}", volumeScale);
         }
     }
 
-    public void setVolumeScale(int volumeScale) {
-        if (volumeScale < 0) volumeScale = 0;
-        if (volumeScale > 5) volumeScale = 5;
-        this.volumeScale = volumeScale;
-        checkVolume();
+    public void volumeDown() {
+        if(volumeScale > 0) {
+            volumeScale--;
+            updateVolume();
+            log.debug("Volume scale decreased to {}", volumeScale);
+        }
+    }
+
+    private void updateVolume() {
+        float dB = VOLUME_LEVELS[volumeScale];
+        for(FloatControl c : controls) {
+            if(c != null) {
+                float min = c.getMinimum();
+                float max = c.getMaximum();
+
+                float clamped = Math.max(min, Math.min(max, dB));
+                c.setValue(clamped);
+            }
+        }
     }
 
     public synchronized void playFX(int index) {
         if(!BooleanService.canPlayFX) { return; }
         Clip clip = clips[index];
-        if(clip.isRunning()) clip.stop();
+        if(clip.isRunning()) { clip.stop(); }
         clip.setFramePosition(0);
         clip.start();
     }
@@ -128,11 +127,13 @@ public class Sound {
     public synchronized void playMusic() {
         if(!BooleanService.canPlayMusic) { return; }
         Clip c = clips[7];
-        if (c == null) return;
+        if(c == null) { return; }
 
-        if (!c.isRunning()) {
+        if(!c.isRunning()) {
             c.setFramePosition(0);
             c.loop(Clip.LOOP_CONTINUOUSLY);
         }
+
+        updateVolume();
     }
 }

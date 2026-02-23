@@ -30,7 +30,7 @@ public class ControlsRender {
 
     public void drawControlsHUD(Graphics2D g2) {
         int startX = 25;
-        int y = 400;
+        int y = RenderContext.BASE_HEIGHT - 600;
         int lineHeight = 32;
         g2.setColor(Colorblindness.filter(Colors.getForeground()));
         g2.setFont(UIService.getFont(UIService.getMENU_FONT()));
@@ -71,7 +71,8 @@ public class ControlsRender {
                 case "arrow_up", "arrow_down", "arrow_left", "arrow_right" ->
                         UIService.getImage("/ui/keys/" + key);
                 case "ctrl" -> UIService.getImage("/ui/keys/ctrl");
-                case "q", "t", "g", "r", "z", "c", "h" ->
+                case "tab" -> UIService.getImage("/ui/keys/tab");
+                case "q", "t", "g", "r", "z", "c", "h", "m", "k" ->
                         UIService.getImage("/ui/keys/" + key);
                 case "1", "2", "3" -> UIService.getImage("/ui/keys/" + key);
                 case "enter" -> UIService.getImage("/ui/keys/enter");

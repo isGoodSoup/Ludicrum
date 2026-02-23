@@ -3,6 +3,8 @@ package org.lud.engine.enums;
 import org.lud.engine.gui.Colors;
 import org.lud.engine.interfaces.Clickable;
 import org.lud.engine.service.GameService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public enum GameMenu implements Clickable {
     PLAY("PLAY", "Start a match of ", "Continue match of ") {
@@ -39,10 +41,12 @@ public enum GameMenu implements Clickable {
     EXIT("EXIT", "Leave?", "") {
         @Override
         public void run(GameService gameService) {
+            log.info("Ending session");
             System.exit(0);
         }
     };
 
+    private static final Logger log = LoggerFactory.getLogger(GameMenu.class);
     private final String label;
     private final String tooltip;
     private final String continueTooltip;

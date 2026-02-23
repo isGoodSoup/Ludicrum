@@ -356,13 +356,33 @@ public class KeyboardInput {
             move.undoLastMove();
             service.getSound().playFX(0);
         }
+        if(keyboard.isComboPressed(KeyEvent.VK_CONTROL, KeyEvent.VK_H)) {
+            service.getRender().getMovesRender().toggleMoves();
+            service.getSound().playFX(3);
+        }
+        if(keyboard.isComboPressed(KeyEvent.VK_CONTROL, KeyEvent.VK_R)) {
+            service.getBoardService().resetBoard();
+            service.getSound().playFX(0);
+        }
     }
 
     private void globalShortcuts(Keyboard keyboard) {
-        if(keyboard.isComboPressed(KeyEvent.VK_CONTROL, KeyEvent.VK_Q)) System.exit(0);
-        if(keyboard.isComboPressed(KeyEvent.VK_CONTROL, KeyEvent.VK_T) && BooleanService.canTheme) { Colors.nextTheme(); service.getSound().playFX(0); }
-        if(keyboard.isComboPressed(KeyEvent.VK_CONTROL, KeyEvent.VK_R)) { service.getBoardService().resetBoard(); service.getSound().playFX(0); }
-        if(keyboard.isComboPressed(KeyEvent.VK_CONTROL, KeyEvent.VK_H)) { service.getRender().getMovesRender().toggleMoves(); service.getSound().playFX(3); }
+        if(keyboard.isComboPressed(KeyEvent.VK_CONTROL, KeyEvent.VK_Q)) {
+            log.info("Force ending session");
+            System.exit(0);
+        }
+        if(keyboard.isComboPressed(KeyEvent.VK_CONTROL, KeyEvent.VK_T) && BooleanService.canTheme) {
+            Colors.nextTheme();
+            service.getSound().playFX(2);
+        }
+        if(keyboard.isComboPressed(KeyEvent.VK_CONTROL, KeyEvent.VK_K)) {
+            service.getSound().volumeUp();
+            service.getSound().playFX(2);
+        }
+        if(keyboard.isComboPressed(KeyEvent.VK_CONTROL, KeyEvent.VK_M)) {
+            service.getSound().volumeDown();
+            service.getSound().playFX(1);
+        }
     }
 
     private void repeatKeyCheck(boolean condition, Runnable action, long now, long lastKeyTime, Runnable updateTime) {
