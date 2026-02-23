@@ -322,7 +322,7 @@ public class PieceService {
         p.setRow(newRow);
         updatePos(p, false);
 
-        log.debug("{} {}: {} -> {}", p.getColor().toString(),
+        log.info("{} {}: {} -> {}", p.getColor().toString(),
                 p.getTypeID().toString(), oldPos, newPos);
         BoardService.getBoardState()[newRow][newCol] = p;
     }
