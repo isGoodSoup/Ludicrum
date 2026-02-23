@@ -3,7 +3,6 @@ package org.lud.engine.render;
 import org.lud.engine.entities.Button;
 import org.lud.engine.entities.ButtonSprite;
 import org.lud.engine.enums.*;
-import org.lud.engine.input.Mouse;
 import org.lud.engine.interfaces.Clickable;
 import org.lud.engine.interfaces.UI;
 import org.lud.engine.service.BooleanService;

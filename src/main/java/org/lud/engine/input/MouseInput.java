@@ -12,7 +12,6 @@ import org.lud.engine.service.PieceService;
 import org.lud.engine.service.ServiceFactory;
 
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.Map;
 
 public class MouseInput {
