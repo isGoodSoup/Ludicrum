@@ -309,11 +309,12 @@ public class MainMenu implements UI {
                 render.scale(RenderContext.BASE_HEIGHT - 131));
     }
 
+    @SuppressWarnings("StatementWithEmptyBody")
     private String showTooltip(GameMenu op) {
-        if(op.equals(GameMenu.PLAY)) {
-            return gameService.getTooltip(GameService.getGame(),
-                    gameService.getSaveManager().autosaveExists()
-            );
+        if(op == GameMenu.PLAY) {
+            if(GameService.getGame() != null) {
+                return GameService.getGame().getTooltip();
+            } else {}
         }
         return op.getTooltip();
     }

@@ -370,6 +370,7 @@ public class KeyboardInput {
     }
 
     private void globalShortcuts(Keyboard keyboard) {
+        if(keyboard.wasMPressed()) { BooleanService.canPlayMusic ^= true; }
         if(keyboard.isComboPressed(KeyEvent.VK_CONTROL, KeyEvent.VK_Q)) {
             log.info("Quitting session");
             System.exit(0);

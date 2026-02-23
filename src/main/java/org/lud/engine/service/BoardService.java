@@ -145,7 +145,7 @@ public class BoardService {
 
     public void startBoard() {
         if(GameService.getGame() == Games.SANDBOX) { setPiecesSandbox(); }
-        if(BooleanService.canDoChaos) { setPiecesChaos(); }
+        if(GameService.getGame() == Games.CHAOS) { setPiecesChaos(); }
         else { setPieces(); }
 
         if(!(GameService.getGame() == Games.SANDBOX)) {
@@ -319,49 +319,44 @@ public class BoardService {
                 service.getGameService().setCurrentTurn(Turn.LIGHT);
                 PieceService.nullThisPiece();
             }
+            case CHAOS -> {}
         }
     }
 
     public void setPiecesChaos() {
-        if(!BooleanService.canDoChaos) {
+        if(!(GameService.getGame() == Games.CHAOS)) {
             return;
         }
 
-        switch(GameService.getGame()) {
-            case CHESS -> {
-                List<Piece> pieces = pieceService.getPieces();
-                columns.clear();
-                pieces.clear();
-                clearBoardState();
+        List<Piece> pieces = pieceService.getPieces();
+        columns.clear();
+        pieces.clear();
+        clearBoardState();
 
-                List<Integer> f = new ArrayList<>(List.of(0, 1, 2, 3, 4, 5, 6, 7));
-                List<Integer> b = new ArrayList<>(List.of(0, 1, 2, 3, 4, 5, 6, 7));
-                Collections.shuffle(f);
-                Collections.shuffle(b);
-                columns.put(f, b);
+        List<Integer> f = new ArrayList<>(List.of(0, 1, 2, 3, 4, 5, 6, 7));
+        List<Integer> b = new ArrayList<>(List.of(0, 1, 2, 3, 4, 5, 6, 7));
+        Collections.shuffle(f);
+        Collections.shuffle(b);
+        columns.put(f, b);
 
-                for(Map.Entry<List<Integer>, List<Integer>> entry :
-                        columns.entrySet()) {
-                    List<Integer> front = entry.getKey();
-                    List<Integer> back = entry.getValue();
+        for(Map.Entry<List<Integer>, List<Integer>> entry :
+                columns.entrySet()) {
+            List<Integer> front = entry.getKey();
+            List<Integer> back = entry.getValue();
 
-                    for(int col : front) {
-                        pieces.add(pieceService.getRandomPiece(Turn.LIGHT, col, 6));
-                        pieces.add(pieceService.getRandomPiece(Turn.DARK, col, 1));
-                    }
-
-                    for(int col : back) {
-                        if(col == 4) { continue; }
-                        pieces.add(pieceService.getRandomPiece(Turn.LIGHT, col, 7));
-                        pieces.add(pieceService.getRandomPiece(Turn.DARK, col, 0));
-                    }
-                }
-                pieces.add(new King(Turn.LIGHT, 4, 7));
-                pieces.add(new King(Turn.DARK, 4, 0));
+            for(int col : front) {
+                pieces.add(pieceService.getRandomPiece(Turn.LIGHT, col, 6));
+                pieces.add(pieceService.getRandomPiece(Turn.DARK, col, 1));
             }
-            case CHECKERS -> {}
-            case SHOGI -> {}
+
+            for(int col : back) {
+                if(col == 4) { continue; }
+                pieces.add(pieceService.getRandomPiece(Turn.LIGHT, col, 7));
+                pieces.add(pieceService.getRandomPiece(Turn.DARK, col, 0));
+            }
         }
+        pieces.add(new King(Turn.LIGHT, 4, 7));
+        pieces.add(new King(Turn.DARK, 4, 0));
     }
 
     public void setPiecesSandbox() {

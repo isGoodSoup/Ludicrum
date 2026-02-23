@@ -19,7 +19,7 @@ public class King extends Piece {
 	public boolean canMove(int targetCol, int targetRow, List<Piece> board) {
 		if(!isWithinBoard(targetCol, targetRow)) { return false; }
 		switch(GameService.getGame()) {
-			case CHESS -> {
+			case CHESS, CHAOS -> {
 				int colDiff = Math.abs(targetCol - getCol());
 				int rowDiff = Math.abs(targetRow - getRow());
 

@@ -24,6 +24,7 @@ public class Board implements Serializable {
 		grids.put(Games.CHECKERS, 8);
 		grids.put(Games.SHOGI, 9);
 		grids.put(Games.SANDBOX, 9);
+		grids.put(Games.CHAOS, 8);
 	}
 
 	public void setSize(Games game) {

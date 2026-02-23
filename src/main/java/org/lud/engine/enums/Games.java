@@ -7,8 +7,7 @@ import org.lud.engine.service.GameService;
 
 public enum Games implements State {
     CHESS("CHESS", "",
-            "A classic strategy duel where every piece moves differently. " +
-                    "Outsmart your opponent and deliver checkmate to win") {
+            "A classic strategy duel where every piece moves differently.") {
         @Override
         public void setup(GameService gameService) {
             gameService.setGame(this);
@@ -31,8 +30,7 @@ public enum Games implements State {
         }
     },
     CHECKERS("CHECKERS", "checker_",
-            "A fast-paced tactical game of diagonal moves and jumps. Capture " +
-                    "all opponent pieces or block their moves to win") {
+            "A fast-paced tactical game of diagonal moves and jumps.") {
         @Override
         public void setup(GameService gameService) {
             gameService.setGame(this);
@@ -55,7 +53,7 @@ public enum Games implements State {
         }
     },
     SHOGI("SHOGI", "shogi_", "Japanese chess on a 9×9 board where " +
-            "captured pieces can rejoin the game under your control."){
+            "captured pieces can rejoin"){
         @Override
         public void setup(GameService gameService) {
             gameService.setGame(this);
@@ -103,6 +101,32 @@ public enum Games implements State {
         public boolean isEnabled() {
             return true;
         }
+    },
+    CHAOS("CHAOS", "", "????"){
+        @Override
+        public void setup(GameService gameService) {
+            gameService.setCurrentTurn(Turn.LIGHT);
+
+            gameService.setGame(this);
+            gameService.setState(GameState.BOARD);
+
+            if(!gameService.getSaveManager().autosaveExists()) {
+                gameService.startNewGame();
+            } else {
+                gameService.continueGame();
+            }
+        }
+
+        @Override
+        public boolean isEnabled() {
+            return true;
+        }
+
+        @Override
+        public int getBoardSize(Board board, GameService gameService) {
+            return board.getGrids().get(GameService.getGame());
+        }
+
     };
 
     private final String label;
@@ -112,7 +136,9 @@ public enum Games implements State {
     Games(String label, String spritePrefix, String tooltip) {
         this.label = label;
         this.spritePrefix = spritePrefix;
-        this.tooltip = tooltip;
+        this.tooltip = tooltip.length() > 120
+                ? tooltip.substring(0, 117) + "..."
+                : tooltip;
     }
 
     public String getLabel() {

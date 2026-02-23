@@ -138,7 +138,9 @@ public class GameService {
         Games newGame = games[nextIndex];
         setPreviousGame(getGame());
         setGame(newGame);
-        log.info("Game rotated to {}. Overwriting autosave.", newGame);
+        if(BooleanService.canSave) {
+            log.info("Game rotated to {}. Overwriting autosave.", newGame);
+        }
 
         boardService.prepBoard();
         boardService.startBoard();

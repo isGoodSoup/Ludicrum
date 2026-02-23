@@ -20,7 +20,7 @@ public class Rook extends Piece {
 		if(isWithinBoard(targetCol, targetRow) && !isSameSquare(this, targetCol,
 				targetRow)) {
 			switch(GameService.getGame()) {
-				case CHESS, SANDBOX -> {
+				case CHESS, SANDBOX, CHAOS -> {
 					if(targetCol == getPreCol() || targetRow == getPreRow()) {
 						return isValidSquare(this, targetCol, targetRow, board)
 								&& isPathClear(this, targetCol, targetRow, board);

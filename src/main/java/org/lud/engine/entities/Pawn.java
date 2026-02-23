@@ -26,7 +26,7 @@ public class Pawn extends Piece {
 		Piece pieceAtTarget = PieceService.getPieceAt(targetCol, targetRow, board);
 
 		switch(GameService.getGame()) {
-			case CHESS, CHECKERS, SANDBOX -> {
+			case CHESS, SANDBOX, CHAOS -> {
 				if(targetCol == getCol() && targetRow == getRow() + direction) {
 					return pieceAtTarget == null;
 				}

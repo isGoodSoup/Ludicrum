@@ -42,7 +42,7 @@ public class ModelService {
 
     public Ruleset createRuleSet(Games type) {
         return switch(type) {
-            case CHESS -> new ChessRuleset(pieceService, boardService);
+            case CHESS, CHAOS -> new ChessRuleset(pieceService, boardService);
             case CHECKERS -> new CheckersRuleset(pieceService, boardService);
             case SHOGI -> new ShogiRuleset(pieceService, boardService);
             default -> throw new IllegalStateException("No ruleset?");
@@ -71,14 +71,12 @@ public class ModelService {
     public void executeMove(Move move) {
         if(move == null) { return; }
         Piece p = move.piece();
-
         animationService.startMove(p, move.targetCol(), move.targetRow());
-        boardService.getService().getSound().playFX(0);
-
         BooleanService.cannotAutoCommit = true;
         BoardService.getMovesManager()
                 .attemptMove(move.piece(), move.targetCol(), move.targetRow());
         BooleanService.cannotAutoCommit = false;
+        boardService.getService().getSound().playFX(0);
     }
 
     public Move getAiTurn() {

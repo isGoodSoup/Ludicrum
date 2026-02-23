@@ -32,15 +32,6 @@ public enum GameSettings implements Clickable {
         }
     },
 
-    CHAOS_MODE("Chaos Mode") {
-        public boolean get() { return BooleanService.canDoChaos; }
-        public void toggle() {
-            BooleanService.canDoChaos ^= true;
-            BooleanService.canUndoMoves = true;
-            BooleanService.canDoAchievements = false;
-        }
-    },
-
     BASIC_MOVES("Basic Moves") {
         public boolean get() { return BooleanService.canDoMoves; }
         public void toggle() { BooleanService.canDoMoves ^= true; }
@@ -49,6 +40,18 @@ public enum GameSettings implements Clickable {
     PROMOTION("Promotion") {
         public boolean get() { return BooleanService.canPromote; }
         public void toggle() { BooleanService.canPromote ^= true; }
+    },
+
+    AUTOMATIC("Automatic Switch") {
+        @Override
+        public boolean get() {
+            return BooleanService.canDoAuto;
+        }
+
+        @Override
+        public void toggle() {
+            BooleanService.canDoAuto ^= true;
+        }
     },
 
     TIMER("Timer") {
@@ -64,18 +67,6 @@ public enum GameSettings implements Clickable {
         public void toggle() {
             BooleanService.canStopwatch ^= true;
             BooleanService.canTime = false;
-        }
-    },
-
-    AUTOMATIC("Automatic Switch") {
-        @Override
-        public boolean get() {
-            return BooleanService.canDoAuto;
-        }
-
-        @Override
-        public void toggle() {
-            BooleanService.canDoAuto ^= true;
         }
     },
 

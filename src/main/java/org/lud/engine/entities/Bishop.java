@@ -22,7 +22,7 @@ public class Bishop extends Piece {
 		}
 
 		switch(GameService.getGame()) {
-			case CHESS, SANDBOX -> {
+			case CHESS, SANDBOX, CHAOS -> {
 				int colDiff = targetCol - getCol();
 				int rowDiff = targetRow - getRow();
 
