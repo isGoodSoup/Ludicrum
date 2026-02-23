@@ -27,6 +27,7 @@ public class Sound {
         setSound(4, "pages");
         setSound(5, "reveal");
         setSound(6, "checkmate");
+        setSound(7, "main-theme");
         log.info("Loading sound FX...");
         preload();
     }
@@ -83,7 +84,9 @@ public class Sound {
 
     public void loop(int i) {
         Clip c = clips[i];
-        if (c == null) return;
+        if(c == null) { return; }
+        if(c.isRunning()) { c.stop(); }
+        c.setFramePosition(0);
         c.loop(Clip.LOOP_CONTINUOUSLY);
     }
 
@@ -120,5 +123,16 @@ public class Sound {
         if(clip.isRunning()) clip.stop();
         clip.setFramePosition(0);
         clip.start();
+    }
+
+    public synchronized void playMusic() {
+        if(!BooleanService.canPlayMusic) { return; }
+        Clip c = clips[7];
+        if (c == null) return;
+
+        if (!c.isRunning()) {
+            c.setFramePosition(0);
+            c.loop(Clip.LOOP_CONTINUOUSLY);
+        }
     }
 }

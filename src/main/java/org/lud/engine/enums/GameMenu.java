@@ -9,6 +9,7 @@ public enum GameMenu implements Clickable {
         @Override
         public void run(GameService gameService) {
             GameService.getGame().setup(gameService);
+            gameService.getServiceFactory().getSound().playFX(7);
         }
     },
     GAMES("GAMES", "", "Who knows, maybe there's more?") {

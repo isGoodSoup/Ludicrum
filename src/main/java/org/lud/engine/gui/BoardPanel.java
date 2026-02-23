@@ -46,6 +46,7 @@ public class BoardPanel extends JPanel implements Runnable {
         addMouseMotionListener(service.getMouse());
         setFocusTraversalKeysEnabled(false);
         setFocusable(true);
+        service.getSound().playMusic();
 	}
 
     public void launch() {

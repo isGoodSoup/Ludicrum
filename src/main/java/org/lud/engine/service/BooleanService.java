@@ -20,6 +20,7 @@ public class BooleanService {
     public static boolean isTurnLocked;
     public static boolean canType;
     public static boolean canPlayFX;
+    public static boolean canPlayMusic;
     public static boolean canZoomIn;
     public static boolean cannotAutoCommit;
     public static boolean wasTabPressed;
@@ -48,6 +49,7 @@ public class BooleanService {
         canDoAuto = false;
         cannotAutoCommit = false;
         canPlayFX = true;
+        canPlayMusic = true;
         canUndoMoves = true;
         canDoMoves = true;
         canAIPlay = true;
