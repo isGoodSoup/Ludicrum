@@ -368,7 +368,7 @@ public class KeyboardInput {
 
     private void globalShortcuts(Keyboard keyboard) {
         if(keyboard.isComboPressed(KeyEvent.VK_CONTROL, KeyEvent.VK_Q)) {
-            log.info("Force ending session");
+            log.info("Quitting session");
             System.exit(0);
         }
         if(keyboard.isComboPressed(KeyEvent.VK_CONTROL, KeyEvent.VK_T) && BooleanService.canTheme) {

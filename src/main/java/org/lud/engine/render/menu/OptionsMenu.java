@@ -76,6 +76,7 @@ public class OptionsMenu implements UI {
 
     @Override
     public void drawMenu(Graphics2D g2) {
+        initButtons();
         draw(g2, MenuRender.SETTINGS_MENU);
     }
 
@@ -152,7 +153,6 @@ public class OptionsMenu implements UI {
             );
 
             render.getMenuRender().getButtons().put(option, toggleHitbox);
-
             boolean isEnabled = option.get();
             boolean isHovered = toggleHitbox.contains(
                     mouse.getX(), mouse.getY());
@@ -166,11 +166,8 @@ public class OptionsMenu implements UI {
                     render.getOffsetY() + toggleY,
                     toggleWidth,
                     toggleHeight);
-
             startY += lineHeight;
         }
-
-        initButtons(options, totalWidth);
         drawButtons(g2);
     }
 
@@ -199,7 +196,7 @@ public class OptionsMenu implements UI {
         }
     }
 
-    private void initButtons(GameSettings[] options, int totalWidth) {
+    private void initButtons() {
         int baseY = render.scale(RenderContext.BASE_HEIGHT - 115);
         Map<Clickable, Rectangle> buttons = render.getMenuRender().getButtons();
 
@@ -209,10 +206,13 @@ public class OptionsMenu implements UI {
 
             backButton = createButton(x, y, getSprites()[0].getWidth(), getSprites()[0].getHeight(),
                     () -> gameService.setState(GameState.MENU));
+        } else {
+            buttons.put(backButton, new Rectangle(backButton.getX(), backButton.getY(),
+                    backButton.getWidth(), backButton.getHeight()));
         }
 
         if(prevButton == null) {
-            int x = totalWidth/2 - render.scale(80);
+            int x = getTotalWidth()/2 - render.scale(80);
             int y = baseY;
 
             prevButton = createButton(x, y, getSprites()[0].getWidth(), getSprites()[0].getHeight(),
@@ -223,15 +223,18 @@ public class OptionsMenu implements UI {
                         }
                         keyUI.setCurrentPage(page);
                     });
+        } else {
+            buttons.put(prevButton, new Rectangle(prevButton.getX(), prevButton.getY(),
+                    prevButton.getWidth(), prevButton.getHeight()));
         }
 
         if(nextButton == null) {
-            int x = totalWidth/2;
+            int x = getTotalWidth()/2;
             int y = baseY;
 
             nextButton = createButton(x, y, getSprites()[0].getWidth(), getSprites()[0].getHeight(),
                     () -> {
-                        int totalPages = (options.length + KeyboardInput.getITEMS_PER_PAGE() - 1)
+                        int totalPages = (MenuRender.SETTINGS_MENU.length + KeyboardInput.getITEMS_PER_PAGE() - 1)
                                         / KeyboardInput.getITEMS_PER_PAGE() - 1;
 
                         int page = keyUI.getCurrentPage() + 1;
@@ -240,6 +243,9 @@ public class OptionsMenu implements UI {
                         }
                         keyUI.setCurrentPage(page);
                     });
+        } else {
+            buttons.put(nextButton, new Rectangle(nextButton.getX(), nextButton.getY(),
+                    nextButton.getWidth(), nextButton.getHeight()));
         }
     }
 

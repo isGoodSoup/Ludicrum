@@ -45,6 +45,8 @@ public class AchievementsMenu implements UI {
     private Button prevButton;
     private Button backButton;
 
+    private boolean isNavigation = true;
+
     public AchievementsMenu(RenderContext render, UIService uiService, KeyboardInput keyUI,
                             AchievementService achievementService, GameService gameService, Mouse mouse) {
         this.render = render;
@@ -70,6 +72,7 @@ public class AchievementsMenu implements UI {
 
     @Override
     public void drawMenu(Graphics2D g2) {
+        initButtons(g2);
         draw(g2);
     }
 
@@ -153,8 +156,6 @@ public class AchievementsMenu implements UI {
 
             startY += height + spacing;
         }
-
-        initButtons(g2);
         drawButtons(g2);
 
         if(BooleanService.canZoomIn) {
@@ -196,6 +197,9 @@ public class AchievementsMenu implements UI {
 
             backButton = createButton(x, y, getSprites()[0].getWidth(), getSprites()[0].getHeight(),
                     () -> gameService.setState(GameState.MENU));
+        } else {
+            buttons.put(backButton, new Rectangle(backButton.getX(), backButton.getY(),
+                    backButton.getWidth(), backButton.getHeight()));
         }
 
         if(prevButton == null) {
@@ -210,6 +214,9 @@ public class AchievementsMenu implements UI {
                         }
                         keyUI.setCurrentPage(page);
                     });
+        } else {
+            buttons.put(prevButton, new Rectangle(prevButton.getX(), prevButton.getY(),
+                    prevButton.getWidth(), prevButton.getHeight()));
         }
 
         if(nextButton == null) {
@@ -227,6 +234,9 @@ public class AchievementsMenu implements UI {
                         }
                         keyUI.setCurrentPage(page);
                     });
+        } else {
+            buttons.put(nextButton, new Rectangle(nextButton.getX(), nextButton.getY(),
+                    nextButton.getWidth(), nextButton.getHeight()));
         }
     }
 

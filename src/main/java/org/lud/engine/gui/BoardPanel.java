@@ -47,6 +47,7 @@ public class BoardPanel extends JPanel implements Runnable {
         setFocusTraversalKeysEnabled(false);
         setFocusable(true);
         service.getSound().playMusic();
+        log.info("Opening new session");
 	}
 
     public void launch() {

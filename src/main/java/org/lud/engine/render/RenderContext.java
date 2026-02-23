@@ -7,6 +7,7 @@ import org.lud.engine.interfaces.Clickable;
 import org.lud.engine.interfaces.UI;
 import org.lud.engine.manager.MovesManager;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -119,7 +120,8 @@ public class RenderContext {
     }
 
     public boolean isHovered(Clickable param) {
-        return menuRender.getButtons().get(param).contains(mouse.getX(), mouse.getY())
+        Rectangle hitbox = menuRender.getButtons().get(param);
+        return hitbox != null && hitbox.contains(mouse.getX(), mouse.getY())
                 && !mouseInput.isClickingOption(param);
     }
 

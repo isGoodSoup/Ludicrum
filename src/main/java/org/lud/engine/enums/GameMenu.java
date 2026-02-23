@@ -10,8 +10,8 @@ public enum GameMenu implements Clickable {
     PLAY("PLAY", "Start a match of ", "Continue match of ") {
         @Override
         public void run(GameService gameService) {
+            log.debug("Starting a new game");
             GameService.getGame().setup(gameService);
-            gameService.getServiceFactory().getSound().playFX(7);
         }
     },
     GAMES("GAMES", "", "Who knows, maybe there's more?") {
@@ -23,12 +23,14 @@ public enum GameMenu implements Clickable {
     SETTINGS("SETTINGS", "Settings, themes, toggles", "") {
         @Override
         public void run(GameService gameService) {
+            log.debug("Settings menu");
             gameService.setState(GameState.SETTINGS);
         }
     },
     ADVANCEMENTS("ACHIEVEMENTS", "Track your progress", "") {
         @Override
         public void run(GameService gameService) {
+            log.debug("Achievements menu");
             gameService.setState(GameState.ACHIEVEMENTS);
         }
     },
