@@ -113,6 +113,7 @@ public class KeyboardInput {
         MovesManager move = service.getMovesManager();
 
         if(keyboard.isEscapeDown()) {
+            service.getRender().getMenuRender().onClose();
             service.getGameService().setState(GameState.MENU);
             service.getGameService().autoSave();
             selectedIndexY = 0;

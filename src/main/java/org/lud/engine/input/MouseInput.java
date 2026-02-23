@@ -2,6 +2,7 @@ package org.lud.engine.input;
 
 import org.lud.engine.entities.Board;
 import org.lud.engine.entities.Piece;
+import org.lud.engine.enums.GameState;
 import org.lud.engine.enums.Games;
 import org.lud.engine.interfaces.Clickable;
 import org.lud.engine.render.RenderContext;
@@ -11,6 +12,7 @@ import org.lud.engine.service.PieceService;
 import org.lud.engine.service.ServiceFactory;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.Map;
 
 public class MouseInput {
@@ -84,6 +86,12 @@ public class MouseInput {
                 entry.getKey().onClick(service.getGameService());
                 isClicking = true;
                 click = entry.getKey();
+            }
+            if(service.getGameService().getState() == GameState.ACHIEVEMENTS) {
+                if(service.getRender().isHovered(entry.getKey()) && mouse.wasPressed()) {
+                    entry.getKey().onClick(service.getGameService());
+                    service.getSound().playFX(0);
+                }
             }
         }
 

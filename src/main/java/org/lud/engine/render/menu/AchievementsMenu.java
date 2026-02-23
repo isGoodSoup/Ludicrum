@@ -19,6 +19,8 @@ import org.lud.engine.service.AchievementService;
 import org.lud.engine.service.BooleanService;
 import org.lud.engine.service.GameService;
 import org.lud.engine.service.UIService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -31,6 +33,7 @@ public class AchievementsMenu implements UI {
     private static final int STROKE = 6;
     private static final int OPTION_Y = 160;
     private static final String ACHIEVEMENTS = "ACHIEVEMENTS";
+    private static final Logger log = LoggerFactory.getLogger(AchievementsMenu.class);
 
     private final Map<Achievement, Rectangle> achievementBoxes;
 
@@ -44,8 +47,6 @@ public class AchievementsMenu implements UI {
     private Button nextButton;
     private Button prevButton;
     private Button backButton;
-
-    private boolean isNavigation = true;
 
     public AchievementsMenu(RenderContext render, UIService uiService, KeyboardInput keyUI,
                             AchievementService achievementService, GameService gameService, Mouse mouse) {
@@ -72,7 +73,10 @@ public class AchievementsMenu implements UI {
 
     @Override
     public void drawMenu(Graphics2D g2) {
-        initButtons(g2);
+        if (!BooleanService.haveButtonsInit) {
+            initButtons();
+            BooleanService.haveButtonsInit = true;
+        }
         draw(g2);
     }
 
@@ -187,7 +191,8 @@ public class AchievementsMenu implements UI {
         }
     }
 
-    private void initButtons(Graphics2D g2) {
+    private void initButtons() {
+        render.getMenuRender().clearButtons();
         int baseY = render.scale(RenderContext.BASE_HEIGHT - 115);
         Map<Clickable, Rectangle> buttons = render.getMenuRender().getButtons();
 
@@ -196,11 +201,14 @@ public class AchievementsMenu implements UI {
             int y = baseY;
 
             backButton = createButton(x, y, getSprites()[0].getWidth(), getSprites()[0].getHeight(),
-                    () -> gameService.setState(GameState.MENU));
-        } else {
-            buttons.put(backButton, new Rectangle(backButton.getX(), backButton.getY(),
-                    backButton.getWidth(), backButton.getHeight()));
+                    () -> {
+                        gameService.setState(GameState.MENU);
+                        render.getMenuRender().onClose();
+                    });
         }
+
+        buttons.put(backButton, new Rectangle(backButton.getX(), backButton.getY(),
+                backButton.getWidth(), backButton.getHeight()));
 
         if(prevButton == null) {
             int x = getTotalWidth()/2 - 80;
@@ -214,10 +222,10 @@ public class AchievementsMenu implements UI {
                         }
                         keyUI.setCurrentPage(page);
                     });
-        } else {
-            buttons.put(prevButton, new Rectangle(prevButton.getX(), prevButton.getY(),
-                    prevButton.getWidth(), prevButton.getHeight()));
         }
+
+        buttons.put(prevButton, new Rectangle(prevButton.getX(), prevButton.getY(),
+                prevButton.getWidth(), prevButton.getHeight()));
 
         if(nextButton == null) {
             int x = getTotalWidth()/2;
@@ -234,10 +242,10 @@ public class AchievementsMenu implements UI {
                         }
                         keyUI.setCurrentPage(page);
                     });
-        } else {
-            buttons.put(nextButton, new Rectangle(nextButton.getX(), nextButton.getY(),
-                    nextButton.getWidth(), nextButton.getHeight()));
         }
+
+        buttons.put(nextButton, new Rectangle(nextButton.getX(), nextButton.getY(),
+                nextButton.getWidth(), nextButton.getHeight()));
     }
 
     private Button createButton(int x, int y, int width, int height, Runnable action) {

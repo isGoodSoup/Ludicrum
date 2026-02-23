@@ -197,6 +197,7 @@ public class OptionsMenu implements UI {
     }
 
     private void initButtons() {
+        render.getMenuRender().clearButtons();
         int baseY = render.scale(RenderContext.BASE_HEIGHT - 115);
         Map<Clickable, Rectangle> buttons = render.getMenuRender().getButtons();
 
@@ -206,10 +207,10 @@ public class OptionsMenu implements UI {
 
             backButton = createButton(x, y, getSprites()[0].getWidth(), getSprites()[0].getHeight(),
                     () -> gameService.setState(GameState.MENU));
-        } else {
-            buttons.put(backButton, new Rectangle(backButton.getX(), backButton.getY(),
-                    backButton.getWidth(), backButton.getHeight()));
         }
+
+        buttons.put(backButton, new Rectangle(backButton.getX(), backButton.getY(),
+                backButton.getWidth(), backButton.getHeight()));
 
         if(prevButton == null) {
             int x = getTotalWidth()/2 - render.scale(80);
@@ -223,10 +224,10 @@ public class OptionsMenu implements UI {
                         }
                         keyUI.setCurrentPage(page);
                     });
-        } else {
-            buttons.put(prevButton, new Rectangle(prevButton.getX(), prevButton.getY(),
-                    prevButton.getWidth(), prevButton.getHeight()));
         }
+
+        buttons.put(prevButton, new Rectangle(prevButton.getX(), prevButton.getY(),
+                prevButton.getWidth(), prevButton.getHeight()));
 
         if(nextButton == null) {
             int x = getTotalWidth()/2;
@@ -243,10 +244,10 @@ public class OptionsMenu implements UI {
                         }
                         keyUI.setCurrentPage(page);
                     });
-        } else {
-            buttons.put(nextButton, new Rectangle(nextButton.getX(), nextButton.getY(),
-                    nextButton.getWidth(), nextButton.getHeight()));
         }
+
+        buttons.put(nextButton, new Rectangle(nextButton.getX(), nextButton.getY(),
+                nextButton.getWidth(), nextButton.getHeight()));
     }
 
     private Button createButton(int x, int y, int width, int height, Runnable action) {
