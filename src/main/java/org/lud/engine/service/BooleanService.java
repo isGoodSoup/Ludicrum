@@ -48,9 +48,9 @@ public class BooleanService {
 
     public static void defaultToggles() {
         canDoAchievements = false;
-        canSave = true;
+        canSave = false;
         isTurnLocked = false;
-        canDoAuto = false;
+        canDoAuto = true;
         cannotAutoCommit = false;
         canPlayFX = true;
         canPlayMusic = true;

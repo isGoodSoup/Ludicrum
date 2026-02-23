@@ -22,6 +22,7 @@ import java.io.Serial;
 public class BoardPanel extends JPanel implements Runnable {
 	@Serial
     private static final long serialVersionUID = -5189356863277669172L;
+    private static final Logger log = LoggerFactory.getLogger(BoardPanel.class);
     private final GameFrame gameFrame;
     private final Intro intro;
     private final RenderContext render;
@@ -29,7 +30,8 @@ public class BoardPanel extends JPanel implements Runnable {
 	private Thread thread;
 
     private static ServiceFactory service;
-    private static final Logger log = LoggerFactory.getLogger(BoardPanel.class);
+
+    private boolean isFinished;
 
 	public BoardPanel(GameFrame gameFrame) {
         super();
@@ -49,6 +51,7 @@ public class BoardPanel extends JPanel implements Runnable {
         addMouseMotionListener(service.getMouse());
         setFocusTraversalKeysEnabled(false);
         setFocusable(true);
+        isFinished = false;
         log.info("Opening new session");
 	}
 
@@ -119,9 +122,10 @@ public class BoardPanel extends JPanel implements Runnable {
     }
 
     private void update() {
-        if(intro.isFinished()) {
+        if(intro.isFinished() && !isFinished) {
             service.getGameService().setState(GameState.MENU);
             service.getSound().playMusic();
+            isFinished = true;
         }
         service.getKeyboardInput().update();
         service.getMouseInput().update();

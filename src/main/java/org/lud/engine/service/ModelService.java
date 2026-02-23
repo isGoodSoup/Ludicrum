@@ -10,7 +10,6 @@ import org.lud.engine.rulesets.ChessRuleset;
 import org.lud.engine.rulesets.ShogiRuleset;
 
 import javax.swing.*;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -89,7 +88,6 @@ public class ModelService {
         List<MoveScore> moves = rule.getAllLegalMoves(boardService.getService().getGameService().getCurrentTurn());
         if(moves.isEmpty()) { return null; }
         moves.sort(Comparator.comparingInt(MoveScore::score).reversed());
-        Collections.shuffle(moves);
         return moves.getFirst().move();
     }
 }
