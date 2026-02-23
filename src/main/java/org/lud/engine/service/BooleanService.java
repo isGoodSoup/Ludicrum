@@ -18,6 +18,7 @@ public class BooleanService {
     public static boolean isExitActive;
     public static boolean isMovesActive;
     public static boolean isTurnLocked;
+    public static boolean isDraw;
     public static boolean canType;
     public static boolean canPlayFX;
     public static boolean canPlayMusic;

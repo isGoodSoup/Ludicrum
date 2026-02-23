@@ -19,10 +19,11 @@ public class AchievementService {
     private List<Achievement> achievementList;
     private List<Achievement> sortedList;
 
-    private Map<Long, Integer> moveCount;
-    private Map<Long, Integer> winCount;
-    private Map<Long, Integer> promotionCount;
-    private Map<Long, Integer> checkCount;
+    private final Map<Long, Integer> moveCount;
+    private final Map<Long, Integer> winCount;
+    private final Map<Long, Integer> promotionCount;
+    private final Map<Long, Integer> checkCount;
+    private final Map<Long, Integer> jumpCount;
 
     private Set<Long> unlockedIDs;
     private Set<Turn> kingsChecked;
@@ -30,16 +31,17 @@ public class AchievementService {
     private int castlingCount = 0;
     private int opponentPieces = 0;
     private int piecesCounter = 0;
-
-    private boolean isFirstCapture;
-    private boolean isFirstToggle;
-    private boolean isFirstWin;
-    private boolean isQuickWin;
+    private int lostPieces = 0;
 
     private AnimationService animationService;
     private SaveManager saveManager;
     private ServiceFactory service;
     private EventBus eventBus;
+
+    private boolean isFirstCapture;
+    private boolean isFirstToggle;
+    private boolean isFirstWin;
+    private boolean isQuickWin;
 
     public AchievementService(EventBus eventBus) {
         achievements = new HashMap<>();
@@ -49,6 +51,7 @@ public class AchievementService {
         this.winCount = new HashMap<>();
         this.promotionCount = new HashMap<>();
         this.checkCount = new HashMap<>();
+        this.jumpCount = new HashMap<>();
 
         this.unlockedIDs = new HashSet<>();
         this.kingsChecked = new HashSet<>();
@@ -91,6 +94,23 @@ public class AchievementService {
 
         eventBus.register(VictoryEvent.class, this::onVictory);
         eventBus.register(StrategistEvent.class, this::onStrategist);
+        eventBus.register(JumpEvent.class, this::onJump);
+        eventBus.register(CaptureEvent.class, this::onLostPiece);
+        eventBus.register(CheckersMasterEvent.class, event -> {
+            long checkersStartId = 2001L;
+            long checkersEndId   = 2011L;
+            long unlockedCheckers = event.achievements().stream()
+                    .map(a -> a.getId().getId())
+                    .filter(id -> id >= checkersStartId && id <= checkersEndId)
+                    .count();
+            long totalCheckers = getSortedAchievements().stream()
+                    .map(a -> a.getId().getId())
+                    .filter(id -> id >= checkersStartId && id <= checkersEndId)
+                    .count();
+            if(unlockedCheckers >= totalCheckers) {
+                unlock(Achievements.KINGMAKER);
+            }
+        });
 
         eventBus.register(GrandmasterEvent.class, this::onGrandmaster);
     }
@@ -174,6 +194,10 @@ public class AchievementService {
                 .unmodifiableList(getUnlockedAchievements())));
     }
 
+    public boolean isUnlocked(Achievements type) {
+        return achievements.get(type).isUnlocked();
+    }
+
     public void lock(Achievements type) {
         Achievement achievement = achievements.get(type);
         if(achievement != null && achievement.isUnlocked()) {
@@ -252,7 +276,7 @@ public class AchievementService {
     private void onCapture(CaptureEvent event) {
         Piece attacker = event.piece();
         Piece captured = event.captured();
-        if(attacker.getColor() != Turn.LIGHT) return;
+        if(attacker.getColor() != Turn.LIGHT) { return; }
 
         if(GameService.getGame() == Games.CHESS && isFirstCapture) {
             unlock(Achievements.FIRST_CAPTURE);
@@ -265,6 +289,14 @@ public class AchievementService {
         }
     }
 
+    private void onLostPiece(CaptureEvent event) {
+        Piece captured = event.captured();
+        Piece attacker = event.piece();
+
+        if (captured.getColor() == Turn.LIGHT) {
+            lostPieces++;
+        }
+    }
 
     private void onToggle(ToggleEvent event) {
         if(isFirstToggle) {
@@ -312,12 +344,36 @@ public class AchievementService {
         }
     }
 
+    private void onJump(JumpEvent event) {
+        Piece p = event.piece();
+        jumpCount.merge(p.getID(), 1, Integer::sum);
+
+        if(jumpCount.get(p.getID()) == 2 && !isUnlocked(Achievements.DOUBLE_JUMP)) {
+            unlock(Achievements.DOUBLE_JUMP);
+            jumpCount.clear();
+        }
+
+        if(jumpCount.get(p.getID()) == 3 && !isUnlocked(Achievements.TRIPLE_JUMP)) {
+            unlock(Achievements.TRIPLE_JUMP);
+            jumpCount.clear();
+        }
+    }
+
     private void onVictory(VictoryEvent event) {
         if(GameService.getGame() != Games.CHECKERS) { return; }
         Piece p = event.piece();
 
+        if(BooleanService.isDraw && !isUnlocked(Achievements.DRAW_MASTER)) {
+            unlock(Achievements.DRAW_MASTER);
+        }
+
         if(opponentPieces == 0) {
             unlock(Achievements.CLEAN_SWEEP);
+        }
+
+        if (lostPieces >= 4) {
+            unlock(Achievements.COMEBACK);
+            lostPieces = 0;
         }
     }
 
@@ -328,12 +384,24 @@ public class AchievementService {
     }
 
     private void onPromotion(PromotionEvent event) {
-        if(GameService.getGame() != Games.CHESS) { return; }
         Piece piece = event.piece();
         promotionCount.merge(piece.getID(), 1, Integer::sum);
+        if(GameService.getGame() == Games.CHESS) {
+            if(promotionCount.get(piece.getID()) == 4) {
+                unlock(Achievements.KING_PROMOTER);
+            }
+        }
 
-        if(promotionCount.get(piece.getID()) == 4) {
-            unlock(Achievements.KING_PROMOTER);
+        if(GameService.getGame() == Games.CHECKERS) {
+            if(promotionCount.get(piece.getID()) == 1
+                    && !isUnlocked(Achievements.KING_ME)) {
+                unlock(Achievements.KING_ME);
+            }
+
+            if(promotionCount.get(piece.getID()) == 4
+                    && !isUnlocked(Achievements.KINGDOM_BUILDER)) {
+                unlock(Achievements.KINGDOM_BUILDER);
+            }
         }
     }
 
@@ -348,9 +416,15 @@ public class AchievementService {
     }
 
     private void onStalemate(StalemateEvent event) {
-        if(GameService.getGame() != Games.CHESS) { return; }
         Piece piece = event.piece();
-        unlock(Achievements.ALL_PIECES);
+
+        if(GameService.getGame() == Games.CHESS) {
+            unlock(Achievements.ALL_PIECES);
+        }
+
+        if(GameService.getGame() == Games.CHECKERS) {
+            unlock(Achievements.STALEMATE_SURVIVOR);
+        }
     }
 
     private void onGrandmaster(GrandmasterEvent event) {
@@ -360,7 +434,7 @@ public class AchievementService {
                 .filter(a -> a.getId() != Achievements.GRANDMASTER)
                 .count();
 
-        if(unlocked.size() >= totalAchievements) {
+        if(unlocked.size() >= totalAchievements && !isUnlocked(Achievements.GRANDMASTER)) {
             unlock(Achievements.GRANDMASTER);
         }
     }

@@ -76,7 +76,7 @@ public class MovesManager {
             int colDiff = targetCol - piece.getCol();
             if(Math.abs(colDiff) > 1) {
                 int step = (colDiff > 0) ? 1 : -1;
-                for (int c = piece.getCol(); c != targetCol + step; c += step) {
+                for(int c = piece.getCol(); c != targetCol + step; c += step) {
                     if(service.getPieceService()
                             .wouldLeaveKingInCheck(piece, c, piece.getRow())) {
                         PieceService.updatePos(piece);
@@ -143,6 +143,7 @@ public class MovesManager {
                                         piece.getPreRow(),
                                         piece.isTwoStepsAhead()));
                                 canJumpMore = true;
+                                eventBus.fire(new JumpEvent(piece));
                             }
                         }
                     }
@@ -226,6 +227,10 @@ public class MovesManager {
             if(isVictory() && noLoses()) {
                 eventBus.fire(new StrategistEvent(piece, piece.getColor()));
             }
+
+            if(isStalemate()) {
+                eventBus.fire(new StalemateEvent(piece));
+            }
         }
     }
 
@@ -293,21 +298,22 @@ public class MovesManager {
     private boolean isVictory() {
         int opponentPieces = service.getAchievementService().getOpponentPieces();
         boolean hasLegalMove = false;
-        for (Piece p : service.getPieceService().getPieces()) {
-            if (p instanceof Checker && p.getColor() != service.getGameService().getCurrentTurn()) {
+        for(Piece p : service.getPieceService().getPieces()) {
+            if(p instanceof Checker && p.getColor() != service.getGameService().getCurrentTurn()) {
                 opponentPieces++;
-                for (int col = 0; col < service.getBoardService().getBoard().getCol(); col++) {
-                    for (int row = 0; row < service.getBoardService().getBoard().getRow(); row++) {
-                        if (p.canMove(col, row, service.getPieceService().getPieces())) {
+                for(int col = 0; col < service.getBoardService().getBoard().getCol(); col++) {
+                    for(int row = 0; row < service.getBoardService().getBoard().getRow(); row++) {
+                        if(p.canMove(col, row, service.getPieceService().getPieces())) {
                             hasLegalMove = true;
                             break;
                         }
                     }
-                    if (hasLegalMove) break;
+                    if(hasLegalMove) { break; }
                 }
-                if (hasLegalMove) break;
+                if(hasLegalMove) { break; }
             }
         }
+        if(!hasLegalMove) { BooleanService.isDraw = true; }
         service.getAchievementService().setOpponentPieces(opponentPieces);
         return service.getAchievementService().getOpponentPieces() == 0 || !hasLegalMove;
     }

@@ -18,14 +18,14 @@ public enum Achievements {
     QUICK_START             (2002L, "a14_quick_start",            "Quick Start",            "Win in under 8 moves"),
     STRATEGIST              (2003L, "a15_strategist",             "Strategist",             "Win without losing a piece"),
     DOUBLE_JUMP             (2004L, "a16_graysons",               "The Grayson's",          "Double jump in one turn"),
-    TRIPLE_THREAT           (2005L, "a17_triple_threat",          "Three's Company",        "Triple jump in one turn"),
+    TRIPLE_JUMP             (2005L, "a17_triple_threat",          "Three's Company",        "Triple jump in one turn"),
     KING_ME                 (2006L, "a18_king_me",                "King Me",                "Promote to King"),
     KINGDOM_BUILDER         (2007L, "a19_kingdom_builder",        "Kingdom Come",           "Promote 4 pieces to Kings"),
-    COMEBACK                (2008L, "a20_comeback",               "Comeback",               "Win after losing 4+ pieces"),
+    COMEBACK                (2008L, "a20_comeback",               "Comeback",               "Win against all odds"),
     DRAW_MASTER             (2009L, "a21_even_stevens",           "Even Stevens",           "End in a draw"),
     CLEAN_SWEEP             (2010L, "a22_lord_of_checkers",       "The Lord Of Checkers",   "Capture all opponent pieces"),
     STALEMATE_SURVIVOR      (2011L, "a23_stalemate_survivor",     "The Last Of Us",         "Win with a single piece"),
-    CHAMPION                (2012L, "a24_kingmaker",              "Kingmaker",              "Complete all Checkers achievements"),
+    KINGMAKER               (2012L, "a24_kingmaker",              "Kingmaker",              "Complete all Checkers achievements"),
     GRANDMASTER             (1024L, "axx_grandmaster",            "Grandmaster",            "Complete all achievements");
 
     private final long id;
