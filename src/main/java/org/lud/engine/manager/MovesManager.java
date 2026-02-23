@@ -1,14 +1,14 @@
 package org.lud.engine.manager;
 
 import org.lud.engine.entities.*;
-import org.lud.engine.events.*;
-import org.lud.engine.service.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.lud.engine.enums.GameState;
 import org.lud.engine.enums.Games;
 import org.lud.engine.enums.Turn;
+import org.lud.engine.events.*;
 import org.lud.engine.records.Move;
+import org.lud.engine.service.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,6 +63,8 @@ public class MovesManager {
         boolean isHumanMove = isHumanTurn(service.getGameService().getCurrentTurn());
 
         if(isHumanMove) {
+            service.getTimerService().resume();
+        } else {
             service.getTimerService().pause();
         }
 
@@ -195,7 +197,7 @@ public class MovesManager {
             commitMove();
         }
 
-        if(isAIturn()) {
+        if(isAITurn()) {
             service.getModelService().triggerAIMove();
         }
 
@@ -238,7 +240,7 @@ public class MovesManager {
         return turn == Turn.LIGHT;
     }
 
-    private boolean isAIturn() {
+    private boolean isAITurn() {
         return service.getGameService().getCurrentTurn() == Turn.DARK;
     }
 
@@ -446,7 +448,6 @@ public class MovesManager {
 
         if(service.getGameService().getCurrentTurn() == Turn.DARK) {
             service.getModelService().triggerAIMove();
-            BooleanService.wasTabPressed = true;
         }
 
         service.getSound().playFX(0);

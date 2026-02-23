@@ -344,7 +344,7 @@ public class KeyboardInput {
         if(keyboard.wasCancelPressed()) { move.cancelMove(); service.getSound().playFX(1); }
         if(keyboard.wasSelectPressed()) { activate(GameState.BOARD); service.getSound().playFX(0); }
         if(keyboard.wasTabPressed() && !BooleanService.canDoAuto) {
-            if(!BooleanService.isTurnLocked && !BooleanService.wasTabPressed) {
+            if(!BooleanService.isTurnLocked) {
                 service.getMovesManager().commitMove();
             } else {}
         }

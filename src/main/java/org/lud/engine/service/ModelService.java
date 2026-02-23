@@ -61,7 +61,6 @@ public class ModelService {
                     BoardService.getMovesManager().commitMove();
                     BooleanService.isAIMoving = false;
                     BooleanService.isTurnLocked = false;
-                    BooleanService.wasTabPressed = false;
                 });
             } else {
                 BooleanService.isAIMoving = false;

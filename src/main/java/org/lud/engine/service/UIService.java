@@ -24,7 +24,7 @@ public class UIService {
     private static final int MENU_SPACING = 40;
     private static final int MENU_START_X = 100;
     private static final int MENU_START_Y = 160;
-    private static final int MENU_FONT = 32;
+    private static final int MENU_FONT = 48;
     private static final int MOVES_CAP = 28;
     private static final int PADDING = 90;
 
@@ -68,7 +68,7 @@ public class UIService {
         try {
             font = Font.createFont(Font.TRUETYPE_FONT,
                     Objects.requireNonNull(Board.class.getResourceAsStream(
-                            "/fonts/PressStart2P-Regular.ttf")));
+                            "/fonts/BoldPixels.ttf")));
             GraphicsEnvironment ge =
                     GraphicsEnvironment.getLocalGraphicsEnvironment();
             ge.registerFont(font);

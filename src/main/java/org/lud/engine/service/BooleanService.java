@@ -24,7 +24,6 @@ public class BooleanService {
     public static boolean canPlayMusic;
     public static boolean canZoomIn;
     public static boolean cannotAutoCommit;
-    public static boolean wasTabPressed;
 
     public static boolean canDoMoves;
     public static boolean canUndoMoves;
@@ -71,7 +70,6 @@ public class BooleanService {
         canType = false;
         canToggleHelp = false;
         isDragging = false;
-        wasTabPressed = false;
     }
 
     public static boolean getBoolean() {
