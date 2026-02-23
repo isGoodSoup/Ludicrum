@@ -99,7 +99,7 @@ public class BoardPanel extends JPanel implements Runnable {
                 }
                 service.getRender().getMenuRender().draw(g2);
             }
-            case SETTINGS, ACHIEVEMENTS, CHECKMATE, STALEMATE ->
+            case SETTINGS, ACHIEVEMENTS, CHECKMATE, STALEMATE, VICTORY ->
                     service.getRender().getMenuRender().draw(g2);
         }
 

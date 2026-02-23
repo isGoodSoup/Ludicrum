@@ -14,7 +14,7 @@ public enum GameMenu implements Clickable {
             GameService.getGame().setup(gameService);
         }
     },
-    GAMES("GAMES", "", "Who knows, maybe there's more?") {
+    GAMES("GAMES", "Who knows, maybe there's more?", "") {
         @Override
         public void run(GameService gameService) {
             gameService.nextGame();

@@ -163,13 +163,18 @@ public class MenuRender {
         for(Button b : buttons) {
             ButtonSprite sprite = buttonRegistry.get("button_small");
             g2.drawImage(sprite.normal, b.getX(), b.getY(), null);
-            BufferedImage frame = render.getMenuRender().defineButton(b, ButtonSize.SMALL);
+            BufferedImage frame = render.getMenuRender().defineButton(b, ButtonSize.L);
             g2.drawImage(frame, b.getX(), b.getY(), null);
         }
     }
 
     public BufferedImage defineButton(Clickable c, ButtonSize size) {
-        String key = size == ButtonSize.BIG ? "button" : "button_small";
+        String key = "";
+        switch(size) {
+            case XXL -> key = "button_big";
+            case XL -> key = "button";
+            case L -> key = "button_small";
+        }
         ButtonSprite sprite = buttonRegistry.get(key);
         return render.isHovered(c) ? sprite.highlighted : null;
     }

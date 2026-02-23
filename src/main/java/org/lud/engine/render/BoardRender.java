@@ -273,7 +273,7 @@ public class BoardRender {
         BufferedImage img = render.isHovered(button) ? highlighted : base;
 
         g2.drawImage(img, x, y, null);
-        BufferedImage frame = render.getMenuRender().defineButton(button, ButtonSize.SMALL);
+        BufferedImage frame = render.getMenuRender().defineButton(button, ButtonSize.L);
         if(frame != null) {
             g2.drawImage(frame, x, y, null);
         }

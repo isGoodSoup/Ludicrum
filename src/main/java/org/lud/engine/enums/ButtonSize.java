@@ -1,5 +1,5 @@
 package org.lud.engine.enums;
 
 public enum ButtonSize {
-    BIG, SMALL
+    XXL, XL, L
 }

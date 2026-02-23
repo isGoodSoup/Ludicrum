@@ -3,6 +3,7 @@ package org.lud.engine.enums;
 public enum UIButton {
     BUTTON(""),
     BUTTON_SMALL("small"),
+    BUTTON_BIG("big"),
     UNDO("undo"),
     RESET("reset"),
     ACHIEVEMENTS("achievements"),
@@ -10,7 +11,8 @@ public enum UIButton {
     EXIT("exit"),
     NEXT_PAGE("next_page"),
     PREVIOUS_PAGE("previous_page"),
-    PAUSE("pause");
+    PAUSE("pause"),
+    SWITCH("switch");
 
     private final String suffix;
 

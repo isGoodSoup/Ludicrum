@@ -269,6 +269,7 @@ public class MovesManager {
                 BooleanService.isCheckmate = true;
                 service.getTimerService().stop();
                 service.getGameService().setState(GameState.CHECKMATE);
+                service.getSound().playFX(6);
                 if(selectedPiece != null) {
                     log.info("Checkmate to {}",
                             selectedPiece.getOtherPiece().getColor());
@@ -313,7 +314,17 @@ public class MovesManager {
                 if(hasLegalMove) { break; }
             }
         }
-        if(!hasLegalMove) { BooleanService.isDraw = true; }
+        if(!hasLegalMove) {
+            BooleanService.isCheckmate = true;
+            service.getTimerService().stop();
+            service.getGameService().setState(GameState.VICTORY);
+            service.getSound().playFX(6);
+            if(selectedPiece != null) {
+                log.info("Victory against {}",
+                        selectedPiece.getOtherPiece().getColor());
+            }
+            return true;
+        }
         service.getAchievementService().setOpponentPieces(opponentPieces);
         return service.getAchievementService().getOpponentPieces() == 0 || !hasLegalMove;
     }

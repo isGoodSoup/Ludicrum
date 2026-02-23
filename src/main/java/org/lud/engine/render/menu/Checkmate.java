@@ -40,7 +40,10 @@ public class Checkmate implements UI {
     }
 
     public void draw(Graphics2D g2) {
-        if(gameService.getState() != GameState.CHECKMATE) { return; }
+        if(gameService.getState() != GameState.CHECKMATE
+                || gameService.getState() != GameState.VICTORY) {
+            return;
+        }
 
         g2.setFont(UIService.getFont(UIService.getMENU_FONT()));
         FontMetrics fm = g2.getFontMetrics();

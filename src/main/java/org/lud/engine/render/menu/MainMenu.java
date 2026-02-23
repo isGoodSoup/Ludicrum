@@ -35,6 +35,7 @@ public class MainMenu implements UI {
 
     private BufferedImage smallButton;
     private BufferedImage bigButton;
+    private BufferedImage extraBigButton;
 
     private Button playButton;
     private Button gameButton;
@@ -85,7 +86,8 @@ public class MainMenu implements UI {
 
     public void draw(Graphics2D g2, GameMenu[] options) {
         render.getMenuRender().clearButtons();
-        playButton = settingsButton = achievementsButton = exitButton = themeButton = null;
+        playButton = settingsButton = achievementsButton
+                = exitButton = themeButton = gameButton = null;
 
         int totalWidth = getTotalWidth();
         g2.setColor(Colorblindness.filter(Colors.getBackground()));
@@ -94,13 +96,14 @@ public class MainMenu implements UI {
 
         drawLogo(g2);
 
-        int startX = getStart()[0];
-        int startY = getStart()[1];
-        int x = startX, y = startY;
-        int padding = 100;
-
         smallButton = render.getMenuRender().getButtonRegistry().get("button_small").normal;
         bigButton = render.getMenuRender().getButtonRegistry().get("button").normal;
+        extraBigButton = render.getMenuRender().getButtonRegistry().get("button_big").normal;
+
+        int startX = getTotalWidth()/2 + render.scale(60);
+        int startY = render.scale(RenderContext.BASE_HEIGHT - 300);
+        int x = startX, y = startY;
+        int padding = 100;
 
         g2.setFont(UIService.getFont(UIService.getMENU_FONT()));
         for(GameMenu option : options) {
@@ -129,7 +132,7 @@ public class MainMenu implements UI {
                 Games game = GameService.getGame();
                 int textX = x + (width - fm.stringWidth(game.getLabel()))/2;
                 int textY = y + (height - fm.getHeight())/2 + fm.getAscent();
-                drawButtonLayers(g2, bigButton, playButton, ButtonSize.BIG, x, y);
+                drawButtonLayers(g2, bigButton, playButton, ButtonSize.XL, x, y);
                 g2.setColor(textColor);
                 g2.drawString(game.getLabel(), textX, textY);
 
@@ -155,7 +158,7 @@ public class MainMenu implements UI {
                 BufferedImage img = render.isHovered(settingsButton)
                         ? render.getMenuRender().getColorblindSprite(altImg)
                         : render.getMenuRender().getColorblindSprite(baseImg);
-                drawButtonLayers(g2, smallButton, settingsButton, ButtonSize.SMALL, x, y);
+                drawButtonLayers(g2, smallButton, settingsButton, ButtonSize.L, x, y);
                 g2.drawImage(img, x, y, null);
 
                 if(render.isHovered(settingsButton)) {
@@ -180,7 +183,7 @@ public class MainMenu implements UI {
                 BufferedImage img = render.isHovered(achievementsButton)
                         ? render.getMenuRender().getColorblindSprite(altImg)
                         : render.getMenuRender().getColorblindSprite(baseImg);
-                drawButtonLayers(g2, smallButton, achievementsButton, ButtonSize.SMALL, x, y);
+                drawButtonLayers(g2, smallButton, achievementsButton, ButtonSize.L, x, y);
                 g2.drawImage(img, x, y, null);
 
                 if(render.isHovered(achievementsButton)) {
@@ -206,10 +209,37 @@ public class MainMenu implements UI {
                 BufferedImage img = render.isHovered(exitButton)
                         ? render.getMenuRender().getColorblindSprite(altImg)
                         : render.getMenuRender().getColorblindSprite(baseImg);
-                drawButtonLayers(g2, smallButton, exitButton, ButtonSize.SMALL, x, y);
+                drawButtonLayers(g2, smallButton, exitButton, ButtonSize.L, x, y);
                 g2.drawImage(img, x, y, null);
 
                 if(render.isHovered(exitButton)) {
+                    drawTooltip(g2, showTooltip(option));
+                }
+            }
+
+            if(option == GameMenu.GAMES) {
+                String key = "switch";
+                BufferedImage baseImg = getSprites(key)[0];
+                BufferedImage altImg = getSprites(key)[1];
+                int width = baseImg.getWidth();
+                int height = baseImg.getHeight();
+                x = startX; y = startY;
+
+                y -= height/2;
+                x += width/2;
+
+                if(gameButton == null) {
+                    gameButton = createButton(x, y, width, height, () ->
+                            option.run(gameService));
+                }
+
+                BufferedImage img = render.isHovered(gameButton)
+                        ? render.getMenuRender().getColorblindSprite(altImg)
+                        : render.getMenuRender().getColorblindSprite(baseImg);
+                drawButtonLayers(g2, extraBigButton, gameButton, ButtonSize.XXL, x, y);
+                g2.drawImage(img, x, y, null);
+
+                if(render.isHovered(gameButton)) {
                     drawTooltip(g2, showTooltip(option));
                 }
             }
@@ -233,7 +263,7 @@ public class MainMenu implements UI {
                     BufferedImage img = render.isHovered(themeButton)
                             ? render.getMenuRender().getColorblindSprite(altImg)
                             : render.getMenuRender().getColorblindSprite(baseImg);
-                    drawButtonLayers(g2, smallButton, themeButton, ButtonSize.SMALL, x, y);
+                    drawButtonLayers(g2, smallButton, themeButton, ButtonSize.L, x, y);
                     g2.drawImage(img, x, y, null);
 
                     if(render.isHovered(themeButton)) {
@@ -242,22 +272,6 @@ public class MainMenu implements UI {
                 }
             }
         }
-    }
-
-    private BufferedImage getSmallButton() {
-        ButtonSprite sprite = render.getMenuRender().getButtonRegistry().get("button_small");
-        return sprite != null ? sprite.normal : null;
-    }
-
-    private BufferedImage getBigButton() {
-        ButtonSprite sprite = render.getMenuRender().getButtonRegistry().get("button");
-        return sprite != null ? sprite.normal : null;
-    }
-
-    private int[] getStart() {
-        int startX = getTotalWidth()/2 + 115;
-        int startY = render.scale(RenderContext.BASE_HEIGHT - 300);
-        return new int[]{startX, startY};
     }
 
     private Button createButton(int x, int y, int w, int h, Runnable action) {
