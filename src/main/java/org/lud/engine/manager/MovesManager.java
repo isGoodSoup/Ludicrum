@@ -10,6 +10,7 @@ import org.lud.engine.service.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -270,12 +271,9 @@ public class MovesManager {
             if(!hasEscapeMoves) {
                 BooleanService.isCheckmate = true;
                 service.getTimerService().stop();
-                service.getGameService().setState(GameState.CHECKMATE);
                 service.getSound().playFX(6);
-                if(selectedPiece != null) {
-                    log.info("Checkmate to {}",
-                            selectedPiece.getOtherPiece().getColor());
-                }
+                Timer timer = new Timer(30000, (e)
+                        -> service.getGameService().setState(GameState.CHECKMATE));
                 return true;
             }
         }
@@ -319,12 +317,9 @@ public class MovesManager {
         if(!hasLegalMove) {
             BooleanService.isCheckmate = true;
             service.getTimerService().stop();
-            service.getGameService().setState(GameState.VICTORY);
             service.getSound().playFX(6);
-            if(selectedPiece != null) {
-                log.info("Victory against {}",
-                        selectedPiece.getOtherPiece().getColor());
-            }
+            Timer timer = new Timer(30000, (e)
+                    -> service.getGameService().setState(GameState.VICTORY));
             return true;
         }
         service.getAchievementService().setOpponentPieces(opponentPieces);

@@ -124,9 +124,18 @@ public class BoardPanel extends JPanel implements Runnable {
     private void update() {
         if(intro.isFinished() && !isFinished) {
             service.getGameService().setState(GameState.MENU);
-            service.getSound().playMusic();
+            BooleanService.canPlayMusic = true;
             isFinished = true;
         }
+
+        if(BooleanService.canPlayMusic) {
+            service.getSound().playMusic();
+        }
+
+        if(!BooleanService.canPlayMusic) {
+            service.getSound().stop(7);
+        }
+
         service.getKeyboardInput().update();
         service.getMouseInput().update();
         if(!(GameService.getGame() == Games.SANDBOX)) {

@@ -53,7 +53,7 @@ public class BooleanService {
         canDoAuto = true;
         cannotAutoCommit = false;
         canPlayFX = true;
-        canPlayMusic = true;
+        canPlayMusic = false;
         canUndoMoves = true;
         canDoMoves = true;
         canAIPlay = true;

@@ -59,7 +59,7 @@ public class MovesRender {
         int boardWidth = render.scale(RenderContext.BASE_WIDTH) - Board.getSquare() * 8;
         int totalHeight = render.scale(RenderContext.BASE_HEIGHT);
 
-        g2.setFont(UIService.getFont(24));
+        g2.setFont(UIService.getFont(UIService.getMENU_FONT()));
         FontMetrics fm = g2.getFontMetrics();
         int lineHeight = render.scale(fm.getHeight() + 8);
 
@@ -70,10 +70,10 @@ public class MovesRender {
         boolean hasBackground = true;
 
         int padding = render.scale(UIService.getPADDING() - 30);
-        int innerPadding = render.scale(30);
+        int innerPadding = render.scale(25);
 
         int availableWidth = render.scale(RenderContext.BASE_WIDTH) - boardSize - padding * 4;
-        int boxWidth = availableWidth/5;
+        int boxWidth = availableWidth/6;
         int boxHeight = boardSize - 20;
 
         int leftX = boardX - boxWidth - padding + innerPadding;
