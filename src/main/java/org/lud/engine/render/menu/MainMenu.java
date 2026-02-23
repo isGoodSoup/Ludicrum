@@ -296,7 +296,7 @@ public class MainMenu implements UI {
     }
 
     private void drawButtonLayers(Graphics2D g2, BufferedImage img, Button b, ButtonSize size, int x, int y) {
-        g2.drawImage(img, x, y, null);
+        g2.drawImage(Colorblindness.filter(img), x, y, null);
         BufferedImage frame = render.getMenuRender().defineButton(b, size);
         g2.drawImage(frame, x, y, null);
     }

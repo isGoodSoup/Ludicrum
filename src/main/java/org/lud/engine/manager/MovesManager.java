@@ -464,9 +464,8 @@ public class MovesManager {
 
     public void undoLastMove() {
         if(!BooleanService.canUndoMoves || moves.isEmpty()) { return; }
-
         Turn turn = moves.getLast().currentTurn();
-        while(!moves.isEmpty() && moves.getLast().currentTurn() == turn) {
+        if(!moves.isEmpty() && moves.getLast().currentTurn() == turn) {
             Piece[][] boardState = BoardService.getBoardState();
             Move lastMove = moves.getLast();
             Piece p = lastMove.piece();
