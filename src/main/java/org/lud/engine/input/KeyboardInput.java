@@ -244,9 +244,7 @@ public class KeyboardInput {
     private void activateMenu() {
         if(selectedIndexY >= 0 && selectedIndexY < MenuRender.MENU.length) {
             GameMenu selected = MenuRender.MENU[selectedIndexY];
-            if(selected.isEnabled(service.getGameService())) {
-                selected.run(service.getGameService());
-            }
+            selected.run(service.getGameService());
         }
     }
 
@@ -270,7 +268,7 @@ public class KeyboardInput {
 
         if(keyboard.isComboPressed(KeyEvent.VK_CONTROL, KeyEvent.VK_ENTER) && !BooleanService.canType) {
             BooleanService.canType = true;
-            log.info("Entered sandbox typing mode");
+            log.debug("Typing mode: ON");
             return;
         }
 
@@ -292,6 +290,7 @@ public class KeyboardInput {
     }
 
     private void exitTypingMode() {
+        log.debug("Typing Mode: OFF");
         BooleanService.canType = false;
     }
 
@@ -386,6 +385,10 @@ public class KeyboardInput {
         if(keyboard.isComboPressed(KeyEvent.VK_CONTROL, KeyEvent.VK_M)) {
             service.getSound().volumeDown();
             service.getSound().playFX(1);
+        }
+        if(keyboard.isComboPressed(KeyEvent.VK_CONTROL, KeyEvent.VK_L)) {
+            Lang.nextLang();
+            service.getSound().playFX(3);
         }
     }
 

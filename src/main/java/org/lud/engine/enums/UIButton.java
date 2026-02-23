@@ -8,11 +8,12 @@ public enum UIButton {
     RESET("reset"),
     ACHIEVEMENTS("achievements"),
     SETTINGS("settings"),
+    LANG("lang"),
     EXIT("exit"),
     NEXT_PAGE("next_page"),
     PREVIOUS_PAGE("previous_page"),
     PAUSE("pause"),
-    SWITCH("switch");
+    GAMES("games");
 
     private final String suffix;
 

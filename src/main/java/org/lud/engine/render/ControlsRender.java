@@ -68,13 +68,11 @@ public class ControlsRender {
     private BufferedImage mapKeyNameToSprite(String key) {
         try {
             return switch (key) {
-                case "arrow_up", "arrow_down", "arrow_left", "arrow_right" ->
+                case "arrow_up", "arrow_down", "arrow_left", "arrow_right", "q", "t",
+                     "g", "r", "z", "c", "h", "m", "k", "l", "1", "2", "3" ->
                         UIService.getImage("/ui/keys/" + key);
                 case "ctrl" -> UIService.getImage("/ui/keys/ctrl");
                 case "tab" -> UIService.getImage("/ui/keys/tab");
-                case "q", "t", "g", "r", "z", "c", "h", "m", "k" ->
-                        UIService.getImage("/ui/keys/" + key);
-                case "1", "2", "3" -> UIService.getImage("/ui/keys/" + key);
                 case "enter" -> UIService.getImage("/ui/keys/enter");
                 case "escape" -> UIService.getImage("/ui/keys/escape");
                 case "f11" -> UIService.getImage("/ui/keys/f11");

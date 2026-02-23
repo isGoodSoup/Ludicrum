@@ -16,6 +16,7 @@ import org.lud.engine.render.Colorblindness;
 import org.lud.engine.render.MenuRender;
 import org.lud.engine.render.RenderContext;
 import org.lud.engine.service.GameService;
+import org.lud.engine.service.Localization;
 import org.lud.engine.service.UIService;
 
 import java.awt.*;
@@ -23,8 +24,6 @@ import java.awt.image.BufferedImage;
 import java.util.Map;
 
 public class SettingsMenu implements UI {
-    private static final String SETTINGS = "SETTINGS";
-    private static final String ENABLE = "Enable ";
     private static final int ARC = 32;
     private static final int STROKE = 6;
     private static final int OPTION_Y = 160;
@@ -86,6 +85,9 @@ public class SettingsMenu implements UI {
     }
 
     public void draw(Graphics2D g2, GameSettings[] options) {
+        final String SETTINGS = Localization.lang.t("settings.header");
+        final String ENABLE = Localization.lang.t("settings.enable");
+
         int totalWidth = getTotalWidth();
         g2.setColor(Colorblindness.filter(Colors.getBackground()));
         g2.fillRect(0, 0, totalWidth,
@@ -120,7 +122,7 @@ public class SettingsMenu implements UI {
         int maxRowWidth = 0;
 
         for(int i = startIndex; i < endIndex; i++) {
-            String label = ENABLE + options[i].getLabel();
+            String label = ENABLE + " " + options[i].getLabel();
             int textWidth = g2.getFontMetrics().stringWidth(label.toUpperCase());
             int toggleWidth = render.scale(toggleOn.getWidth()/2);
             int rowWidth = textWidth + gap + toggleWidth;
@@ -133,7 +135,7 @@ public class SettingsMenu implements UI {
             int relativeIndex = i - startIndex;
             boolean isSelected =
                     relativeIndex == keyUI.getSelectedIndexY();
-            String label = ENABLE + option.getLabel();
+            String label = ENABLE + " " + option.getLabel();
             int textWidth = g2.getFontMetrics().stringWidth(label.toUpperCase());
             int toggleWidth = render.scale(toggleOn.getWidth());
             int toggleHeight = render.scale(toggleOn.getHeight());

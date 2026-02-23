@@ -75,7 +75,7 @@ public class TooltipMenu implements UI {
                 }
                 int padding = 16;
                 String square = boardService.getSquareNameAt(p.getCol(), p.getRow());
-                String text = id.name() + " " + square.toUpperCase();
+                String text = id.getLabel().toUpperCase() + " " + square.toUpperCase();
                 g2.setFont(UIService.getFont(UIService.getMENU_FONT()/2));
                 uiService.drawTooltip(g2, text, padding, ARC, false, 0, 0);
             }

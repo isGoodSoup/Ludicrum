@@ -41,6 +41,7 @@ public class MainMenu implements UI {
     private Button gameButton;
     private Button achievementsButton;
     private Button settingsButton;
+    private Button langButton;
     private Button exitButton;
     private Button themeButton;
 
@@ -101,7 +102,7 @@ public class MainMenu implements UI {
 
     public void draw(Graphics2D g2, GameMenu[] options) {
         render.getMenuRender().clearButtons();
-        playButton = settingsButton = achievementsButton
+        playButton = settingsButton = achievementsButton = langButton
                 = exitButton = themeButton = gameButton = null;
 
         int totalWidth = getTotalWidth();
@@ -156,86 +157,9 @@ public class MainMenu implements UI {
                 }
             }
 
-            if(option == GameMenu.SETTINGS) {
-                String key = "settings";
-                BufferedImage baseImg = getSprites(key)[0];
-                BufferedImage altImg = getSprites(key)[1];
-                int width = baseImg.getWidth();
-                int height = baseImg.getHeight();
-                x = startX; y = startY;
-                x -= 2;
-
-                if(settingsButton == null) {
-                    settingsButton = createButton(x, y, width, height, () ->
-                            option.run(gameService));
-                }
-
-                BufferedImage img = render.isHovered(settingsButton)
-                        ? render.getMenuRender().getColorblindSprite(altImg)
-                        : render.getMenuRender().getColorblindSprite(baseImg);
-                drawButtonLayers(g2, smallButton, settingsButton, ButtonSize.L, x, y);
-                g2.drawImage(img, x, y, null);
-
-                if(render.isHovered(settingsButton)) {
-                    drawTooltip(g2, showTooltip(option));
-                }
-            }
-
-            if(option == GameMenu.ADVANCEMENTS) {
-                String key = "achievements";
-                BufferedImage baseImg = getSprites(key)[0];
-                BufferedImage altImg = getSprites(key)[1];
-                int width = baseImg.getWidth();
-                int height = baseImg.getHeight();
-                x = startX; y = startY;
-                x -= 2; y -= height;
-
-                if(achievementsButton == null) {
-                    achievementsButton = createButton(x, y, width, height, () ->
-                            option.run(gameService));
-                }
-
-                BufferedImage img = render.isHovered(achievementsButton)
-                        ? render.getMenuRender().getColorblindSprite(altImg)
-                        : render.getMenuRender().getColorblindSprite(baseImg);
-                drawButtonLayers(g2, smallButton, achievementsButton, ButtonSize.L, x, y);
-                g2.drawImage(img, x, y, null);
-
-                if(render.isHovered(achievementsButton)) {
-                    drawTooltip(g2, showTooltip(option));
-                }
-            }
-
-            if(option == GameMenu.EXIT) {
-                String key = "exit";
-                BufferedImage baseImg = getSprites(key)[0];
-                BufferedImage altImg = getSprites(key)[1];
-                int width = baseImg.getWidth();
-                int height = baseImg.getHeight();
-
-                x = render.scale((int) (RenderContext.BASE_WIDTH - width * 1.75f));
-                y = render.scale(RenderContext.BASE_HEIGHT - 115);
-
-                if(exitButton == null) {
-                    exitButton = createButton(x, y, width, height, () ->
-                            option.run(gameService));
-                }
-
-                BufferedImage img = render.isHovered(exitButton)
-                        ? render.getMenuRender().getColorblindSprite(altImg)
-                        : render.getMenuRender().getColorblindSprite(baseImg);
-                drawButtonLayers(g2, smallButton, exitButton, ButtonSize.L, x, y);
-                g2.drawImage(img, x, y, null);
-
-                if(render.isHovered(exitButton)) {
-                    drawTooltip(g2, showTooltip(option));
-                }
-            }
-
             if(option == GameMenu.GAMES) {
-                String key = "switch";
-                BufferedImage baseImg = getSprites(key)[0];
-                BufferedImage altImg = getSprites(key)[1];
+                BufferedImage baseImg = getSprites(option.name().toLowerCase())[0];
+                BufferedImage altImg = getSprites(option.name().toLowerCase())[1];
                 int width = baseImg.getWidth();
                 int height = baseImg.getHeight();
                 x = startX; y = startY;
@@ -259,11 +183,107 @@ public class MainMenu implements UI {
                 }
             }
 
+            if(option == GameMenu.SETTINGS) {
+                BufferedImage baseImg = getSprites(option.name().toLowerCase())[0];
+                BufferedImage altImg = getSprites(option.name().toLowerCase())[1];
+                int width = baseImg.getWidth();
+                int height = baseImg.getHeight();
+                x = startX; y = startY;
+                x -= 2;
+
+                if(settingsButton == null) {
+                    settingsButton = createButton(x, y, width, height, () ->
+                            option.run(gameService));
+                }
+
+                BufferedImage img = render.isHovered(settingsButton)
+                        ? render.getMenuRender().getColorblindSprite(altImg)
+                        : render.getMenuRender().getColorblindSprite(baseImg);
+                drawButtonLayers(g2, smallButton, settingsButton, ButtonSize.L, x, y);
+                g2.drawImage(img, x, y, null);
+
+                if(render.isHovered(settingsButton)) {
+                    drawTooltip(g2, showTooltip(option));
+                }
+            }
+
+            if(option == GameMenu.ACHIEVEMENTS) {
+                BufferedImage baseImg = getSprites(option.name().toLowerCase())[0];
+                BufferedImage altImg = getSprites(option.name().toLowerCase())[1];
+                int width = baseImg.getWidth();
+                int height = baseImg.getHeight();
+                x = startX; y = startY;
+                x -= 2; y -= height;
+
+                if(achievementsButton == null) {
+                    achievementsButton = createButton(x, y, width, height, () ->
+                            option.run(gameService));
+                }
+
+                BufferedImage img = render.isHovered(achievementsButton)
+                        ? render.getMenuRender().getColorblindSprite(altImg)
+                        : render.getMenuRender().getColorblindSprite(baseImg);
+                drawButtonLayers(g2, smallButton, achievementsButton, ButtonSize.L, x, y);
+                g2.drawImage(img, x, y, null);
+
+                if(render.isHovered(achievementsButton)) {
+                    drawTooltip(g2, showTooltip(option));
+                }
+            }
+
+            if(option == GameMenu.LANG) {
+                BufferedImage baseImg = getSprites(option.name().toLowerCase())[0];
+                BufferedImage altImg = getSprites(option.name().toLowerCase())[1];
+                int width = baseImg.getWidth();
+                int height = baseImg.getHeight();
+                x = startX; y = startY;
+                x = 50; y = render.scale(RenderContext.BASE_HEIGHT - 115);
+
+                if(langButton == null) {
+                    langButton = createButton(x, y, width, height, () ->
+                            option.run(gameService));
+                }
+
+                BufferedImage img = render.isHovered(langButton)
+                        ? render.getMenuRender().getColorblindSprite(altImg)
+                        : render.getMenuRender().getColorblindSprite(baseImg);
+                drawButtonLayers(g2, smallButton, langButton, ButtonSize.L, x, y);
+                g2.drawImage(img, x, y, null);
+
+                if(render.isHovered(langButton)) {
+                    drawTooltip(g2, showTooltip(option));
+                }
+            }
+
+            if(option == GameMenu.EXIT) {
+                BufferedImage baseImg = getSprites(option.name().toLowerCase())[0];
+                BufferedImage altImg = getSprites(option.name().toLowerCase())[1];
+                int width = baseImg.getWidth();
+                int height = baseImg.getHeight();
+
+                x = render.scale((int) (RenderContext.BASE_WIDTH - width * 1.75f));
+                y = render.scale(RenderContext.BASE_HEIGHT - 115);
+
+                if(exitButton == null) {
+                    exitButton = createButton(x, y, width, height, () ->
+                            option.run(gameService));
+                }
+
+                BufferedImage img = render.isHovered(exitButton)
+                        ? render.getMenuRender().getColorblindSprite(altImg)
+                        : render.getMenuRender().getColorblindSprite(baseImg);
+                drawButtonLayers(g2, smallButton, exitButton, ButtonSize.L, x, y);
+                g2.drawImage(img, x, y, null);
+
+                if(render.isHovered(exitButton)) {
+                    drawTooltip(g2, showTooltip(option));
+                }
+            }
+
             if(option == GameMenu.THEME) {
                 if(BooleanService.canTheme) {
-                    String key = "reset";
-                    BufferedImage baseImg = getSprites(key)[0];
-                    BufferedImage altImg = getSprites(key)[1];
+                    BufferedImage baseImg = getSprites(option.name().toLowerCase())[0];
+                    BufferedImage altImg = getSprites(option.name().toLowerCase())[1];
 
                     int width = baseImg.getWidth();
                     int height = baseImg.getHeight();

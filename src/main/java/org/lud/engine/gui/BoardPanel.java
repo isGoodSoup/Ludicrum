@@ -1,6 +1,7 @@
 package org.lud.engine.gui;
 
 import org.lud.engine.render.menu.Intro;
+import org.lud.engine.service.Localization;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.lud.engine.entities.Piece;
@@ -18,6 +19,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 import java.io.Serial;
+import java.util.Locale;
 
 public class BoardPanel extends JPanel implements Runnable {
 	@Serial
@@ -42,6 +44,7 @@ public class BoardPanel extends JPanel implements Runnable {
         service.getGameService().setState(GameState.INTRO);
         Colors.setTheme(Theme.LEGACY);
         BooleanService.defaultToggles();
+        Localization.lang.setLocale(Locale.forLanguageTag("en"));
         final int WIDTH = RenderContext.BASE_WIDTH;
         final int HEIGHT = RenderContext.BASE_HEIGHT;
         setPreferredSize(new Dimension(WIDTH, HEIGHT));

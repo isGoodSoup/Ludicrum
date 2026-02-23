@@ -3,79 +3,76 @@ package org.lud.engine.enums;
 import org.lud.engine.gui.Colors;
 import org.lud.engine.interfaces.Clickable;
 import org.lud.engine.service.GameService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.lud.engine.service.Localization;
 
 public enum GameMenu implements Clickable {
-    PLAY("PLAY", "Start a match of ", "Continue match of ") {
+    PLAY("menu.play", "tooltip.play", "tooltip.play_continue") {
         @Override
         public void run(GameService gameService) {
-            log.debug("Starting a new game");
             GameService.getGame().setup(gameService);
         }
     },
-    GAMES("GAMES", "Who knows, maybe there's more?", "") {
+    GAMES("menu.games", "tooltip.games", "tooltip.games_continue") {
         @Override
         public void run(GameService gameService) {
             gameService.nextGame();
         }
     },
-    SETTINGS("SETTINGS", "Settings, themes, toggles", "") {
+    SETTINGS("menu.settings", "tooltip.settings", "tooltip.settings_continue") {
         @Override
         public void run(GameService gameService) {
-            log.debug("Settings menu");
             gameService.setState(GameState.SETTINGS);
         }
     },
-    ADVANCEMENTS("ACHIEVEMENTS", "Track your progress", "") {
+    ACHIEVEMENTS("menu.achievements", "tooltip.achievements", "tooltip.achievements_continue") {
         @Override
         public void run(GameService gameService) {
-            log.debug("Achievements menu");
             gameService.setState(GameState.ACHIEVEMENTS);
         }
     },
-    THEME("THEMES", "Change the look and feel", ""){
+    LANG("menu.lang", "tooltip.lang", "tooltip.lang_continue") {
+        @Override
+        public void run(GameService gameService) {
+            Lang.nextLang();
+        }
+    },
+    THEME("menu.theme", "tooltip.theme", "tooltip.theme_continue") {
         @Override
         public void run(GameService gameService) {
             Colors.nextTheme();
         }
     },
-    EXIT("EXIT", "Leave?", "") {
+    EXIT("menu.exit", "tooltip.exit", "tooltip.exit_continue") {
         @Override
         public void run(GameService gameService) {
-            log.info("Ending session");
             System.exit(0);
         }
     };
 
-    private static final Logger log = LoggerFactory.getLogger(GameMenu.class);
-    private final String label;
-    private final String tooltip;
-    private final String continueTooltip;
+    private final String labelKey;
+    private final String tooltipKey;
+    private final String continueTooltipKey;
 
-    GameMenu(String label, String tooltip, String continueTooltip) {
-        this.label = label;
-        this.tooltip = tooltip;
-        this.continueTooltip = continueTooltip;
+    GameMenu(String labelKey, String tooltipKey, String continueTooltipKey) {
+        this.labelKey = labelKey;
+        this.tooltipKey = tooltipKey;
+        this.continueTooltipKey = continueTooltipKey;
     }
 
     public String getLabel() {
-        return label;
+        return Localization.lang.t(labelKey);
     }
 
     public String getTooltip() {
-        return tooltip;
+        return Localization.lang.t(tooltipKey);
     }
 
     public String getContinueTooltip() {
-        return continueTooltip;
-    }
-
-    public boolean isEnabled(GameService gameService) {
-        return true;
+        return Localization.lang.f(continueTooltipKey, GameService.getGame().getLabel());
     }
 
     public abstract void run(GameService gameService);
+
 
     @Override
     public void onClick(GameService gameService) {

@@ -3,102 +3,87 @@ package org.lud.engine.enums;
 import org.lud.engine.interfaces.Clickable;
 import org.lud.engine.service.BooleanService;
 import org.lud.engine.service.GameService;
+import org.lud.engine.service.Localization;
 
 public enum GameSettings implements Clickable {
-    AI_OPPONENT("AI Opponent") {
+    AI_OPPONENT("settings.ai_opponent") {
         public boolean get() { return BooleanService.canAIPlay; }
         public void toggle() { BooleanService.canAIPlay ^= true; }
     },
 
-    HELP("Help") {
+    HELP("settings.help") {
         public boolean get() { return BooleanService.canToggleHelp; }
         public void toggle() { BooleanService.canToggleHelp ^= true; }
     },
 
-    SAVES("Saves") {
+    SAVES("settings.saves") {
         public boolean get() { return BooleanService.canSave; }
         public void toggle() { BooleanService.canSave ^= true; }
     },
 
-    ACHIEVEMENTS("Achievements") {
+    ACHIEVEMENTS("settings.achievements") {
         public boolean get() { return BooleanService.canDoAchievements; }
         public void toggle() { BooleanService.canDoAchievements ^= true; }
     },
 
-    PLAY_MUSIC("Play Music") {
+    PLAY_MUSIC("settings.play_music") {
         public boolean get() { return BooleanService.canPlayMusic; }
-        public void toggle() {
-            BooleanService.canPlayMusic ^= true;
-        }
+        public void toggle() { BooleanService.canPlayMusic ^= true; }
     },
 
-    BASIC_MOVES("Basic Moves") {
+    BASIC_MOVES("settings.basic_moves") {
         public boolean get() { return BooleanService.canDoMoves; }
         public void toggle() { BooleanService.canDoMoves ^= true; }
     },
 
-    PROMOTION("Promotion") {
+    PROMOTION("settings.promotion") {
         public boolean get() { return BooleanService.canPromote; }
         public void toggle() { BooleanService.canPromote ^= true; }
     },
 
-    AUTOMATIC("Automatic Switch") {
+    AUTOMATIC("settings.automatic") {
         @Override
-        public boolean get() {
-            return BooleanService.canDoAuto;
-        }
-
+        public boolean get() { return BooleanService.canDoAuto; }
         @Override
-        public void toggle() {
-            BooleanService.canDoAuto ^= true;
-        }
+        public void toggle() { BooleanService.canDoAuto ^= true; }
     },
 
-    TIMER("Timer") {
+    TIMER("settings.timer") {
         public boolean get() { return BooleanService.canTime; }
-        public void toggle() {
-            BooleanService.canTime ^= true;
-            BooleanService.canStopwatch = false;
-        }
+        public void toggle() { BooleanService.canTime ^= true; BooleanService.canStopwatch = false; }
     },
 
-    STOPWATCH("Stopwatch") {
+    STOPWATCH("settings.stopwatch") {
         public boolean get() { return BooleanService.canStopwatch; }
-        public void toggle() {
-            BooleanService.canStopwatch ^= true;
-            BooleanService.canTime = false;
-        }
+        public void toggle() { BooleanService.canStopwatch ^= true; BooleanService.canTime = false; }
     },
 
-    UNDO_MOVES("Undo Moves") {
+    UNDO_MOVES("settings.undo_moves") {
         public boolean get() { return BooleanService.canUndoMoves; }
-        public void toggle() {
-            BooleanService.canUndoMoves ^= true;
-            BooleanService.canDoAchievements = false;
-        }
+        public void toggle() { BooleanService.canUndoMoves ^= true; BooleanService.canDoAchievements = false; }
     },
 
-    RESET_TABLE("Reset Table") {
+    RESET_TABLE("settings.reset_table") {
         public boolean get() { return BooleanService.canResetTable; }
         public void toggle() { BooleanService.canResetTable ^= true; }
     },
 
-    SHOW_TICK("Tick") {
+    SHOW_TICK("settings.show_tick") {
         public boolean get() { return BooleanService.canShowTick; }
         public void toggle() { BooleanService.canShowTick ^= true; }
     },
 
-    THEMES("Themes") {
+    THEMES("settings.themes") {
         public boolean get() { return BooleanService.canTheme; }
         public void toggle() { BooleanService.canTheme ^= true; }
     },
 
-    COLORBLIND_MODE("Colorblind Mode") {
+    COLORBLIND_MODE("settings.colorblind_mode") {
         public boolean get() { return BooleanService.canBeColorblind; }
         public void toggle() { BooleanService.canBeColorblind ^= true; }
     },
 
-    HARD_MODE("Hard Mode") {
+    HARD_MODE("settings.hard_mode") {
         public boolean get() { return BooleanService.canDoHard; }
         public void toggle() {
             BooleanService.canDoHard ^= true;
@@ -112,14 +97,14 @@ public enum GameSettings implements Clickable {
         }
     };
 
-    private final String label;
+    private final String key;
 
-    GameSettings(String label) {
-        this.label = label;
+    GameSettings(String key) {
+        this.key = key;
     }
 
     public String getLabel() {
-        return label;
+        return Localization.lang.t(key);
     }
 
     public abstract boolean get();
