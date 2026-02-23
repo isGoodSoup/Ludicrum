@@ -3,6 +3,7 @@ package org.lud.engine.manager;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.lud.engine.entities.*;
+import org.lud.engine.service.BooleanService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.lud.engine.records.Save;
@@ -55,9 +56,11 @@ public class SaveManager {
     }
 
     public void saveGame(Save save) {
+        if(!BooleanService.canSave) { return; }
         Path temp = savePath.resolveSibling("autosave.tmp");
         try(FileWriter writer = new FileWriter(temp.toFile())) {
             gson.toJson(save, writer);
+            log.info("Saved game");
         } catch(IOException e) {
             log.error("Failed to write temp autosave: {}", e.getMessage());
             return;

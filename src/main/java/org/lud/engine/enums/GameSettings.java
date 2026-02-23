@@ -25,6 +25,11 @@ public enum GameSettings implements Clickable {
         public void toggle() { BooleanService.canDoAchievements ^= true; }
     },
 
+    PLAY_MUSIC("Play Music") {
+        public boolean get() { return BooleanService.canPlayMusic; }
+        public void toggle() { BooleanService.canPlayMusic ^= true; }
+    },
+
     CHAOS_MODE("Chaos Mode") {
         public boolean get() { return BooleanService.canDoChaos; }
         public void toggle() {

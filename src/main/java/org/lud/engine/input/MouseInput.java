@@ -62,7 +62,10 @@ public class MouseInput {
     public void update() {
         Map<Clickable, Rectangle> buttons = service.getRender().getMenuRender().getButtons();
         switch(service.getGameService().getState()) {
-            case MENU, SETTINGS -> updateMenus(buttons);
+            case MENU, SETTINGS -> {
+                updateMenus(buttons);
+                updateAchievements(buttons);
+            }
             case BOARD -> {
                 updateBoard();
                 updateMenus(buttons);
@@ -86,18 +89,24 @@ public class MouseInput {
                 isClicking = true;
                 click = entry.getKey();
             }
-            if(service.getGameService().getState() == GameState.ACHIEVEMENTS) {
-                if(service.getRender().isHovered(entry.getKey()) && mouse.wasPressed()) {
-                    entry.getKey().onClick(service.getGameService());
-                    service.getSound().playFX(0);
-                }
-            }
         }
 
         wasPressedLastFrame = wasMousePressed;
         if(!wasMousePressed) {
             isClicking = false;
             click = null;
+        }
+    }
+
+    private void updateAchievements(Map<Clickable, Rectangle> buttons) {
+        for(Map.Entry<Clickable, Rectangle> entry : buttons.entrySet()) {
+            boolean hover = entry.getValue().contains(mouse.getX(), mouse.getY());
+            if(service.getGameService().getState() == GameState.ACHIEVEMENTS) {
+                if(service.getRender().isHovered(entry.getKey()) && mouse.wasPressed()) {
+                    entry.getKey().onClick(service.getGameService());
+                    service.getSound().playFX(0);
+                }
+            }
         }
     }
 

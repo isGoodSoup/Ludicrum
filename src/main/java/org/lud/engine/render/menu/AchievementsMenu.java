@@ -35,7 +35,7 @@ public class AchievementsMenu implements UI {
     private static final String ACHIEVEMENTS = "ACHIEVEMENTS";
     private static final Logger log = LoggerFactory.getLogger(AchievementsMenu.class);
 
-    private final Map<Achievement, Rectangle> achievementBoxes;
+    private final Map<Clickable, Rectangle> achievementBoxes;
 
     private final RenderContext render;
     private final UIService uiService;
@@ -73,7 +73,7 @@ public class AchievementsMenu implements UI {
 
     @Override
     public void drawMenu(Graphics2D g2) {
-        if (!BooleanService.haveButtonsInit) {
+        if (!BooleanService.haveButtonsInit || render.getMenuRender().getButtons().isEmpty()) {
             initButtons();
             BooleanService.haveButtonsInit = true;
         }
@@ -117,7 +117,7 @@ public class AchievementsMenu implements UI {
             Achievement a = list.get(i);
 
             int textX = x + render.scale(110);
-            int titleY = startY + render.scale(70);
+            int titleY = startY + render.scale(60);
             int descY = titleY;
 
             g2.setColor(Colorblindness.filter(Colors.getTheme() == Theme.DEFAULT

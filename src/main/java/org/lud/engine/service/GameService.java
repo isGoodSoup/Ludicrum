@@ -79,7 +79,6 @@ public class GameService {
                 service.getAchievementService().getUnlockedAchievements()
         );
         saveManager.saveGame(newSave);
-        log.info("New game started and autosave created.");
         if(!(GameService.getGame() == Games.SANDBOX)) {
             Ruleset rule = service.getModelService().createRuleSet(games);
             service.getModelService().setRule(rule);
@@ -122,9 +121,10 @@ public class GameService {
     }
 
     public void autoSave() {
+        if(!BooleanService.canSave) { return; }
         Save save = new Save(
                 getGame(),
-                "autosave",
+                LocalDate.now().toString(),
                 getCurrentTurn(),
                 service.getPieceService().getPieces(),
                 service.getAchievementService().getUnlockedAchievements()

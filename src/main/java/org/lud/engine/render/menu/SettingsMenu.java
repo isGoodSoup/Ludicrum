@@ -22,7 +22,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.Map;
 
-public class OptionsMenu implements UI {
+public class SettingsMenu implements UI {
     private static final String SETTINGS = "SETTINGS";
     private static final String ENABLE = "Enable ";
     private static final int ARC = 32;
@@ -47,9 +47,9 @@ public class OptionsMenu implements UI {
     private Button prevButton;
     private Button backButton;
 
-    public OptionsMenu(RenderContext render, UIService uiService, GameService gs,
-                       KeyboardInput keyUI, Mouse mouse, MouseInput mouseInput,
-                       BufferedImage... images) {
+    public SettingsMenu(RenderContext render, UIService uiService, GameService gs,
+                        KeyboardInput keyUI, Mouse mouse, MouseInput mouseInput,
+                        BufferedImage... images) {
 
         this.render = render;
         this.uiService = uiService;
@@ -109,7 +109,7 @@ public class OptionsMenu implements UI {
 
         int startY = headerY + render.scale(100);
         int lineHeight = g2.getFontMetrics().getHeight()
-                + render.scale(48);
+                + render.scale(32);
 
         int itemsPerPage = 8;
         int startIndex = keyUI.getCurrentPage() * itemsPerPage;

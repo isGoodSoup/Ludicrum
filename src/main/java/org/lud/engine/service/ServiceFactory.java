@@ -18,6 +18,7 @@ import org.lud.engine.sound.Sound;
 import java.util.List;
 
 public class ServiceFactory {
+    private final Intro intro;
     private final RenderContext render;
     private final PieceService piece;
     private final BoardService board;
@@ -37,8 +38,10 @@ public class ServiceFactory {
     private final AchievementService achievement;
     private final EventBus eventBus;
 
-    public ServiceFactory(RenderContext render, GameFrame gameFrame) {
+    public ServiceFactory(RenderContext render, GameFrame gameFrame,
+                          Intro intro) {
         this.render = render;
+        this.intro = intro;
         this.eventBus = new EventBus();
         this.keyboard = new Keyboard();
         this.key = new KeyboardInput();
@@ -85,7 +88,7 @@ public class ServiceFactory {
 
         List<UI> menus = render.getMenuRender().getMenus();
         menus.add(new MainMenu(render, gs, ui, key, mouse));
-        menus.add(new OptionsMenu(render, ui, gs, key, mouse, mouseInput, MenuRender.OPTION_BUTTONS));
+        menus.add(new SettingsMenu(render, ui, gs, key, mouse, mouseInput, MenuRender.OPTION_BUTTONS));
         menus.add(new AchievementsMenu(render, ui, key, achievement, gs, mouse));
         menus.add(new Checkmate(ui, gs, render, RenderContext.BASE_WIDTH));
         menus.add(new PromotionMenu(render, piece, promotion, ui));
@@ -108,6 +111,10 @@ public class ServiceFactory {
         this.mouseInput.init();
         this.achievement.init();
         Colors.setService(this);
+    }
+
+    public Intro getIntro() {
+        return intro;
     }
 
     public RenderContext getRender() {

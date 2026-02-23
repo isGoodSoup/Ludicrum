@@ -44,6 +44,9 @@ public class MainMenu implements UI {
     private Button exitButton;
     private Button themeButton;
 
+    private int logoSize = 0;
+    private int logoDelta = 1;
+
     public MainMenu(RenderContext render, GameService gameService,
                     UIService uiService, KeyboardInput keyUI,
                     Mouse mouse) {
@@ -73,15 +76,27 @@ public class MainMenu implements UI {
     }
 
     private void drawLogo(Graphics2D g2) {
-        BufferedImage logo = UIService.getLogo();
-        if(logo == null) { return; }
-        BufferedImage img = Colorblindness.filter(logo);
-        int logoWidth = logo.getWidth() * 2;
-        int logoHeight = logo.getHeight() * 2;
-        int x = getCenterX(getTotalWidth(), logoWidth);
-        int y = render.getOffsetY()
-                + render.scale(RenderContext.BASE_HEIGHT)/3;
-        g2.drawImage(img, x, y, logoWidth, logoHeight, null);
+        BufferedImage img = Colorblindness.filter(UIService.getLogo());
+        int originalWidth = img.getWidth() * 2;
+        int originalHeight = img.getHeight() * 2;
+
+        logoSize += logoDelta;
+        int MAX_SIZE = 40;
+        if(logoSize > MAX_SIZE) {
+            logoSize = MAX_SIZE;
+            logoDelta = -logoDelta;
+        } else if (logoSize < 0) {
+            logoSize = 0;
+            logoDelta = -logoDelta;
+        }
+
+        double scale = 1.0 + logoSize/400.0;
+        int width = (int)(originalWidth * scale);
+        int height = (int)(originalHeight * scale);
+
+        int x = getCenterX(getTotalWidth(), width);
+        int y = render.getOffsetY() + render.scale(RenderContext.BASE_HEIGHT) / 3;
+        g2.drawImage(img, x, y, width, height, null);
     }
 
     public void draw(Graphics2D g2, GameMenu[] options) {
@@ -105,7 +120,7 @@ public class MainMenu implements UI {
         int x = startX, y = startY;
         int padding = 100;
 
-        g2.setFont(UIService.getFont(UIService.getMENU_FONT()));
+        g2.setFont(UIService.getFont(50));
         for(GameMenu option : options) {
             if(option == GameMenu.PLAY) {
                 String key = "button";
@@ -291,7 +306,7 @@ public class MainMenu implements UI {
         g2.setFont(UIService.getFont(UIService.getMENU_FONT()));
         uiService.drawTooltip(g2, text, padding, ARC, true,
                 render.scale(RenderContext.BASE_WIDTH/2 - g2.getFontMetrics().stringWidth(text)/2 - 15),
-                render.scale(RenderContext.BASE_HEIGHT - 100));
+                render.scale(RenderContext.BASE_HEIGHT - 131));
     }
 
     private String showTooltip(GameMenu op) {

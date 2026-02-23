@@ -361,9 +361,11 @@ public class KeyboardInput {
             service.getRender().getMovesRender().toggleMoves();
             service.getSound().playFX(3);
         }
-        if(keyboard.isComboPressed(KeyEvent.VK_CONTROL, KeyEvent.VK_R)) {
-            service.getBoardService().resetBoard();
-            service.getSound().playFX(0);
+        if(service.getGameService().getState() == GameState.BOARD) {
+            if(keyboard.isComboPressed(KeyEvent.VK_CONTROL, KeyEvent.VK_R)) {
+                service.getBoardService().resetBoard();
+                service.getSound().playFX(0);
+            }
         }
     }
 

@@ -1,5 +1,6 @@
 package org.lud.engine.gui;
 
+import org.lud.engine.render.menu.Intro;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.lud.engine.entities.Piece;
@@ -22,6 +23,7 @@ public class BoardPanel extends JPanel implements Runnable {
 	@Serial
     private static final long serialVersionUID = -5189356863277669172L;
     private final GameFrame gameFrame;
+    private final Intro intro;
     private final RenderContext render;
     private final int FPS = 60;
 	private Thread thread;
@@ -33,8 +35,9 @@ public class BoardPanel extends JPanel implements Runnable {
         super();
         this.gameFrame = gameFrame;
         this.render = new RenderContext();
-        service = new ServiceFactory(render, gameFrame);
-        service.getGameService().setState(GameState.MENU);
+        this.intro = new Intro();
+        service = new ServiceFactory(render, gameFrame, intro);
+        service.getGameService().setState(GameState.INTRO);
         Colors.setTheme(Theme.LEGACY);
         BooleanService.defaultToggles();
         final int WIDTH = RenderContext.BASE_WIDTH;
@@ -46,7 +49,6 @@ public class BoardPanel extends JPanel implements Runnable {
         addMouseMotionListener(service.getMouse());
         setFocusTraversalKeysEnabled(false);
         setFocusable(true);
-        service.getSound().playMusic();
         log.info("Opening new session");
 	}
 
@@ -86,7 +88,9 @@ public class BoardPanel extends JPanel implements Runnable {
 
     public void drawGame(Graphics2D g2) throws InterruptedException, IOException {
         switch (service.getGameService().getState()) {
-            case MENU -> service.getRender().getMenuRender().draw(g2);
+            case MENU, SETTINGS, ACHIEVEMENTS, CHECKMATE, STALEMATE, VICTORY ->
+                    service.getRender().getMenuRender().draw(g2);
+            case INTRO -> service.getIntro().draw(g2);
             case BOARD -> {
                 service.getRender().getBoardRender().drawBoard(g2);
                 service.getRender().getMovesRender().drawMoves(g2);
@@ -99,10 +103,7 @@ public class BoardPanel extends JPanel implements Runnable {
                 }
                 service.getRender().getMenuRender().draw(g2);
             }
-            case SETTINGS, ACHIEVEMENTS, CHECKMATE, STALEMATE, VICTORY ->
-                    service.getRender().getMenuRender().draw(g2);
         }
-
         renderAnimations(g2);
         if (BooleanService.canToggleHelp) {
             renderControls(g2);
@@ -118,6 +119,10 @@ public class BoardPanel extends JPanel implements Runnable {
     }
 
     private void update() {
+        if(intro.isFinished()) {
+            service.getGameService().setState(GameState.MENU);
+            service.getSound().playMusic();
+        }
         service.getKeyboardInput().update();
         service.getMouseInput().update();
         if(!(GameService.getGame() == Games.SANDBOX)) {

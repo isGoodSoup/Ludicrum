@@ -7,7 +7,7 @@ import org.lud.engine.service.ServiceFactory;
 import java.awt.*;
 
 public class Colors {
-    public static final Color BUTTON = new Color(101, 106, 130);
+    public static final Color BUTTON = new Color(198, 114, 11);
     public static final Color SETTINGS = new Color(0 ,0 , 0, 180);
     private static Theme currentTheme = Theme.DEFAULT;
     private static ServiceFactory service;
