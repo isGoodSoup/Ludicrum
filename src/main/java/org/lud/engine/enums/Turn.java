@@ -17,4 +17,8 @@ public enum Turn {
 		int nextIndex = (gameService.getCurrentTurn().ordinal() + 1) % turns.length;
 		gameService.setCurrentTurn(turns[nextIndex]);
 	}
+
+    public static Turn next(Turn currentTurn) {
+		return currentTurn == Turn.DARK ? Turn.LIGHT : Turn.DARK;
+    }
 }

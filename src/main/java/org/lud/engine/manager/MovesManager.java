@@ -195,7 +195,7 @@ public class MovesManager {
         }
 
         if(BooleanService.canDoAuto && !BooleanService.cannotAutoCommit) {
-            commitMove(piece);
+            SwingUtilities.invokeLater(() -> commitMove(piece));
         }
 
         if(isAITurn()) {
@@ -216,40 +216,35 @@ public class MovesManager {
     }
 
     private boolean isCheckmate() {
-        if(service.getPieceService().isKingInCheck(service.getGameService().getCurrentTurn())) {
-            boolean hasEscapeMoves = false;
-            for(Piece piece : service.getPieceService().getPieces()) {
-                if(piece.getColor() == service.getGameService().getCurrentTurn()) {
-                    for(int col = 0; col < service.getBoardService().getBoard().getCol(); col++) {
-                        for(int row = 0; row < service.getBoardService().getBoard().getRow(); row++) {
-                            if(piece.canMove(col, row, service.getPieceService().getPieces()) &&
-                                    !service.getPieceService().wouldLeaveKingInCheck(piece, col, row)) {
-                                hasEscapeMoves = true;
-                                break;
-                            }
-                        }
-                        if(hasEscapeMoves) {
-                            break;
-                        }
+        Turn currentTurn = service.getGameService().getCurrentTurn();
+        Turn opponent = Turn.next(currentTurn);
+        Piece king = service.getPieceService().getKing(opponent);
+        if(king == null) { return false; }
+
+        if(!service.getPieceService().isKingInCheck(opponent)) {
+            return false;
+        }
+
+        for(Piece piece : service.getPieceService().getPieces()) {
+            if(piece.getColor() != opponent) { continue; }
+            for(int col = 0; col < service.getBoardService().getBoard().getCol(); col++) {
+                for(int row = 0; row < service.getBoardService().getBoard().getRow(); row++) {
+                    if(piece.canMove(col, row, service.getPieceService().getPieces()) &&
+                            !service.getPieceService().wouldLeaveKingInCheck(piece, col, row)) {
+                        return false;
                     }
                 }
-                if(hasEscapeMoves) {
-                    break;
-                }
-            }
-
-            if(!hasEscapeMoves) {
-                log.debug("Checkmate");
-                BooleanService.isCheckmate = true;
-                service.getTimerService().stop();
-                BooleanService.canPlayMusic = false;
-                service.getSound().playFX(6);
-                new Timer(3000, (e)
-                        -> service.getGameService().setState(GameState.CHECKMATE)).start();
-                return true;
             }
         }
-        return false;
+
+        log.debug("Checkmate for {}", opponent);
+        BooleanService.isCheckmate = true;
+        service.getTimerService().stop();
+        BooleanService.canPlayMusic = false;
+        service.getSound().playFX(6);
+        new Timer(3000, (e) ->
+                service.getGameService().setState(GameState.CHECKMATE)).start();
+        return true;
     }
 
     private boolean isStalemate() {
@@ -416,15 +411,23 @@ public class MovesManager {
 
         if(GameService.getGame() == Games.CHESS) {
             if(isCheckmate()) {
-                eventBus.fire(new CheckmateEvent(piece,
-                        service.getPieceService().getKing(piece.getColor())));
+                Piece winner = (piece.getColor() == Turn.LIGHT)
+                        ? service.getPieceService().getKing(Turn.DARK)
+                        : service.getPieceService().getKing(Turn.LIGHT);
+                eventBus.fire(new CheckmateEvent(winner,
+                        service.getPieceService().getKing(winner.getColor())));
                 eventBus.fire(new TotalMovesEvent(piece));
-
                 if(BooleanService.canDoHard) {
                     eventBus.fire(new HardEvent(piece));
                 }
+                isCommiting = false;
+                BooleanService.cannotAutoCommit = false;
+                return;
             } else if(isStalemate()) {
                 eventBus.fire(new StalemateEvent(piece));
+                isCommiting = false;
+                BooleanService.cannotAutoCommit = false;
+                return;
             }
         }
 
@@ -440,11 +443,10 @@ public class MovesManager {
             }
         }
 
-        Turn.nextTurn(service.getGameService());
-        BooleanService.isTurnLocked = true;
-
-        if(service.getGameService().getCurrentTurn() == Turn.DARK) {
-            service.getModelService().triggerAIMove();
+        if(!BooleanService.isCheckmate || !BooleanService.isStalemate) {
+            Turn.nextTurn(service.getGameService());
+            BooleanService.isTurnLocked = true;
+            if(isAITurn()) { service.getModelService().triggerAIMove(); }
         }
         isCommiting = false;
         BooleanService.cannotAutoCommit = false;
