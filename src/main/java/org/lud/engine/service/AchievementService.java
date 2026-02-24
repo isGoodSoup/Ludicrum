@@ -188,7 +188,7 @@ public class AchievementService {
             animationService.add(new ToastAnimation
                     (achievement.getId().getTitle(), null,
                             AchievementSprites.getSprite(achievement)));
-           service.getSound().playFX(5);
+           service.getSound().playFX(8);
            service.getGameService().autoSave();
             saveManager.saveAchievements(getSortedAchievements(new ArrayList<>(achievements.values())));
            log.info("Achievement Unlocked: {}", achievement.getId().getTitle());

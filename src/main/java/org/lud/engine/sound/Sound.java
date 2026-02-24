@@ -28,6 +28,7 @@ public class Sound {
         setSound(5, "reveal");
         setSound(6, "checkmate");
         setSound(7, "main-theme");
+        setSound(8, "level-up");
         log.info("Loading sound FX...");
         preload();
     }
