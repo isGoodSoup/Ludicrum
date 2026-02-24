@@ -1,6 +1,6 @@
 <p align="center">
   <img src="src/main/resources/ui/logo/logo_final_v1.png" alt="Vertex Logo" 
-width="516"/>
+width="1032"/>
 </p>
 
 # About

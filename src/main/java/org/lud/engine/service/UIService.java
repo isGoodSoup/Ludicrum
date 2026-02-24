@@ -108,15 +108,7 @@ public class UIService {
 
     public static BufferedImage getLogo() {
         try {
-            return switch(Colors.getTheme()) {
-                case DEFAULT -> logo = getImage("/ui/logo/logo_final_v2-1");
-                case BLACK -> logo = getImage("/ui/logo/logo_final_v2");
-                case LEGACY -> logo = getImage("/ui/logo/logo_final_v2_creme");
-                case OCEAN -> logo = getImage("/ui/logo/logo_final_v2_ocean");
-                case FOREST -> logo = getImage("/ui/logo/logo_final_v2_forest");
-                case LOGO -> logo = getImage("/ui/logo/logo_final_v2_logo");
-                case FAIRY -> logo = getImage("/ui/logo/logo_final_v2_fairy");
-            };
+            return logo = getImage("/ui/logo/logo_final_v1");
         } catch (RuntimeException | IOException e) {
             throw new RuntimeException(e);
         }

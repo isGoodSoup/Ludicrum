@@ -109,17 +109,19 @@ public class MainMenu implements UI {
 
     private void drawLogo(Graphics2D g2) {
         BufferedImage img = Colorblindness.filter(UIService.getLogo());
-        int originalWidth = img.getWidth() * 2;
-        int originalHeight = img.getHeight() * 2;
+        int originalWidth = img.getWidth();
+        int originalHeight = img.getHeight();
 
-        logoSize += logoDelta;
-        int MAX_SIZE = 40;
-        if(logoSize > MAX_SIZE) {
-            logoSize = MAX_SIZE;
-            logoDelta = -logoDelta;
-        } else if (logoSize < 0) {
-            logoSize = 0;
-            logoDelta = -logoDelta;
+        if(BooleanService.canAnimateLogo) {
+            logoSize += logoDelta;
+            int MAX_SIZE = 40;
+            if(logoSize > MAX_SIZE) {
+                logoSize = MAX_SIZE;
+                logoDelta = -logoDelta;
+            } else if (logoSize < 0) {
+                logoSize = 0;
+                logoDelta = -logoDelta;
+            }
         }
 
         double scale = 1.0 + logoSize/400.0;

@@ -58,6 +58,11 @@ public enum GameSettings implements Clickable {
         public void toggle() { BooleanService.canStopwatch ^= true; BooleanService.canTime = false; }
     },
 
+    LOGO_ANIMATION("settings.logo") {
+        public boolean get() { return BooleanService.canAnimateLogo; }
+        public void toggle() { BooleanService.canAnimateLogo ^= true; }
+    },
+
     UNDO_MOVES("settings.undo_moves") {
         public boolean get() { return BooleanService.canUndoMoves; }
         public void toggle() { BooleanService.canUndoMoves ^= true; BooleanService.canDoAchievements = false; }
