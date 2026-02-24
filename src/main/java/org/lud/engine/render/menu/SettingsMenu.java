@@ -95,7 +95,7 @@ public class SettingsMenu implements UI {
         int x = 32;
         int y = 32;
 
-        g2.setFont(UIService.getFont(UIService.getMENU_FONT()));
+        g2.setFont(UIService.getFont(UIService.fontSize()[4]));
 
         int headerY = render.getOffsetY() + render.scale(OPTION_Y);
         int headerWidth = g2.getFontMetrics().stringWidth(SETTINGS);

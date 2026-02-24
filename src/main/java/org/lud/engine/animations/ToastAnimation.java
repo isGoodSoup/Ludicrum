@@ -66,7 +66,7 @@ public class ToastAnimation implements Animation {
         }
 
         if(description == null) {
-            g2.setFont(UIService.getFont(UIService.getMENU_FONT()));
+            g2.setFont(UIService.getFont(UIService.fontSize()[4]));
             g2.setColor(Colorblindness.filter(Colors.getHighlight()));
             FontMetrics fm = g2.getFontMetrics();
             int textX = x + 56;
@@ -76,7 +76,7 @@ public class ToastAnimation implements Animation {
             return;
         }
 
-        g2.setFont(UIService.getFont(UIService.getMENU_FONT()));
+        g2.setFont(UIService.getFont(UIService.fontSize()[4]));
         g2.setColor(Colorblindness.filter(Colors.getHighlight()));
         FontMetrics fm = g2.getFontMetrics();
         int textX = x + 20 + (icon != null ? iconSize + 32 : 0);

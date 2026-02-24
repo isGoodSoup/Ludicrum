@@ -5,6 +5,7 @@ import org.lud.engine.entities.Button;
 import org.lud.engine.entities.ButtonSprite;
 import org.lud.engine.enums.GameState;
 import org.lud.engine.enums.Theme;
+import org.lud.engine.service.*;
 import org.lud.engine.util.Colors;
 import org.lud.engine.input.KeyboardInput;
 import org.lud.engine.input.Mouse;
@@ -15,10 +16,6 @@ import org.lud.engine.render.AchievementLock;
 import org.lud.engine.render.AchievementSprites;
 import org.lud.engine.render.Colorblindness;
 import org.lud.engine.render.RenderContext;
-import org.lud.engine.service.AchievementService;
-import org.lud.engine.service.BooleanService;
-import org.lud.engine.service.GameService;
-import org.lud.engine.service.UIService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +29,6 @@ public class AchievementsMenu implements UI {
     private static final int ARC = 32;
     private static final int STROKE = 6;
     private static final int OPTION_Y = 160;
-    private static final String ACHIEVEMENTS = "ACHIEVEMENTS";
     private static final Logger log = LoggerFactory.getLogger(AchievementsMenu.class);
 
     private final Map<Clickable, Rectangle> achievementBoxes;
@@ -94,10 +90,10 @@ public class AchievementsMenu implements UI {
         List<Achievement> list = achievementService.init();
         int x = 32, y = 32;
 
-        String text = ACHIEVEMENTS;
+        String text = Localization.lang.t("achievements.header");
         int headerY = render.getOffsetY() + render.scale(OPTION_Y);
         int headerWidth = g2.getFontMetrics().stringWidth(text);
-        g2.setFont(UIService.getFont(UIService.getMENU_FONT()));
+        g2.setFont(UIService.getFont(UIService.fontSize()[4]));
         g2.setColor(Colorblindness.filter(Colors.getTheme() == Theme.DEFAULT
                 ? Color.WHITE : Colors.getForeground()));
 
@@ -122,7 +118,7 @@ public class AchievementsMenu implements UI {
 
             g2.setColor(Colorblindness.filter(Colors.getTheme() == Theme.DEFAULT
                     ? Color.WHITE : Colors.getForeground()));
-            g2.setFont(UIService.getFont(UIService.getMENU_FONT()));
+            g2.setFont(UIService.getFont(UIService.fontSize()[4]));
 
             achievementBoxes.put(a, new Rectangle(x, startY, width, height));
             if(isHovered(a)) {

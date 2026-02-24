@@ -94,8 +94,8 @@ public class UIService {
         return MENU_START_X;
     }
 
-    public static int getMENU_FONT() {
-        return MENU_FONT;
+    public static int[] fontSize() {
+        return new int[]{16, 24, 32, 40, 48, 56};
     }
 
     public BufferedImage getYES() {
@@ -146,7 +146,7 @@ public class UIService {
         int boardY = render.getBoardRender().getBoardOriginY();
         int boardWidth = Board.getSquare() * boardService.getBoard().getCol();
 
-        g2.setFont(getFont(MENU_FONT));
+        g2.setFont(getFont(fontSize()[4]));
         FontMetrics fm = g2.getFontMetrics();
         String time = timerService.getTimeString();
         int textWidth = fm.stringWidth(time);

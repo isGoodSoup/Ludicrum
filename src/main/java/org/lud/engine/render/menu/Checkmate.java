@@ -45,7 +45,7 @@ public class Checkmate implements UI {
             return;
         }
 
-        g2.setFont(UIService.getFont(UIService.getMENU_FONT()));
+        g2.setFont(UIService.getFont(UIService.fontSize()[3]));
         FontMetrics fm = g2.getFontMetrics();
 
         int headerY = render.getOffsetY() + render.scale(200);

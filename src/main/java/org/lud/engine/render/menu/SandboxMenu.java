@@ -48,7 +48,7 @@ public class SandboxMenu implements UI {
         int boardHeight = Board.getSquare() * boardService.getBoard().getRow();
         int boardBottom = boardY + boardHeight;
 
-        g2.setFont(UIService.getFont(UIService.getMENU_FONT()));
+        g2.setFont(UIService.getFont(UIService.fontSize()[4]));
         FontMetrics fm = g2.getFontMetrics();
         Keyboard keyboard = boardService.getService().getKeyboard();
         String input = keyboard.getCurrentText();

@@ -5,8 +5,8 @@ import org.lud.engine.service.Localization;
 import java.util.Locale;
 
 public enum Lang {
-    ES("es"),
     EN("en"),
+    ES("es"),
     FR("fr");
 
     private final String langKey;

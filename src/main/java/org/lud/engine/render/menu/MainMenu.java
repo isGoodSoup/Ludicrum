@@ -99,9 +99,10 @@ public class MainMenu implements UI {
         int x = getCenterX(getTotalWidth(), width);
         int y = render.getOffsetY() + render.scale(RenderContext.BASE_HEIGHT) / 3;
         g2.drawImage(img, x, y, width, height, null);
-        g2.setFont(UIService.getFont(UIService.getMENU_FONT()));
+        g2.setFont(UIService.getFont(UIService.fontSize()[2]));
         g2.setColor(Color.YELLOW);
-        g2.drawString(Version.LATEST, x + width - g2.getFontMetrics().stringWidth(Version.LATEST), y + height);
+        g2.drawString(Version.LATEST.toUpperCase(), x + width
+                - g2.getFontMetrics().stringWidth(Version.LATEST.toUpperCase()), y + height);
     }
 
     public void draw(Graphics2D g2, GameMenu[] options) {
@@ -125,7 +126,6 @@ public class MainMenu implements UI {
         int x = startX, y = startY;
         int padding = 100;
 
-        g2.setFont(UIService.getFont(50));
         for(GameMenu option : options) {
             if(option == GameMenu.PLAY) {
                 String key = "button";
@@ -148,6 +148,7 @@ public class MainMenu implements UI {
                         ? render.getMenuRender().getColorblindSprite(altImg)
                         : render.getMenuRender().getColorblindSprite(baseImg);
 
+                g2.setFont(UIService.getFont(UIService.fontSize()[5]));
                 FontMetrics fm = g2.getFontMetrics();
                 Games game = GameService.getGame();
                 int textX = x + (width - fm.stringWidth(game.getLabel()))/2;
@@ -327,7 +328,7 @@ public class MainMenu implements UI {
 
     public void drawTooltip(Graphics2D g2, String text) {
         int padding = 16;
-        g2.setFont(UIService.getFont(UIService.getMENU_FONT()));
+        g2.setFont(UIService.getFont(UIService.fontSize()[3]));
         uiService.drawTooltip(g2, text, padding, ARC, true,
                 render.scale(RenderContext.BASE_WIDTH/2 - g2.getFontMetrics().stringWidth(text)/2 - 15),
                 render.scale(RenderContext.BASE_HEIGHT - 131));
