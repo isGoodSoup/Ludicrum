@@ -121,7 +121,10 @@ public class BoardRender {
         int offset = render.scale(buttonWidth);
 
         backButton = drawIconButton(g2, backButton, "previous_page",
-                buttonX, buttonY, () -> gameService.setState(GameState.MENU));
+                buttonX, buttonY, () -> {
+                    gameService.setState(GameState.MENU);
+                    render.getMenuRender().onClose();
+                });
         buttonX += offset;
 
         undoButton = drawIconButton(g2, undoButton, "undo",
@@ -165,7 +168,6 @@ public class BoardRender {
     }
 
     public void drawBaseBoard(Graphics2D g2) {
-        render.getMenuRender().clearButtons();
         backButton = undoButton = resetButton = pauseButton = null;
 
         g2.setColor(Colorblindness.filter(Colors.getBackground()));
@@ -251,10 +253,12 @@ public class BoardRender {
         );
     }
 
-    private Button createButton(int x, int y, int width, int height, Runnable action) {
-        Button b = new Button(x, y, width, height, action);
-        render.getMenuRender().getButtons().put(b, new Rectangle(x, y, width, height));
-        return b;
+    private Button createButton(Button button, int x, int y, int width, int height, Runnable action) {
+        if(button == null) {
+            button = new Button(x, y, width, height, action);
+        }
+        render.getMenuRender().addButton(button, new Rectangle(x, y, width, height));
+        return button;
     }
 
     private Button drawIconButton(Graphics2D g2, Button button, String spriteKey,
@@ -263,9 +267,7 @@ public class BoardRender {
         BufferedImage base = sprites[0];
         BufferedImage highlighted = sprites[1];
 
-        if(button == null) {
-            button = createButton(x, y, base.getWidth(), base.getHeight(), action);
-        }
+        button = createButton(button, x, y, base.getWidth(), base.getHeight(), action);
 
         g2.drawImage(render.getMenuRender().getButtonRegistry()
                 .get("button_small").normal, x, y, null);
