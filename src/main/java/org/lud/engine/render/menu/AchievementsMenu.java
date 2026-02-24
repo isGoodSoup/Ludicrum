@@ -10,6 +10,7 @@ import org.lud.engine.input.Mouse;
 import org.lud.engine.interfaces.Clickable;
 import org.lud.engine.interfaces.State;
 import org.lud.engine.interfaces.UI;
+import org.lud.engine.render.AchievementLock;
 import org.lud.engine.render.AchievementSprites;
 import org.lud.engine.render.Colorblindness;
 import org.lud.engine.render.RenderContext;
@@ -80,7 +81,8 @@ public class AchievementsMenu implements UI {
     }
 
     private void drawProgressBar(Graphics2D g2) {
-        List<Achievement> unlocked = achievementService.init();
+        List<Achievement> unlocked = achievementService.init().stream()
+                .filter(Achievement::isUnlocked).toList();
         List<Achievement> total = achievementService.getAchievementList();
         int scale = 25;
         double percentValue = ((double) unlocked.size()/total.size()) * 100;
@@ -92,7 +94,7 @@ public class AchievementsMenu implements UI {
         String percent = String.format("%.0f%%", percentValue);
         int percentWidth = g2.getFontMetrics().stringWidth(percent) + 15;
         int x = getTotalWidth()/2 - totalWidth/2 + percentWidth - 20;
-        int y = 100;
+        int y = OPTION_Y - height;
 
         g2.setColor(Color.BLACK);
         g2.fillRoundRect(x, y, totalWidth, height, ARC, ARC);
@@ -116,9 +118,10 @@ public class AchievementsMenu implements UI {
 
         drawProgressBar(g2);
 
-        List<Achievement> list = achievementService.getUnlockedAchievements();
+        List<Achievement> total = achievementService.getAchievementList();
+
         String headerText = Localization.lang.t("achievements.header");
-        int headerY = render.getOffsetY() + render.scale(OPTION_Y);
+        int headerY = render.scale(OPTION_Y);
         g2.setFont(UIService.getFont(UIService.fontSize()[4]));
         g2.setColor(Colorblindness.filter(
                 Colors.getTheme() == Theme.DEFAULT ? Color.WHITE : Colors.getForeground()
@@ -138,38 +141,39 @@ public class AchievementsMenu implements UI {
         int descX = totalWidth/2 + spacing * 3;
         int descY = startY;
 
-        g2.setColor(Colorblindness.filter(Colors.getBackground()));
+        g2.setColor(Colorblindness.filter(Colors.getEdge()));
         g2.fillRoundRect(descX, descY, descWidth, descHeight, ARC, ARC);
 
-        UIService.drawBox(g2, 6, descX, descY, descWidth, descHeight,
+        UIService.drawBox(g2, STROKE, descX, descY, descWidth, descHeight,
                 ARC, hasBackground, false, 180);
 
         int itemsPerPage = KeyboardInput.getITEMS_PER_PAGE();
         int start = keyUI.getCurrentPage() * itemsPerPage;
-        int end = Math.min(start + itemsPerPage, list.size());
+        int end = Math.min(start + itemsPerPage, total.size());
 
         for(int i = start; i < end; i++) {
-            Achievement a = list.get(i);
+            Achievement a = total.get(i);
             BufferedImage sprite = AchievementSprites.getSprite(a);
             achievementBoxes.put(a, new Rectangle(boxX, startY, boxWidth, boxHeight));
 
             if(isHovered(a)) {
                 UIService.drawBox(g2, STROKE, boxX, startY, boxWidth, boxHeight,
-                        ARC, hasBackground, true, 255);
+                        ARC, hasBackground, true, 180);
 
                 String title  = a.getId().getTitle();
-                String desc = a.getId().getDescription();
-                g2.setColor(Colors.getForeground());
+                String desc = !a.isUnlocked() ? "????" : a.getId().getDescription() ;
                 g2.setFont(UIService.getFont(UIService.fontSize()[3]));
 
                 int padding = spacing;
                 int lineHeight = g2.getFontMetrics().getHeight();
                 int currentY = descY + padding;
 
+                g2.setColor(Colors.getHighlight());
                 g2.drawString(title, descX + padding, currentY + padding);
                 currentY += lineHeight;
 
                 for(String line : UIService.wrapText(desc, descWidth - padding * 2, g2)) {
+                    g2.setColor(Colorblindness.filter(Colors.getForeground()));
                     g2.drawString(line, descX + padding, currentY + padding);
                     currentY += lineHeight;
                 }
@@ -179,13 +183,19 @@ public class AchievementsMenu implements UI {
                     int spriteHeight = sprite.getHeight();
                     int centerX = descX + (descWidth - spriteWidth)/2;
                     int centerY = descY + (descHeight - spriteHeight)/2;
+                    if(!a.isUnlocked()) {
+                        sprite = AchievementLock.filter(sprite, !a.isUnlocked());
+                    }
                     g2.drawImage(sprite, centerX, centerY, null);
                 }
             } else {
                 UIService.drawBox(g2, STROKE, boxX, startY, boxWidth, boxHeight,
-                        ARC, hasBackground, false, 255);
+                        ARC, hasBackground, false, 180);
             }
 
+            if(isHovered(a)) {
+                g2.setColor(Colors.getHighlight());
+            }
             g2.setFont(UIService.getFont(UIService.fontSize()[4]));
             g2.drawString(a.getId().getTitle(), boxX + render.scale(120), startY + render.scale(60));
 
@@ -193,6 +203,9 @@ public class AchievementsMenu implements UI {
                 int iconSize = render.scale(64);
                 int iconX = boxX + render.scale(20);
                 int iconY = startY + (boxHeight - iconSize)/2;
+                if(!a.isUnlocked()) {
+                    sprite = AchievementLock.filter(sprite, !a.isUnlocked());
+                }
                 g2.drawImage(sprite, iconX, iconY, iconSize, iconSize, null);
             }
             startY += boxHeight + spacing;
@@ -229,7 +242,7 @@ public class AchievementsMenu implements UI {
         nextButton = createButton(nextButton, x, y, getSprites()[0].getWidth(), getSprites()[0].getHeight(),
                 () -> {
                     log.debug("Next page");
-                    int totalPages = (achievementService.getUnlockedAchievements().size()
+                    int totalPages = (achievementService.getAchievementList().size()
                             + KeyboardInput.getITEMS_PER_PAGE() - 1)
                             /KeyboardInput.getITEMS_PER_PAGE() - 1;
                     int page = keyUI.getCurrentPage() + 1;

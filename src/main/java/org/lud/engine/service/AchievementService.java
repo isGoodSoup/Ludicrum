@@ -10,7 +10,6 @@ import org.lud.engine.events.*;
 import org.lud.engine.manager.EventBus;
 import org.lud.engine.manager.SaveManager;
 import org.lud.engine.render.AchievementSprites;
-import org.lud.engine.render.RenderContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -117,9 +116,15 @@ public class AchievementService {
     }
 
     public List<Achievement> init() {
-        List<Achievement> loaded = saveManager.loadAchievements();
-        setUnlockedAchievements(loaded);
-        return loaded;
+        try {
+            List<Achievement> loaded = saveManager.loadAchievements();
+            setAchievementList(loaded);
+            log.info("All achievements loaded");
+            return loaded;
+        } catch(Exception e) {
+            log.error("Achievements loading failed, clearing list");
+            return achievementList;
+        }
     }
 
     public ServiceFactory getService() {
@@ -183,11 +188,10 @@ public class AchievementService {
             achievement.setUnlocked(true);
             animationService.add(new ToastAnimation
                     (achievement.getId().getTitle(), null,
-                            RenderContext.BASE_HEIGHT,
                             AchievementSprites.getSprite(achievement)));
            service.getSound().playFX(5);
            service.getGameService().autoSave();
-           saveManager.saveAchievements(getUnlockedAchievements());
+           saveManager.saveAchievements(getAchievementList());
            log.info("Achievement Unlocked: {}", achievement.getId().getTitle());
            eventBus.fire(new ChessMasterEvent(getUnlockedAchievements()));
         }
@@ -229,16 +233,25 @@ public class AchievementService {
         return achievementList;
     }
 
+    public void setAchievementList(List<Achievement> achievementList) {
+        this.achievementList = achievementList;
+    }
+
     public List<Achievement> getUnlockedAchievements() {
         return achievementList.stream()
                 .filter(Achievement::isUnlocked)
                 .toList();
     }
 
+    public List<Achievement> getLockedAchievements() {
+        return achievementList.stream()
+                .filter(a -> !a.isUnlocked())
+                .toList();
+    }
+
     public void setUnlockedAchievements(List<Achievement> loadedAchievements) {
         unlockedIDs.clear();
-
-        for (Achievement loaded : loadedAchievements) {
+        for(Achievement loaded : loadedAchievements) {
             Achievements type = loaded.getId();
             Achievement existing = achievements.get(type);
 

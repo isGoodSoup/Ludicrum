@@ -149,7 +149,7 @@ public class BoardRender {
                 UIService.drawBox(g2, 4, getBoardOriginX() + hoverX * squareSize,
                         getBoardOriginY() + hoverY * squareSize, squareSize,
                         squareSize, MenuRender.getARC()/4,
-                        true, false, 180);
+                        true, true, 180);
             }
         }
 
