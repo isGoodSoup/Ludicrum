@@ -48,6 +48,10 @@ public class MainMenu implements UI {
 
     private int logoSize = 0;
     private int logoDelta = 1;
+    private final float FADE_SPEED = 0.15f;
+    private float fadeAlpha = 1f;
+
+    private boolean isFadingIn;
 
     public MainMenu(RenderContext render, GameService gameService,
                     UIService uiService, KeyboardInput keyUI,
@@ -57,6 +61,7 @@ public class MainMenu implements UI {
         this.uiService = uiService;
         this.keyUI = keyUI;
         this.mouse = mouse;
+        this.isFadingIn = true;
     }
 
     private int getTotalWidth() {
@@ -70,11 +75,36 @@ public class MainMenu implements UI {
     @Override
     public void drawMenu(Graphics2D g2) {
         draw(g2, MenuRender.MENU);
+        fadeFrom(g2);
     }
 
     @Override
     public boolean canDraw(State state) {
         return state == GameState.MENU;
+    }
+
+    private void fadeFrom(Graphics2D g2) {
+        if(isFadingIn) {
+            fadeAlpha -= FADE_SPEED;
+            if (fadeAlpha <= 0f) {
+                fadeAlpha = 0f;
+                isFadingIn = false;
+            }
+        }
+
+        if(fadeAlpha > 0f) {
+            Composite original = g2.getComposite();
+            g2.setComposite(AlphaComposite.getInstance(
+                    AlphaComposite.SRC_OVER,
+                    fadeAlpha
+            ));
+            g2.setColor(Color.BLACK);
+            g2.fillRect(0, 0,
+                    render.scale(RenderContext.BASE_WIDTH),
+                    render.scale(RenderContext.BASE_HEIGHT)
+            );
+            g2.setComposite(original);
+        }
     }
 
     private void drawLogo(Graphics2D g2) {

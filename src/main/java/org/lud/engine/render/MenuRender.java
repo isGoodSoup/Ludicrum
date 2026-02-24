@@ -45,13 +45,13 @@ public class MenuRender {
     private AchievementSprites sprites;
 
     public MenuRender(RenderContext render, UI... menus) {
+        this.render = render;
         this.buttons = new HashMap<>();
         this.buttonsClicked = new HashMap<>();
         this.buttonRegistry = new HashMap<>();
         this.activeButtons = new HashSet<>();
         this.menus = new ArrayList<>();
         Collections.addAll(this.menus, menus);
-        this.render = render;
         cb = ColorblindType.PROTANOPIA;
     }
 

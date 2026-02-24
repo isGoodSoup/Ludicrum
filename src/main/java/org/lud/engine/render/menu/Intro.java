@@ -50,7 +50,7 @@ public class Intro {
         int x = (RenderContext.BASE_WIDTH / 2) - (width / 2);
         int y = (RenderContext.BASE_HEIGHT / 2) - (height / 2);
 
-        if (fadingIn) {
+        if(fadingIn) {
             alpha += FADE_SPEED;
             if (alpha >= 1f) {
                 alpha = 1f;
