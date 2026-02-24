@@ -87,6 +87,7 @@ public enum GameSettings implements Clickable {
         public boolean get() { return BooleanService.canDoHard; }
         public void toggle() {
             BooleanService.canDoHard ^= true;
+            BooleanService.canDoAuto = true;
             BooleanService.canTime = true;
             BooleanService.canStopwatch = false;
             BooleanService.canDoAchievements = true;

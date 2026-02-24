@@ -13,7 +13,8 @@ public enum UIButton {
     NEXT_PAGE("next_page"),
     PREVIOUS_PAGE("previous_page"),
     PAUSE("pause"),
-    GAMES("games");
+    GAMES("games"),
+    THEME("theme");
 
     private final String suffix;
 

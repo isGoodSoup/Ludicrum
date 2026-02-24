@@ -18,6 +18,8 @@ import org.lud.engine.render.RenderContext;
 import org.lud.engine.service.GameService;
 import org.lud.engine.service.Localization;
 import org.lud.engine.service.UIService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -27,6 +29,7 @@ public class SettingsMenu implements UI {
     private static final int ARC = 32;
     private static final int STROKE = 6;
     private static final int OPTION_Y = 160;
+    private static final Logger log = LoggerFactory.getLogger(SettingsMenu.class);
 
     private final RenderContext render;
     private final UIService uiService;
@@ -85,6 +88,8 @@ public class SettingsMenu implements UI {
     }
 
     public void draw(Graphics2D g2, GameSettings[] options) {
+        clearToggles();
+
         final String SETTINGS = Localization.lang.t("settings.header");
         final String ENABLE = Localization.lang.t("settings.enable");
 
@@ -207,6 +212,7 @@ public class SettingsMenu implements UI {
         backButton = createButton(backButton, x, y, getSprites()[0].getWidth(), getSprites()[0].getHeight(),
                 () -> {
                     gameService.setState(GameState.MENU);
+                    log.debug("Back to Menu");
                     render.getMenuRender().onClose();
                 });
 
@@ -216,6 +222,9 @@ public class SettingsMenu implements UI {
                     int page = keyUI.getCurrentPage() - 1;
                     if (page < 0) {
                         page = 0;
+                        log.debug("No previous page");
+                    } else {
+                        log.debug("Previous page");
                     }
                     keyUI.setCurrentPage(page);
                 });
@@ -229,6 +238,9 @@ public class SettingsMenu implements UI {
                     int page = keyUI.getCurrentPage() + 1;
                     if(page > totalPages) {
                         page = totalPages;
+                        log.debug("No next page");
+                    } else {
+                        log.debug("Next page");
                     }
                     keyUI.setCurrentPage(page);
                 });
@@ -270,5 +282,10 @@ public class SettingsMenu implements UI {
         BufferedImage previousPageOn = sprite1.highlighted;
         BufferedImage nextPageOn = sprite2.highlighted;
         return new BufferedImage[]{previousPage, previousPageOn, nextPage, nextPageOn};
+    }
+
+    public void clearToggles() {
+        render.getMenuRender().getButtons().clear();
+        initButtons();
     }
 }

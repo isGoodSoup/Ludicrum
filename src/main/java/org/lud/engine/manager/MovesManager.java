@@ -271,7 +271,7 @@ public class MovesManager {
             if(!hasEscapeMoves) {
                 BooleanService.isCheckmate = true;
                 service.getTimerService().stop();
-                service.getSound().stop(7);
+                BooleanService.canPlayMusic = false;
                 service.getSound().playFX(6);
                 Timer timer = new Timer(30000, (e)
                         -> service.getGameService().setState(GameState.CHECKMATE));
@@ -318,7 +318,7 @@ public class MovesManager {
         if(!hasLegalMove) {
             BooleanService.isCheckmate = true;
             service.getTimerService().stop();
-            service.getSound().stop(7);
+            BooleanService.canPlayMusic = false;
             service.getSound().playFX(6);
             Timer timer = new Timer(30000, (e)
                     -> service.getGameService().setState(GameState.VICTORY));
