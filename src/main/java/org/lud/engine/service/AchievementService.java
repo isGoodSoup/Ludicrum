@@ -11,10 +11,13 @@ import org.lud.engine.manager.EventBus;
 import org.lud.engine.manager.SaveManager;
 import org.lud.engine.render.AchievementSprites;
 import org.lud.engine.render.RenderContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
 public class AchievementService {
+    private static final Logger log = LoggerFactory.getLogger(AchievementService.class);
     private Map<Achievements, Achievement> achievements;
     private List<Achievement> achievementList;
     private List<Achievement> sortedList;
@@ -187,8 +190,9 @@ public class AchievementService {
                             AchievementSprites.getSprite(achievement)));
            service.getSound().playFX(5);
            service.getGameService().autoSave();
-            saveManager.saveAchievements(getUnlockedAchievements());
-            eventBus.fire(new ChessMasterEvent(getUnlockedAchievements()));
+           saveManager.saveAchievements(getUnlockedAchievements());
+           log.info("Achievement Unlocked: {}", achievement.getId().getTitle());
+           eventBus.fire(new ChessMasterEvent(getUnlockedAchievements()));
         }
         eventBus.fire(new GrandmasterEvent(Collections
                 .unmodifiableList(getUnlockedAchievements())));
