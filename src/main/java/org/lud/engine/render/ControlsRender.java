@@ -33,7 +33,7 @@ public class ControlsRender {
         int y = RenderContext.BASE_HEIGHT - 600;
         int lineHeight = 32;
         g2.setColor(Colorblindness.filter(Colors.getForeground()));
-        g2.setFont(UIService.getFont(UIService.fontSize()[3]));
+        g2.setFont(UIService.getFont(UIService.fontSize()[1]));
 
         ControlCategory[] categories = switch(service.getGameService().getState()) {
             case BOARD -> new ControlCategory[]{ControlCategory.BOARD_KEYBOARD, ControlCategory.BOARD_MOUSE};

@@ -24,6 +24,7 @@ public enum ControlsHUD {
     RESET_BOARD(ControlCategory.BOARD_KEYBOARD, "reset_board", new String[]{"ctrl", "r"}),
     UNDO_MOVE(ControlCategory.BOARD_KEYBOARD, "undo_move", new String[]{"ctrl", "z"}),
     CANCEL_MOVE(ControlCategory.BOARD_KEYBOARD, "cancel_move", new String[]{"c"}),
+    HIDE_CURSOR(ControlCategory.BOARD_KEYBOARD, "hide_cursor", new String[]{"h"}),
     TOGGLE_MOVES_LIST(ControlCategory.BOARD_KEYBOARD, "toggle_moves_list", new String[]{"ctrl", "h"}),
 
     DRAG_PIECE(ControlCategory.BOARD_MOUSE, "drag_piece", new String[]{"mouse_left"}),
