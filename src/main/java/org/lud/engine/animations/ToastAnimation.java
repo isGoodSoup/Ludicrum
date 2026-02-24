@@ -1,7 +1,7 @@
 package org.lud.engine.animations;
 
 import org.lud.engine.enums.Theme;
-import org.lud.engine.gui.Colors;
+import org.lud.engine.util.Colors;
 import org.lud.engine.interfaces.Animation;
 import org.lud.engine.render.Colorblindness;
 import org.lud.engine.render.RenderContext;

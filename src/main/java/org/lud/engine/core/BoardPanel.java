@@ -1,7 +1,8 @@
-package org.lud.engine.gui;
+package org.lud.engine.core;
 
 import org.lud.engine.render.menu.Intro;
 import org.lud.engine.service.Localization;
+import org.lud.engine.util.Colors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.lud.engine.entities.Piece;

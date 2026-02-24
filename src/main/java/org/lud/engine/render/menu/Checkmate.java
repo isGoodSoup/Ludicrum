@@ -1,7 +1,7 @@
 package org.lud.engine.render.menu;
 
 import org.lud.engine.enums.GameState;
-import org.lud.engine.gui.Colors;
+import org.lud.engine.util.Colors;
 import org.lud.engine.interfaces.State;
 import org.lud.engine.interfaces.UI;
 import org.lud.engine.render.Colorblindness;

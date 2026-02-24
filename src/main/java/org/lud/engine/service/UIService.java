@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.lud.engine.entities.Board;
 import org.lud.engine.enums.Theme;
-import org.lud.engine.gui.Colors;
+import org.lud.engine.util.Colors;
 import org.lud.engine.input.Mouse;
 import org.lud.engine.manager.MovesManager;
 import org.lud.engine.render.Colorblindness;

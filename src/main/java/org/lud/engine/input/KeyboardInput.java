@@ -6,8 +6,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.lud.engine.entities.Piece;
 import org.lud.engine.events.ToggleEvent;
-import org.lud.engine.gui.Colors;
-import org.lud.engine.gui.GameFrame;
+import org.lud.engine.util.Colors;
+import org.lud.engine.core.GameFrame;
 import org.lud.engine.manager.MovesManager;
 import org.lud.engine.render.MenuRender;
 

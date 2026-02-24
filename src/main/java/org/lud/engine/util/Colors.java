@@ -1,4 +1,4 @@
-package org.lud.engine.gui;
+package org.lud.engine.util;
 
 import org.lud.engine.enums.Theme;
 import org.lud.engine.service.PieceService;

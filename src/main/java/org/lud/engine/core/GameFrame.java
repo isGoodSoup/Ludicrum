@@ -1,4 +1,4 @@
-package org.lud.engine.gui;
+package org.lud.engine.core;
 
 import org.lud.engine.service.BooleanService;
 

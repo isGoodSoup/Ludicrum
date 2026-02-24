@@ -1,7 +1,7 @@
 package org.lud.engine.service;
 
-import org.lud.engine.gui.Colors;
-import org.lud.engine.gui.GameFrame;
+import org.lud.engine.util.Colors;
+import org.lud.engine.core.GameFrame;
 import org.lud.engine.input.Keyboard;
 import org.lud.engine.input.KeyboardInput;
 import org.lud.engine.input.Mouse;

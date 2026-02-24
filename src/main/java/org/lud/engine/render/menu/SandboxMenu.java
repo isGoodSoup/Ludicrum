@@ -2,7 +2,7 @@ package org.lud.engine.render.menu;
 
 import org.lud.engine.entities.Board;
 import org.lud.engine.enums.Games;
-import org.lud.engine.gui.Colors;
+import org.lud.engine.util.Colors;
 import org.lud.engine.input.Keyboard;
 import org.lud.engine.interfaces.State;
 import org.lud.engine.interfaces.UI;

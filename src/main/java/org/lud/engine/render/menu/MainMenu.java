@@ -1,9 +1,10 @@
 package org.lud.engine.render.menu;
 
+import org.lud.engine.core.Version;
 import org.lud.engine.entities.Button;
 import org.lud.engine.entities.ButtonSprite;
 import org.lud.engine.enums.*;
-import org.lud.engine.gui.Colors;
+import org.lud.engine.util.Colors;
 import org.lud.engine.input.KeyboardInput;
 import org.lud.engine.input.Mouse;
 import org.lud.engine.interfaces.State;
@@ -98,6 +99,9 @@ public class MainMenu implements UI {
         int x = getCenterX(getTotalWidth(), width);
         int y = render.getOffsetY() + render.scale(RenderContext.BASE_HEIGHT) / 3;
         g2.drawImage(img, x, y, width, height, null);
+        g2.setFont(UIService.getFont(UIService.getMENU_FONT()));
+        g2.setColor(Color.YELLOW);
+        g2.drawString(Version.LATEST, x + width - g2.getFontMetrics().stringWidth(Version.LATEST), y + height);
     }
 
     public void draw(Graphics2D g2, GameMenu[] options) {

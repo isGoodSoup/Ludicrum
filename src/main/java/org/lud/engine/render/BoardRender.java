@@ -5,7 +5,7 @@ import org.lud.engine.entities.Button;
 import org.lud.engine.enums.ButtonSize;
 import org.lud.engine.enums.GameState;
 import org.lud.engine.enums.Games;
-import org.lud.engine.gui.Colors;
+import org.lud.engine.util.Colors;
 import org.lud.engine.input.Mouse;
 import org.lud.engine.input.MouseInput;
 import org.lud.engine.service.*;

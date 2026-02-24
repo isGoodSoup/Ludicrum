@@ -1,6 +1,6 @@
 package org.lud.engine.enums;
 
-import org.lud.engine.gui.Colors;
+import org.lud.engine.util.Colors;
 import org.lud.engine.interfaces.Clickable;
 import org.lud.engine.service.GameService;
 import org.lud.engine.service.Localization;

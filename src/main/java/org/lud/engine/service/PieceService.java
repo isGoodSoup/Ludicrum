@@ -8,7 +8,7 @@ import org.lud.engine.enums.Theme;
 import org.lud.engine.enums.Turn;
 import org.lud.engine.enums.TypeID;
 import org.lud.engine.events.CheckEvent;
-import org.lud.engine.gui.Colors;
+import org.lud.engine.util.Colors;
 import org.lud.engine.manager.EventBus;
 import org.lud.engine.manager.MovesManager;
 

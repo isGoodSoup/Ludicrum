@@ -3,7 +3,7 @@ package org.lud.engine.enums;
 import org.lud.engine.entities.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.lud.engine.gui.Colors;
+import org.lud.engine.util.Colors;
 import org.lud.engine.service.BoardService;
 import org.lud.engine.service.BooleanService;
 import org.lud.engine.service.GameService;

@@ -3,7 +3,7 @@ package org.lud.engine.render;
 import org.lud.engine.enums.ControlCategory;
 import org.lud.engine.enums.ControlsHUD;
 import org.lud.engine.enums.Games;
-import org.lud.engine.gui.Colors;
+import org.lud.engine.util.Colors;
 import org.lud.engine.service.GameService;
 import org.lud.engine.service.ServiceFactory;
 import org.lud.engine.service.UIService;
