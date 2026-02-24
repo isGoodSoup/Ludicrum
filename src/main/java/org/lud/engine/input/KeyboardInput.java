@@ -337,6 +337,23 @@ public class KeyboardInput {
             service.getSound().playFX(0);
             return;
         }
+        if(keyboard.isComboPressed(KeyEvent.VK_CONTROL, KeyEvent.VK_Z) && BooleanService.canUndoMoves) {
+            move.undoLastMove();
+            service.getSound().playFX(0);
+        }
+        if(keyboard.isComboPressed(KeyEvent.VK_CONTROL, KeyEvent.VK_H)) {
+            service.getRender().getMovesRender().toggleMoves();
+            service.getSound().playFX(3);
+        } else if(keyboard.wasHPressed()) {
+            BooleanService.canToggleCursor ^= true;
+            service.getSound().playFX(3);
+        }
+        if(service.getGameService().getState() == GameState.BOARD) {
+            if(keyboard.isComboPressed(KeyEvent.VK_CONTROL, KeyEvent.VK_R)) {
+                service.getBoardService().resetBoard();
+                service.getSound().playFX(0);
+            }
+        }
 
         if(BooleanService.canType) { return; }
 
@@ -347,26 +364,10 @@ public class KeyboardInput {
                 service.getMovesManager().commitMove();
             } else {}
         }
-        if(keyboard.wasHPressed()) { BooleanService.canToggleCursor ^= true; }
         repeatKeyCheck(keyboard.wasUpPressed(), () -> move(Direction.UP), now, lastUpTime, () -> lastUpTime = now);
         repeatKeyCheck(keyboard.wasDownPressed(), () -> move(Direction.DOWN), now, lastDownTime, () -> lastDownTime = now);
         repeatKeyCheck(keyboard.wasLeftPressed(), () -> move(Direction.LEFT), now, lastLeftTime, () -> lastLeftTime = now);
         repeatKeyCheck(keyboard.wasRightPressed(), () -> move(Direction.RIGHT), now, lastRightTime, () -> lastRightTime = now);
-
-        if(keyboard.isComboPressed(KeyEvent.VK_CONTROL, KeyEvent.VK_Z) && BooleanService.canUndoMoves) {
-            move.undoLastMove();
-            service.getSound().playFX(0);
-        }
-        if(keyboard.isComboPressed(KeyEvent.VK_CONTROL, KeyEvent.VK_H)) {
-            service.getRender().getMovesRender().toggleMoves();
-            service.getSound().playFX(3);
-        }
-        if(service.getGameService().getState() == GameState.BOARD) {
-            if(keyboard.isComboPressed(KeyEvent.VK_CONTROL, KeyEvent.VK_R)) {
-                service.getBoardService().resetBoard();
-                service.getSound().playFX(0);
-            }
-        }
     }
 
     private void globalShortcuts(Keyboard keyboard) {

@@ -10,11 +10,13 @@ import java.util.Map;
 public class Keyboard implements KeyListener {
     private final Map<Integer, Boolean> keyStates;
     private final Map<Integer, Boolean> keyProcessed;
+    private final Map<Integer, Boolean> keyProcessedCombo;
     private StringBuilder textBuffer = new StringBuilder();
 
     public Keyboard() {
-        keyStates = new HashMap<>();
-        keyProcessed = new HashMap<>();
+        this.keyStates = new HashMap<>();
+        this.keyProcessed = new HashMap<>();
+        this.keyProcessedCombo = new HashMap<>();
     }
 
     public String consumeText() {
@@ -54,10 +56,13 @@ public class Keyboard implements KeyListener {
     }
 
     private boolean wasKeyPressed(int keyCode) {
+        if(keyProcessedCombo.getOrDefault(keyCode, false)) {
+            return false;
+        }
+
         boolean down = keyStates.getOrDefault(keyCode, false);
         boolean processed = keyProcessed.getOrDefault(keyCode, false);
-
-        if (down && !processed) {
+        if(down && !processed) {
             keyProcessed.put(keyCode, true);
             return true;
         }
@@ -87,6 +92,18 @@ public class Keyboard implements KeyListener {
     public boolean isEscapeDown() { return isKeyDown(KeyEvent.VK_ESCAPE); }
 
     public boolean isComboPressed(int modifierKey, int triggerKey) {
-        return isKeyDown(modifierKey) && wasKeyPressed(triggerKey);
+        boolean down = isKeyDown(modifierKey) && isKeyDown(triggerKey);
+        boolean processed = keyProcessedCombo.getOrDefault(triggerKey, false);
+
+        if(down && !processed) {
+            keyProcessedCombo.put(triggerKey, true);
+            return true;
+        }
+
+        if(!isKeyDown(modifierKey) || !isKeyDown(triggerKey)) {
+            keyProcessedCombo.put(triggerKey, false);
+        }
+
+        return false;
     }
 }

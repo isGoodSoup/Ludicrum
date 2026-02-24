@@ -45,7 +45,7 @@ public class BooleanService {
     private static final Random random = new Random();
 
     public static void defaultToggles() {
-        canDoAchievements = false;
+        canDoAchievements = true;
         canSave = false;
         isTurnLocked = false;
         canDoAuto = true;
