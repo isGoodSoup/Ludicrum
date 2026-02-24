@@ -105,7 +105,7 @@ public class SettingsMenu implements UI {
                         ? Color.WHITE
                         : Colors.getForeground()));
 
-        g2.drawString(SETTINGS,
+        g2.drawString(SETTINGS.toUpperCase(),
                 getCenterX(totalWidth, headerWidth),
                 headerY);
 
