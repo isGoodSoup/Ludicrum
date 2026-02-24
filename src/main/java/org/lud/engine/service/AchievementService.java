@@ -68,7 +68,7 @@ public class AchievementService {
             achievements.put(type, new Achievement(type));
         }
         achievementList = new ArrayList<>(achievements.values());
-        getSortedAchievements();
+        getSortedAchievements(achievements.values().stream().filter(Achievement::isUnlocked).toList());
 
         eventBus.register(TotalMovesEvent.class, this::onMove);
         eventBus.register(ToggleEvent.class, this::onToggle);
@@ -80,16 +80,16 @@ public class AchievementService {
         eventBus.register(HardEvent.class, this::onHardGame);
         eventBus.register(StalemateEvent.class, this::onStalemate);
         eventBus.register(ChessMasterEvent.class, event -> {
-            long chessStartId = 1001L;
-            long chessEndId   = 1011L;
             long unlockedChess = event.achievements().stream()
                     .map(a -> a.getId().getId())
-                    .filter(id -> id >= chessStartId && id <= chessEndId)
+                    .filter(id -> id >= 1001L && id <= 1011L)
                     .count();
-            long totalChess = getSortedAchievements().stream()
+
+            long totalChess = achievementList.stream()
                     .map(a -> a.getId().getId())
-                    .filter(id -> id >= chessStartId && id <= chessEndId)
+                    .filter(id -> id >= 1001L && id <= 1011L)
                     .count();
+
             if(unlockedChess >= totalChess) {
                 unlock(Achievements.MASTER_OF_NONE);
             }
@@ -100,15 +100,13 @@ public class AchievementService {
         eventBus.register(JumpEvent.class, this::onJump);
         eventBus.register(CaptureEvent.class, this::onLostPiece);
         eventBus.register(CheckersMasterEvent.class, event -> {
-            long checkersStartId = 2001L;
-            long checkersEndId   = 2011L;
             long unlockedCheckers = event.achievements().stream()
                     .map(a -> a.getId().getId())
-                    .filter(id -> id >= checkersStartId && id <= checkersEndId)
+                    .filter(id -> id >= 2001L && id <= 2011L)
                     .count();
-            long totalCheckers = getSortedAchievements().stream()
+            long totalCheckers = achievementList.stream()
                     .map(a -> a.getId().getId())
-                    .filter(id -> id >= checkersStartId && id <= checkersEndId)
+                    .filter(id -> id >= 2001L && id <= 2011L)
                     .count();
             if(unlockedCheckers >= totalCheckers) {
                 unlock(Achievements.KINGMAKER);
@@ -233,8 +231,7 @@ public class AchievementService {
     }
 
     public List<Achievement> getUnlockedAchievements() {
-        return achievements.values()
-                .stream()
+        return achievementList.stream()
                 .filter(Achievement::isUnlocked)
                 .toList();
     }
@@ -253,13 +250,10 @@ public class AchievementService {
         }
     }
 
-    public List<Achievement> getSortedAchievements() {
-        Collection<Achievement> achievements = achievementList;
-        sortedList = new ArrayList<>(achievements);
-        sortedList.sort(
-                Comparator.comparingInt(a -> a.getId().ordinal())
-        );
-        return sortedList;
+    public List<Achievement> getSortedAchievements(Collection<Achievement> achievements) {
+        return achievements.stream()
+                .sorted(Comparator.comparingInt(a -> a.getId().ordinal()))
+                .toList();
     }
 
     private void onMove(TotalMovesEvent event) {

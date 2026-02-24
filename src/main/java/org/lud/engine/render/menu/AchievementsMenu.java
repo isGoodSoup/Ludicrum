@@ -83,7 +83,7 @@ public class AchievementsMenu implements UI {
         g2.setColor(Colorblindness.filter(Colors.getBackground()));
         g2.fillRect(0, 0, totalWidth, render.scale(RenderContext.BASE_HEIGHT));
 
-        List<Achievement> list = achievementService.init();
+        List<Achievement> list = achievementService.getUnlockedAchievements();
         int x = 32, y = 32;
 
         String text = Localization.lang.t("achievements.header");
@@ -212,7 +212,7 @@ public class AchievementsMenu implements UI {
         nextButton = createButton(nextButton, x, y, getSprites()[0].getWidth(), getSprites()[0].getHeight(),
                 () -> {
                     log.debug("Next page");
-                    int totalPages = (achievementService.init().size()
+                    int totalPages = (achievementService.getUnlockedAchievements().size()
                             + KeyboardInput.getITEMS_PER_PAGE() - 1)
                             /KeyboardInput.getITEMS_PER_PAGE() - 1;
                     int page = keyUI.getCurrentPage() + 1;
