@@ -13,25 +13,32 @@ turn-based board games while maintaining clean architecture and custom visual de
 
 ## Features
 
-- ♟️ **Multiple Games**
+- **Multiple Games**
     - Chess
     - Checkers
     - Shogi
-    - Designed to support more games in the future
 
-- 🏆 **Achievement System**
-    - Track player milestones and in-game accomplishments
+- **Achievement System**
+    - Track player advancements
 
-- 💾 **Save System**
+- **Save System**
     - Persist game states and resume progress
 
-- 🎛️ **Game Toggles**
+- **Game Toggles**
     - Adjustable gameplay settings
 
-- ⌨️ **Keyboard Input Support**
+- **MultiLanguage Support**
+    - English (EN)
+    - Spanish (ES)
+    - French (FR)
+
+- **Keyboard Input Support**
     - Full keyboard interaction
 
-- 🎨 **Themes & Sprites**
+- **Mouse Input Support**
+    - Full mouse interaction too
+
+- **Themes & Sprites**
     - Dynamic theme switching
     - Custom-made graphics
     - Sprites adapt based on selected theme
