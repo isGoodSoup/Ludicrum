@@ -347,6 +347,7 @@ public class KeyboardInput {
                 service.getMovesManager().commitMove();
             } else {}
         }
+        if(keyboard.wasHPressed()) { BooleanService.canToggleCursor ^= true; }
         repeatKeyCheck(keyboard.wasUpPressed(), () -> move(Direction.UP), now, lastUpTime, () -> lastUpTime = now);
         repeatKeyCheck(keyboard.wasDownPressed(), () -> move(Direction.DOWN), now, lastDownTime, () -> lastDownTime = now);
         repeatKeyCheck(keyboard.wasLeftPressed(), () -> move(Direction.LEFT), now, lastLeftTime, () -> lastLeftTime = now);

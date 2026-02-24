@@ -39,6 +39,7 @@ public class BooleanService {
     public static boolean canTheme;
     public static boolean canShowTick;
     public static boolean canToggleHelp;
+    public static boolean canToggleCursor;
     public static boolean canDoAuto;
 
     private static final Random random = new Random();
@@ -66,6 +67,7 @@ public class BooleanService {
         canType = false;
         canToggleHelp = false;
         isDragging = false;
+        canToggleCursor = true;
     }
 
     public static boolean getBoolean() {

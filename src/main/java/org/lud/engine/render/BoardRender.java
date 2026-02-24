@@ -145,11 +145,12 @@ public class BoardRender {
 
         if(hoverX >= 0 && hoverY >= 0) {
             int squareSize = render.scale(Board.getSquare());
-
-            UIService.drawBox(g2, 4, getBoardOriginX() + hoverX * squareSize,
-                    getBoardOriginY() + hoverY * squareSize, squareSize,
-                    squareSize, MenuRender.getARC()/4,
-                    true, false, 180);
+            if(BooleanService.canToggleCursor) {
+                UIService.drawBox(g2, 4, getBoardOriginX() + hoverX * squareSize,
+                        getBoardOriginY() + hoverY * squareSize, squareSize,
+                        squareSize, MenuRender.getARC()/4,
+                        true, false, 180);
+            }
         }
 
         Piece selectedPiece = pieceService.getMoveManager() != null

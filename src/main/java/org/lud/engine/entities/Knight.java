@@ -43,7 +43,6 @@ public class Knight extends Piece implements GoldGeneral {
 				if(rowDiff == 2 * direction && Math.abs(colDiff) == 1) {
 					return isValidSquare(this, targetCol, targetRow, board);
 				}
-
 				return false;
 			}
         }
