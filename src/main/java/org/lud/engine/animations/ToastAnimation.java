@@ -60,8 +60,8 @@ public class ToastAnimation implements Animation {
         g2.setFont(UIService.getFont(UIService.fontSize()[4]));
         g2.setColor(Colorblindness.filter(Colors.getHighlight()));
         FontMetrics fm = g2.getFontMetrics();
-        int textX = x + 20 + (icon != null ? ICON_SIZE + 32 : 0);
-        int titleY = y + (HEIGHT + fm.getAscent()) / 2 - (description != null ? 36 : 0);
+        int textX = x + 20 + (icon != null ? ICON_SIZE * 2 : 0);
+        int titleY = y + (HEIGHT + fm.getAscent())/2 - (description != null ? 36 : 0);
         g2.drawString(title.toUpperCase(), textX, titleY);
 
         if (description != null) {

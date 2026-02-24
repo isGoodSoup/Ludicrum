@@ -44,6 +44,7 @@ public class AchievementService {
     private boolean isFirstToggle;
     private boolean isFirstWin;
     private boolean isQuickWin;
+    private boolean achievementsLoaded;
 
     public AchievementService(EventBus eventBus) {
         achievements = new HashMap<>();
@@ -116,15 +117,13 @@ public class AchievementService {
     }
 
     public List<Achievement> init() {
-        try {
-            List<Achievement> loaded = saveManager.loadAchievements();
-            setAchievementList(loaded);
+        List<Achievement> loaded = saveManager.loadAchievements();
+        setAchievementList(loaded);
+        if(!achievementsLoaded) {
             log.info("All achievements loaded");
-            return loaded;
-        } catch(Exception e) {
-            log.error("Achievements loading failed, clearing list");
-            return achievementList;
+            achievementsLoaded = true;
         }
+        return achievementList;
     }
 
     public ServiceFactory getService() {
@@ -191,9 +190,8 @@ public class AchievementService {
                             AchievementSprites.getSprite(achievement)));
            service.getSound().playFX(5);
            service.getGameService().autoSave();
-           saveManager.saveAchievements(getAchievementList());
+            saveManager.saveAchievements(getSortedAchievements(new ArrayList<>(achievements.values())));
            log.info("Achievement Unlocked: {}", achievement.getId().getTitle());
-           eventBus.fire(new ChessMasterEvent(getUnlockedAchievements()));
         }
         eventBus.fire(new GrandmasterEvent(Collections
                 .unmodifiableList(getUnlockedAchievements())));
@@ -233,8 +231,23 @@ public class AchievementService {
         return achievementList;
     }
 
-    public void setAchievementList(List<Achievement> achievementList) {
-        this.achievementList = achievementList;
+    public void setAchievementList(List<Achievement> loadedAchievements) {
+        achievements.clear();
+        unlockedIDs.clear();
+
+        for (Achievements type : Achievements.values()) {
+            Achievement ach = new Achievement(type);
+            achievements.put(type, ach);
+        }
+
+        for (Achievement loaded : loadedAchievements) {
+            Achievement existing = achievements.get(loaded.getId());
+            if (existing != null && loaded.isUnlocked()) {
+                existing.setUnlocked(true);
+                unlockedIDs.add(existing.getId().getId());
+            }
+        }
+        achievementList = new ArrayList<>(achievements.values());
     }
 
     public List<Achievement> getUnlockedAchievements() {

@@ -109,7 +109,7 @@ public class SaveManager {
         }
         try(FileReader reader = new FileReader(achievementsPath.toFile())) {
             Achievement[] arr = gson.fromJson(reader, Achievement[].class);
-            if(arr == null) return new ArrayList<>();
+            if(arr == null) { return new ArrayList<>(); }
             List<Achievement> list = new ArrayList<>(Arrays.asList(arr));
             return list;
         } catch(IOException e) {
