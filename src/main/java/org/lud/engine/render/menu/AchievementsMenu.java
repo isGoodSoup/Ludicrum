@@ -5,17 +5,19 @@ import org.lud.engine.entities.Button;
 import org.lud.engine.entities.ButtonSprite;
 import org.lud.engine.enums.GameState;
 import org.lud.engine.enums.Theme;
-import org.lud.engine.service.*;
-import org.lud.engine.util.Colors;
 import org.lud.engine.input.KeyboardInput;
 import org.lud.engine.input.Mouse;
 import org.lud.engine.interfaces.Clickable;
 import org.lud.engine.interfaces.State;
 import org.lud.engine.interfaces.UI;
-import org.lud.engine.render.AchievementLock;
 import org.lud.engine.render.AchievementSprites;
 import org.lud.engine.render.Colorblindness;
 import org.lud.engine.render.RenderContext;
+import org.lud.engine.service.AchievementService;
+import org.lud.engine.service.GameService;
+import org.lud.engine.service.Localization;
+import org.lud.engine.service.UIService;
+import org.lud.engine.util.Colors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -122,7 +124,7 @@ public class AchievementsMenu implements UI {
                 Colors.getTheme() == Theme.DEFAULT ? Color.WHITE : Colors.getForeground()
         ));
 
-        g2.drawString(headerText, render.scale(50), headerY); // left-aligned header
+        g2.drawString(headerText.toUpperCase(), render.scale(50), headerY);
         int spacing = 25;
         int startY = headerY + spacing * 2;
 
@@ -132,7 +134,7 @@ public class AchievementsMenu implements UI {
         boolean hasBackground = true;
 
         int descWidth = render.scale((int) (RenderContext.BASE_WIDTH/2.5f));
-        int descHeight = boxHeight * 6 + spacing;
+        int descHeight = ((boxHeight + spacing) * 6) - spacing;
         int descX = totalWidth/2 + spacing * 3;
         int descY = startY;
 
@@ -148,12 +150,14 @@ public class AchievementsMenu implements UI {
 
         for(int i = start; i < end; i++) {
             Achievement a = list.get(i);
+            BufferedImage sprite = AchievementSprites.getSprite(a);
             achievementBoxes.put(a, new Rectangle(boxX, startY, boxWidth, boxHeight));
 
             if(isHovered(a)) {
                 UIService.drawBox(g2, STROKE, boxX, startY, boxWidth, boxHeight,
                         ARC, hasBackground, true, 255);
 
+                String title  = a.getId().getTitle();
                 String desc = a.getId().getDescription();
                 g2.setColor(Colors.getForeground());
                 g2.setFont(UIService.getFont(UIService.fontSize()[3]));
@@ -162,12 +166,14 @@ public class AchievementsMenu implements UI {
                 int lineHeight = g2.getFontMetrics().getHeight();
                 int currentY = descY + padding;
 
+                g2.drawString(title, descX + padding, currentY + padding);
+                currentY += lineHeight;
+
                 for(String line : UIService.wrapText(desc, descWidth - padding * 2, g2)) {
                     g2.drawString(line, descX + padding, currentY + padding);
                     currentY += lineHeight;
                 }
 
-                BufferedImage sprite = AchievementSprites.getSprite(a);
                 if(sprite != null) {
                     int spriteWidth  = sprite.getWidth();
                     int spriteHeight = sprite.getHeight();
@@ -183,15 +189,11 @@ public class AchievementsMenu implements UI {
             g2.setFont(UIService.getFont(UIService.fontSize()[4]));
             g2.drawString(a.getId().getTitle(), boxX + render.scale(120), startY + render.scale(60));
 
-            BufferedImage img = AchievementSprites.getSprite(a);
-            if(img != null && !a.isUnlocked()) {
-                img = AchievementLock.filter(img, a.isUnlocked());
-            }
-            if(img != null) {
+            if(sprite != null) {
                 int iconSize = render.scale(64);
                 int iconX = boxX + render.scale(20);
                 int iconY = startY + (boxHeight - iconSize)/2;
-                g2.drawImage(img, iconX, iconY, iconSize, iconSize, null);
+                g2.drawImage(sprite, iconX, iconY, iconSize, iconSize, null);
             }
             startY += boxHeight + spacing;
         }
