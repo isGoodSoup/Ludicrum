@@ -6,7 +6,8 @@ import java.util.Locale;
 
 public enum Lang {
     ES("es"),
-    EN("en");
+    EN("en"),
+    FR("fr");
 
     private final String langKey;
 
