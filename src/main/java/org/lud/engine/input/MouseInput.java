@@ -171,6 +171,7 @@ public class MouseInput {
             targetRow = Math.max(0, Math.min(maxIndex, targetRow));
             service.getMovesManager().attemptMove(piece, targetCol, targetRow);
             service.getSound().playFX(0);
+            service.getPieceService().setLastPiece(piece);
             piece = null;
             wasJustDropped = true;
         }

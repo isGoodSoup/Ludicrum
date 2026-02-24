@@ -182,8 +182,7 @@ public class AchievementService {
         if(achievement != null && !achievement.isUnlocked()) {
             achievement.setUnlocked(true);
             animationService.add(new ToastAnimation
-                    (achievement.getId().getTitle(),
-                            achievement.getId().getDescription(),
+                    (achievement.getId().getTitle(), null,
                             RenderContext.BASE_HEIGHT,
                             AchievementSprites.getSprite(achievement)));
            service.getSound().playFX(5);

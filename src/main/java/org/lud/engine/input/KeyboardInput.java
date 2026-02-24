@@ -360,7 +360,7 @@ public class KeyboardInput {
         if(keyboard.wasSelectPressed()) { activate(GameState.BOARD); service.getSound().playFX(0); }
         if(keyboard.wasTabPressed() && !BooleanService.canDoAuto) {
             if(!BooleanService.isTurnLocked) {
-                service.getMovesManager().commitMove();
+                service.getMovesManager().commitMove(service.getPieceService().getLastPiece());
             } else {}
         }
         repeatKeyCheck(keyboard.wasUpPressed(), () -> move(Direction.UP), now, lastUpTime, () -> lastUpTime = now);

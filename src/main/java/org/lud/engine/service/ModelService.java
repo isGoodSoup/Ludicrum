@@ -57,7 +57,7 @@ public class ModelService {
             if(AIMove != null) {
                 SwingUtilities.invokeLater(() -> {
                     executeMove(AIMove);
-                    BoardService.getMovesManager().commitMove();
+                    BoardService.getMovesManager().commitMove(pieceService.getLastPiece());
                     BooleanService.isAIMoving = false;
                     BooleanService.isTurnLocked = false;
                 });

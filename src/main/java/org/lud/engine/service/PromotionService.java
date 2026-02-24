@@ -1,13 +1,13 @@
 package org.lud.engine.service;
 
 import org.lud.engine.entities.*;
-import org.lud.engine.manager.MovesManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.lud.engine.enums.Games;
 import org.lud.engine.enums.Turn;
 import org.lud.engine.events.PromotionEvent;
 import org.lud.engine.manager.EventBus;
+import org.lud.engine.manager.MovesManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -70,14 +70,14 @@ public class PromotionService {
         }
 
         if(p instanceof Pawn) {
-            if ((p.getColor() == Turn.LIGHT && p.getRow() == 0) ||
+            if((p.getColor() == Turn.LIGHT && p.getRow() == 0) ||
                     (p.getColor() == Turn.DARK && p.getRow() == 7)) {
                 return true;
             }
         }
 
         if(p instanceof Checker) {
-            if ((p.getColor() == Turn.LIGHT && p.getRow() == 0) ||
+            if((p.getColor() == Turn.LIGHT && p.getRow() == 0) ||
                     (p.getColor() == Turn.DARK && p.getRow() == 7)) {
                 return true;
             }
@@ -137,7 +137,7 @@ public class PromotionService {
             piece.setPromoted(true);
             return piece;
         }
-        if(BooleanService.canDoAuto) { movesManager.commitMove(); }
+        if(BooleanService.canDoAuto) { movesManager.commitMove(piece); }
         return piece;
     }
 
