@@ -199,7 +199,7 @@ public class BoardRender {
                         SQUARE
                 );
 
-                g2.setFont(UIService.getFont(24));
+                g2.setFont(UIService.getFont(UIService.fontSize()[1]));
 
                 if(col == 0) {
                     String number = String.valueOf(ROW - row);
