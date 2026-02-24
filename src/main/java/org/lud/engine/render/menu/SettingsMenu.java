@@ -154,7 +154,7 @@ public class SettingsMenu implements UI {
                     toggleHeight
             );
 
-            render.getMenuRender().getButtons().put(option, toggleHitbox);
+            render.getMenuRender().addButton(option, toggleHitbox);
             boolean isEnabled = option.get();
             boolean isHovered = toggleHitbox.contains(
                     mouse.getX(), mouse.getY());
