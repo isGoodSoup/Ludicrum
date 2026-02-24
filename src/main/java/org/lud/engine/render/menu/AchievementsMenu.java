@@ -77,11 +77,41 @@ public class AchievementsMenu implements UI {
         return state == GameState.ACHIEVEMENTS;
     }
 
+    private void drawProgressBar(Graphics2D g2) {
+        List<Achievement> unlocked = achievementService.init();
+        List<Achievement> total = achievementService.getAchievementList();
+        int scale = 25;
+        double percentValue = ((double) unlocked.size() / total.size()) * 100;
+        int totalWidth = total.size() * scale;
+        int width = (int) (percentValue/100 * totalWidth);
+        int height = 50;
+
+        g2.setFont(UIService.getFont(UIService.fontSize()[5]));
+        String percent = String.format("%.0f%%", percentValue);
+        int percentWidth = g2.getFontMetrics().stringWidth(percent) + 15;
+        int x = getTotalWidth()/2 - totalWidth/2 + percentWidth - 20;
+        int y = 100;
+
+        g2.setColor(Color.BLACK);
+        g2.fillRoundRect(x, y, totalWidth, height, ARC, ARC);
+        g2.setColor(Colors.PROGRESS_BAR);
+        g2.fillRoundRect(x, y, width, height, ARC, ARC);
+
+        g2.setColor(Colors.getEdge());
+        g2.setStroke(new BasicStroke(6));
+        g2.drawRoundRect(x, y, totalWidth, height, ARC, ARC);
+
+        g2.setColor(Colors.getForeground());
+        g2.drawString(percent, x - percentWidth, y + height/1.25f);
+    }
+
     public void draw(Graphics2D g2) {
         int totalWidth = getTotalWidth();
 
         g2.setColor(Colorblindness.filter(Colors.getBackground()));
         g2.fillRect(0, 0, totalWidth, render.scale(RenderContext.BASE_HEIGHT));
+
+        drawProgressBar(g2);
 
         List<Achievement> list = achievementService.getUnlockedAchievements();
         int x = 32, y = 32;
@@ -202,7 +232,7 @@ public class AchievementsMenu implements UI {
                 () -> {
                     log.debug("Previous page");
                     int page = keyUI.getCurrentPage() - 1;
-                    if (page < 0) {
+                    if(page < 0) {
                         page = 0;
                     }
                     keyUI.setCurrentPage(page);
