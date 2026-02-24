@@ -81,7 +81,7 @@ public class AchievementsMenu implements UI {
         List<Achievement> unlocked = achievementService.init();
         List<Achievement> total = achievementService.getAchievementList();
         int scale = 25;
-        double percentValue = ((double) unlocked.size() / total.size()) * 100;
+        double percentValue = ((double) unlocked.size()/total.size()) * 100;
         int totalWidth = total.size() * scale;
         int width = (int) (percentValue/100 * totalWidth);
         int height = 50;
@@ -107,111 +107,96 @@ public class AchievementsMenu implements UI {
 
     public void draw(Graphics2D g2) {
         int totalWidth = getTotalWidth();
+        int totalHeight = render.scale(RenderContext.BASE_HEIGHT);
 
         g2.setColor(Colorblindness.filter(Colors.getBackground()));
-        g2.fillRect(0, 0, totalWidth, render.scale(RenderContext.BASE_HEIGHT));
+        g2.fillRect(0, 0, totalWidth, totalHeight);
 
         drawProgressBar(g2);
 
         List<Achievement> list = achievementService.getUnlockedAchievements();
-        int x = 32, y = 32;
-
-        String text = Localization.lang.t("achievements.header");
+        String headerText = Localization.lang.t("achievements.header");
         int headerY = render.getOffsetY() + render.scale(OPTION_Y);
-        int headerWidth = g2.getFontMetrics().stringWidth(text);
         g2.setFont(UIService.getFont(UIService.fontSize()[4]));
-        g2.setColor(Colorblindness.filter(Colors.getTheme() == Theme.DEFAULT
-                ? Color.WHITE : Colors.getForeground()));
+        g2.setColor(Colorblindness.filter(
+                Colors.getTheme() == Theme.DEFAULT ? Color.WHITE : Colors.getForeground()
+        ));
 
+        g2.drawString(headerText, render.scale(50), headerY); // left-aligned header
         int spacing = 25;
         int startY = headerY + spacing * 2;
-        int width = RenderContext.BASE_WIDTH/2;
-        int height = 100;
-        x = getCenterX(totalWidth, width);
+
+        int boxX = render.scale(50);
+        int boxWidth = render.scale(RenderContext.BASE_WIDTH/2);
+        int boxHeight = render.scale(100);
         boolean hasBackground = true;
+
+        int descWidth = render.scale((int) (RenderContext.BASE_WIDTH/2.5f));
+        int descHeight = boxHeight * 6 + spacing;
+        int descX = totalWidth/2 + spacing * 3;
+        int descY = startY;
+
+        g2.setColor(Colorblindness.filter(Colors.getBackground()));
+        g2.fillRoundRect(descX, descY, descWidth, descHeight, ARC, ARC);
+
+        UIService.drawBox(g2, 6, descX, descY, descWidth, descHeight,
+                ARC, hasBackground, false, 180);
 
         int itemsPerPage = KeyboardInput.getITEMS_PER_PAGE();
         int start = keyUI.getCurrentPage() * itemsPerPage;
         int end = Math.min(start + itemsPerPage, list.size());
 
-        BufferedImage img = null;
         for(int i = start; i < end; i++) {
             Achievement a = list.get(i);
+            achievementBoxes.put(a, new Rectangle(boxX, startY, boxWidth, boxHeight));
 
-            int textX = x + render.scale(110);
-            int titleY = startY + render.scale(60);
-            int descY = titleY;
-
-            g2.setColor(Colorblindness.filter(Colors.getTheme() == Theme.DEFAULT
-                    ? Color.WHITE : Colors.getForeground()));
-            g2.setFont(UIService.getFont(UIService.fontSize()[4]));
-
-            achievementBoxes.put(a, new Rectangle(x, startY, width, height));
             if(isHovered(a)) {
-                UIService.drawBox(g2, STROKE, x, startY,
-                        width, height, ARC, hasBackground,
-                        true, 255);
+                UIService.drawBox(g2, STROKE, boxX, startY, boxWidth, boxHeight,
+                        ARC, hasBackground, true, 255);
 
-                if(!BooleanService.canZoomIn) {
-                    String desc = a.getId().getDescription();
-                    uiService.drawTooltip(g2, desc,
-                            16, ARC, true,
-                            render.scale(RenderContext.BASE_WIDTH/2 - g2.getFontMetrics().stringWidth(desc)/2),
-                            render.scale(100));
+                String desc = a.getId().getDescription();
+                g2.setColor(Colors.getForeground());
+                g2.setFont(UIService.getFont(UIService.fontSize()[3]));
+
+                int padding = spacing;
+                int lineHeight = g2.getFontMetrics().getHeight();
+                int currentY = descY + padding;
+
+                for(String line : UIService.wrapText(desc, descWidth - padding * 2, g2)) {
+                    g2.drawString(line, descX + padding, currentY + padding);
+                    currentY += lineHeight;
+                }
+
+                BufferedImage sprite = AchievementSprites.getSprite(a);
+                if(sprite != null) {
+                    int spriteWidth  = sprite.getWidth();
+                    int spriteHeight = sprite.getHeight();
+                    int centerX = descX + (descWidth - spriteWidth)/2;
+                    int centerY = descY + (descHeight - spriteHeight)/2;
+                    g2.drawImage(sprite, centerX, centerY, null);
                 }
             } else {
-                UIService.drawBox(g2, STROKE, x, startY,
-                        width, height, ARC, hasBackground,
-                        false, 255);
+                UIService.drawBox(g2, STROKE, boxX, startY, boxWidth, boxHeight,
+                        ARC, hasBackground, false, 255);
             }
 
-            g2.drawString(a.getId().getTitle(), textX, descY);
+            g2.setFont(UIService.getFont(UIService.fontSize()[4]));
+            g2.drawString(a.getId().getTitle(), boxX + render.scale(120), startY + render.scale(60));
 
-            img = AchievementSprites.getSprite(a);
+            BufferedImage img = AchievementSprites.getSprite(a);
             if(img != null && !a.isUnlocked()) {
                 img = AchievementLock.filter(img, a.isUnlocked());
             }
-
             if(img != null) {
                 int iconSize = render.scale(64);
-                int iconX = x + render.scale(20);
-                int iconY = startY + (height - iconSize)/2;
-
+                int iconX = boxX + render.scale(20);
+                int iconY = startY + (boxHeight - iconSize)/2;
                 g2.drawImage(img, iconX, iconY, iconSize, iconSize, null);
             }
-
-            startY += height + spacing;
+            startY += boxHeight + spacing;
         }
         initButtons();
         drawButtons(g2);
-
-        if(BooleanService.canZoomIn) {
-            int zoomWidth  = render.scale(RenderContext.BASE_WIDTH/2);
-            int zoomHeight = render.scale(RenderContext.BASE_HEIGHT/2);
-            int zoomX = getCenterX(totalWidth, zoomWidth);
-            int zoomY = getCenterY(render.scale(RenderContext.BASE_HEIGHT), zoomHeight);
-
-            UIService.drawBox(g2, STROKE,
-                    zoomX, zoomY, zoomWidth, zoomHeight,
-                    ARC, true, false, 180);
-
-            int selectedIndex = keyUI.getSelectedIndexY();
-            int actualIndex = start + selectedIndex;
-
-            if(actualIndex >= 0 && actualIndex < list.size()) {
-                Achievement selected = list.get(actualIndex);
-                BufferedImage zoomImg = AchievementSprites.getSprite(selected);
-
-                if(zoomImg != null) {
-                    int padding = render.scale(40);
-                    int imgSize = Math.min(zoomWidth - padding*2,
-                            zoomHeight - padding*2);
-                    int imgX = zoomX + (zoomWidth - imgSize)/2;
-                    int imgY = zoomY + (zoomHeight - imgSize)/2;
-                    g2.drawImage(zoomImg, imgX, imgY, imgSize, imgSize, null);
-                }
-            }
-        }
     }
 
     private void initButtons() {

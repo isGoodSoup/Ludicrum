@@ -104,7 +104,7 @@ public class GameService {
         setGame(loaded.game());
         boardService.getBoard().setSize(loaded.game());
         boardService.prepBoard();
-        boardService.restoreSprites(loaded, service.getGuiService());
+        boardService.restoreSprites(loaded, service.getUIService());
         service.getPieceService().getPieces().clear();
         service.getPieceService().getPieces().addAll(loaded.pieces());
         service.getAchievementService().setUnlockedAchievements(loaded.achievements());

@@ -145,7 +145,7 @@ public class ServiceFactory {
         return mouseInput;
     }
 
-    public UIService getGuiService() {
+    public UIService getUIService() {
         return ui;
     }
 

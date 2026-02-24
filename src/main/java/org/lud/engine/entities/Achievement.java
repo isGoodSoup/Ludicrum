@@ -2,7 +2,6 @@ package org.lud.engine.entities;
 
 import org.lud.engine.enums.Achievements;
 import org.lud.engine.interfaces.Clickable;
-import org.lud.engine.service.BooleanService;
 import org.lud.engine.service.GameService;
 
 public class Achievement implements Clickable {
@@ -30,7 +29,5 @@ public class Achievement implements Clickable {
     }
 
     @Override
-    public void onClick(GameService gameService) {
-        BooleanService.canZoomIn ^= true;
-    }
+    public void onClick(GameService gameService) {}
 }

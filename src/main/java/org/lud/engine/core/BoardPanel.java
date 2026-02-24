@@ -102,10 +102,10 @@ public class BoardPanel extends JPanel implements Runnable {
                 service.getRender().getBoardRender().drawBoard(g2);
                 service.getRender().getMovesRender().drawMoves(g2);
                 if (GameService.getGame() != Games.SANDBOX && service.getTimerService().isActive()) {
-                    service.getGuiService().drawTimer(g2);
+                    service.getUIService().drawTimer(g2);
                     Piece selected = service.getMovesManager().getSelectedPiece();
                     if (selected != null) {
-                        service.getGuiService().drawTick(g2, BooleanService.isLegal);
+                        service.getUIService().drawTick(g2, BooleanService.isLegal);
                     }
                 }
                 service.getRender().getMenuRender().draw(g2);

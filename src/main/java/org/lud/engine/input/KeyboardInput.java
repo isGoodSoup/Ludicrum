@@ -236,7 +236,6 @@ public class KeyboardInput {
         switch (state) {
             case MENU -> activateMenu();
             case SETTINGS -> activateRules();
-            case ACHIEVEMENTS -> BooleanService.canZoomIn ^= true;
             case BOARD -> keyboardMove();
         }
     }

@@ -22,7 +22,6 @@ public class BooleanService {
     public static boolean canType;
     public static boolean canPlayFX;
     public static boolean canPlayMusic;
-    public static boolean canZoomIn;
     public static boolean cannotAutoCommit;
 
     public static boolean canDoMoves;
@@ -57,7 +56,6 @@ public class BooleanService {
         canAIPlay = true;
         canPromote = true;
         canShowTick = true;
-        canZoomIn = false;
         canResetTable = true;
         canStopwatch = true;
         canTheme = false;

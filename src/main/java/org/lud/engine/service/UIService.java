@@ -132,7 +132,7 @@ public class UIService {
 
     public static BufferedImage getImage(String path) throws IOException {
         InputStream stream = UIService.class.getResourceAsStream(path + ".png");
-        if (stream == null) {
+        if(stream == null) {
             log.error("Resource not found: {}.png", path);
             return null;
         }
@@ -237,10 +237,10 @@ public class UIService {
         int boxWidth = maxWidth + padding * 2;
         int boxHeight = totalTextHeight + padding * 2;
 
-        if (boxX + boxWidth > RenderContext.BASE_WIDTH) {
+        if(boxX + boxWidth > RenderContext.BASE_WIDTH) {
             boxX -= boxWidth;
         }
-        if (boxY + boxHeight > RenderContext.BASE_HEIGHT) {
+        if(boxY + boxHeight > RenderContext.BASE_HEIGHT) {
             boxY -= boxHeight;
         }
 
@@ -269,5 +269,36 @@ public class UIService {
     public void drawToggle(Graphics2D g2, BufferedImage image, int x, int y,
                            int width, int height) {
         g2.drawImage(image, x, y, width, height, null);
+    }
+
+    public static String[] wrapText(String text, int maxWidth, Graphics2D g2) {
+        if(text == null || text.isEmpty()) return new String[0];
+
+        FontMetrics fm = g2.getFontMetrics();
+        String[] words = text.split(" ");
+        StringBuilder line = new StringBuilder();
+        java.util.List<String> lines = new java.util.ArrayList<>();
+
+        for (String word : words) {
+            String testLine = line.isEmpty() ? word : line + " " + word;
+            int lineWidth = fm.stringWidth(testLine);
+            if(lineWidth > maxWidth) {
+                if(!line.isEmpty()) {
+                    lines.add(line.toString());
+                    line = new StringBuilder(word);
+                } else {
+                    // Single long word, force it
+                    lines.add(word);
+                    line = new StringBuilder();
+                }
+            } else {
+                line = new StringBuilder(testLine);
+            }
+        }
+
+        if(!line.isEmpty()) {
+            lines.add(line.toString());
+        }
+        return lines.toArray(new String[0]);
     }
 }
