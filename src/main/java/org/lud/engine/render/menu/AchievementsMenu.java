@@ -95,7 +95,7 @@ public class AchievementsMenu implements UI {
 
         int spacing = 25;
         int startY = headerY + spacing * 2;
-        int width = RenderContext.BASE_WIDTH / 2;
+        int width = RenderContext.BASE_WIDTH/2;
         int height = 100;
         x = getCenterX(totalWidth, width);
         boolean hasBackground = true;
@@ -152,15 +152,12 @@ public class AchievementsMenu implements UI {
 
             startY += height + spacing;
         }
-        if (!BooleanService.areButtonsInit || render.getMenuRender().getButtons().isEmpty()) {
-            initButtons();
-            BooleanService.areButtonsInit = true;
-        }
+        initButtons();
         drawButtons(g2);
 
         if(BooleanService.canZoomIn) {
-            int zoomWidth  = render.scale(RenderContext.BASE_WIDTH / 2);
-            int zoomHeight = render.scale(RenderContext.BASE_HEIGHT / 2);
+            int zoomWidth  = render.scale(RenderContext.BASE_WIDTH/2);
+            int zoomHeight = render.scale(RenderContext.BASE_HEIGHT/2);
             int zoomX = getCenterX(totalWidth, zoomWidth);
             int zoomY = getCenterY(render.scale(RenderContext.BASE_HEIGHT), zoomHeight);
 
@@ -188,66 +185,50 @@ public class AchievementsMenu implements UI {
     }
 
     private void initButtons() {
-        render.getMenuRender().clearButtons();
         int baseY = render.scale(RenderContext.BASE_HEIGHT - 115);
+        int x = 0, y = baseY;
         Map<Clickable, Rectangle> buttons = render.getMenuRender().getButtons();
 
-        if(backButton == null) {
-            int x = render.scale(50);
-            int y = baseY;
+        x = render.scale(50);
+        backButton = createButton(backButton, x, y, getSprites()[0].getWidth(), getSprites()[0].getHeight(),
+                () -> {
+                    log.debug("Back to Menu");
+                    gameService.setState(GameState.MENU);
+                    render.getMenuRender().onClose();
+                });
 
-            backButton = createButton(x, y, getSprites()[0].getWidth(), getSprites()[0].getHeight(),
-                    () -> {
-                        gameService.setState(GameState.MENU);
-                        render.getMenuRender().onClose();
-                    });
-        }
+        x = getTotalWidth()/2 - 80;
+        prevButton = createButton(prevButton, x, y, getSprites()[0].getWidth(), getSprites()[0].getHeight(),
+                () -> {
+                    log.debug("Previous page");
+                    int page = keyUI.getCurrentPage() - 1;
+                    if (page < 0) {
+                        page = 0;
+                    }
+                    keyUI.setCurrentPage(page);
+                });
 
-        buttons.put(backButton, new Rectangle(backButton.getX(), backButton.getY(),
-                backButton.getWidth(), backButton.getHeight()));
-
-        if(prevButton == null) {
-            int x = getTotalWidth()/2 - 80;
-            int y = baseY;
-
-            prevButton = createButton(x, y, getSprites()[0].getWidth(), getSprites()[0].getHeight(),
-                    () -> {
-                        int page = keyUI.getCurrentPage() - 1;
-                        if (page < 0) {
-                            page = 0;
-                        }
-                        keyUI.setCurrentPage(page);
-                    });
-        }
-
-        buttons.put(prevButton, new Rectangle(prevButton.getX(), prevButton.getY(),
-                prevButton.getWidth(), prevButton.getHeight()));
-
-        if(nextButton == null) {
-            int x = getTotalWidth()/2;
-            int y = baseY;
-
-            nextButton = createButton(x, y, getSprites()[0].getWidth(), getSprites()[0].getHeight(),
-                    () -> {
-                        int totalPages = (achievementService.init().size()
-                                        + KeyboardInput.getITEMS_PER_PAGE() - 1)
-                                        / KeyboardInput.getITEMS_PER_PAGE() - 1;
-                        int page = keyUI.getCurrentPage() + 1;
-                        if(page > totalPages) {
-                            page = totalPages;
-                        }
-                        keyUI.setCurrentPage(page);
-                    });
-        }
-
-        buttons.put(nextButton, new Rectangle(nextButton.getX(), nextButton.getY(),
-                nextButton.getWidth(), nextButton.getHeight()));
+        x = getTotalWidth()/2;
+        nextButton = createButton(nextButton, x, y, getSprites()[0].getWidth(), getSprites()[0].getHeight(),
+                () -> {
+                    log.debug("Next page");
+                    int totalPages = (achievementService.init().size()
+                            + KeyboardInput.getITEMS_PER_PAGE() - 1)
+                            /KeyboardInput.getITEMS_PER_PAGE() - 1;
+                    int page = keyUI.getCurrentPage() + 1;
+                    if(page > totalPages) {
+                        page = totalPages;
+                    }
+                    keyUI.setCurrentPage(page);
+                });
     }
 
-    private Button createButton(int x, int y, int width, int height, Runnable action) {
-        Button b = new Button(x, y, width, height, action);
-        render.getMenuRender().getButtons().put(b, new Rectangle(x, y, width, height));
-        return b;
+    private Button createButton(Button button, int x, int y, int width, int height, Runnable action) {
+        if(button == null) {
+            button = new Button(x, y, width, height, action);
+        }
+        render.getMenuRender().addButton(button, new Rectangle(x, y, width, height));
+        return button;
     }
 
     private void drawButtons(Graphics2D g2) {

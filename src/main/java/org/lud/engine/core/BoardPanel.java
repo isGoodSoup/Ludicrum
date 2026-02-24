@@ -38,6 +38,7 @@ public class BoardPanel extends JPanel implements Runnable {
 
 	public BoardPanel(GameFrame gameFrame) {
         super();
+        log.info("Opening new session");
         this.gameFrame = gameFrame;
         this.render = new RenderContext();
         this.intro = new Intro();
@@ -56,7 +57,6 @@ public class BoardPanel extends JPanel implements Runnable {
         setFocusTraversalKeysEnabled(false);
         setFocusable(true);
         isFinished = false;
-        log.info("Opening new session");
 	}
 
     public void launch() {

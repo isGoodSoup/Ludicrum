@@ -2,7 +2,6 @@ package org.lud.engine.input;
 
 import org.lud.engine.entities.Board;
 import org.lud.engine.entities.Piece;
-import org.lud.engine.enums.GameState;
 import org.lud.engine.enums.Games;
 import org.lud.engine.interfaces.Clickable;
 import org.lud.engine.render.RenderContext;
@@ -12,7 +11,7 @@ import org.lud.engine.service.PieceService;
 import org.lud.engine.service.ServiceFactory;
 
 import java.awt.*;
-import java.util.Map;
+import java.util.Set;
 
 public class MouseInput {
     private final Mouse mouse;
@@ -60,15 +59,11 @@ public class MouseInput {
     }
 
     public void update() {
-        Map<Clickable, Rectangle> buttons = service.getRender().getMenuRender().getButtons();
         switch(service.getGameService().getState()) {
-            case MENU, SETTINGS -> {
-                updateMenus(buttons);
-                updateAchievements(buttons);
-            }
+            case MENU, SETTINGS, ACHIEVEMENTS -> updateMenus();
             case BOARD -> {
                 updateBoard();
-                updateMenus(buttons);
+                updateMenus();
             }
         }
     }
@@ -79,15 +74,18 @@ public class MouseInput {
         dropPiece();
     }
 
-    private void updateMenus(Map<Clickable, Rectangle> buttons) {
+    private void updateMenus() {
         boolean wasMousePressed = mouse.wasPressed();
-        for(Map.Entry<Clickable, Rectangle> entry : buttons.entrySet()) {
-            boolean hover = entry.getValue().contains(mouse.getX(), mouse.getY());
+        Set<Clickable> buttons = service.getRender().getMenuRender().getActiveButtons();
+        for(Clickable button : Set.copyOf(buttons)) {
+            Rectangle hitbox = service.getRender().getMenuRender().getButtons().get(button);
+            if(hitbox == null) continue;
+            boolean hover = hitbox.contains(mouse.getX(), mouse.getY());
             if(hover && wasMousePressed && !wasPressedLastFrame) {
                 service.getSound().playFX(0);
-                entry.getKey().onClick(service.getGameService());
+                button.onClick(service.getGameService());
                 isClicking = true;
-                click = entry.getKey();
+                click = button;
             }
         }
 
@@ -95,18 +93,6 @@ public class MouseInput {
         if(!wasMousePressed) {
             isClicking = false;
             click = null;
-        }
-    }
-
-    private void updateAchievements(Map<Clickable, Rectangle> buttons) {
-        for(Map.Entry<Clickable, Rectangle> entry : buttons.entrySet()) {
-            boolean hover = entry.getValue().contains(mouse.getX(), mouse.getY());
-            if(service.getGameService().getState() == GameState.ACHIEVEMENTS) {
-                if(service.getRender().isHovered(entry.getKey()) && mouse.wasPressed()) {
-                    entry.getKey().onClick(service.getGameService());
-                    service.getSound().playFX(0);
-                }
-            }
         }
     }
 

@@ -137,8 +137,10 @@ public class MainMenu implements UI {
                 x -= width; y -= height/2;
 
                 if(playButton == null) {
-                    playButton = createButton(x, y, width, height, () ->
-                            option.run(gameService));
+                    playButton = createButton(x, y, width, height, () -> {
+                        option.run(gameService);
+                        render.getMenuRender().deactivateAll();
+                    });
                 }
 
                 Color textColor = render.isHovered(playButton)
@@ -197,8 +199,10 @@ public class MainMenu implements UI {
                 x -= 2;
 
                 if(settingsButton == null) {
-                    settingsButton = createButton(x, y, width, height, () ->
-                            option.run(gameService));
+                    settingsButton = createButton(x, y, width, height, () -> {
+                        option.run(gameService);
+                        render.getMenuRender().onClose();
+                    });
                 }
 
                 BufferedImage img = render.isHovered(settingsButton)
@@ -221,8 +225,10 @@ public class MainMenu implements UI {
                 x -= 2; y -= height;
 
                 if(achievementsButton == null) {
-                    achievementsButton = createButton(x, y, width, height, () ->
-                            option.run(gameService));
+                    achievementsButton = createButton(x, y, width, height, () -> {
+                        option.run(gameService);
+                        render.getMenuRender().onClose();
+                    });
                 }
 
                 BufferedImage img = render.isHovered(achievementsButton)
@@ -316,7 +322,7 @@ public class MainMenu implements UI {
 
     private Button createButton(int x, int y, int w, int h, Runnable action) {
         Button b = new Button(x, y, w, h, action);
-        render.getMenuRender().getButtons().put(b, new Rectangle(x, y, w, h));
+        render.getMenuRender().addButton(b, new Rectangle(x, y, w, h));
         return b;
     }
 

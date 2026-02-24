@@ -5,7 +5,6 @@ import org.lud.engine.entities.ButtonSprite;
 import org.lud.engine.enums.*;
 import org.lud.engine.interfaces.Clickable;
 import org.lud.engine.interfaces.UI;
-import org.lud.engine.service.BooleanService;
 import org.lud.engine.service.GameService;
 import org.lud.engine.service.UIService;
 import org.slf4j.Logger;
@@ -30,6 +29,7 @@ public class MenuRender {
     private final Map<Clickable, Rectangle> buttons;
     private final Map<Button, Boolean> buttonsClicked;
     private final List<UI> menus;
+    private final Set<Clickable> activeButtons;
     private Map<BufferedImage, BufferedImage> cache;
 
     private transient BufferedImage TOGGLE_ON, TOGGLE_OFF, TOGGLE_ON_HIGHLIGHTED, TOGGLE_OFF_HIGHLIGHTED;
@@ -48,6 +48,7 @@ public class MenuRender {
         this.buttons = new HashMap<>();
         this.buttonsClicked = new HashMap<>();
         this.buttonRegistry = new HashMap<>();
+        this.activeButtons = new HashSet<>();
         this.menus = new ArrayList<>();
         Collections.addAll(this.menus, menus);
         this.render = render;
@@ -56,6 +57,10 @@ public class MenuRender {
 
     public Map<Clickable, Rectangle> getButtons() {
         return buttons;
+    }
+
+    public Set<Clickable> getActiveButtons() {
+        return activeButtons;
     }
 
     public List<UI> getMenus() {
@@ -183,8 +188,16 @@ public class MenuRender {
         buttons.clear();
     }
 
+    public void addButton(Clickable button, Rectangle rect) {
+        buttons.put(button, rect);
+        activeButtons.add(button);
+    }
+
+    public void deactivateAll() {
+        activeButtons.clear();
+    }
+
     public void onClose() {
-        clearButtons();
-        BooleanService.areButtonsInit = false;
+        deactivateAll();
     }
 }

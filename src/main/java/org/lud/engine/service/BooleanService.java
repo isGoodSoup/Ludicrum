@@ -41,8 +41,6 @@ public class BooleanService {
     public static boolean canToggleHelp;
     public static boolean canDoAuto;
 
-    public static boolean areButtonsInit;
-
     private static final Random random = new Random();
 
     public static void defaultToggles() {
