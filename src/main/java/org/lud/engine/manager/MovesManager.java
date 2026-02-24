@@ -195,7 +195,7 @@ public class MovesManager {
         }
 
         if(BooleanService.canDoAuto && !BooleanService.cannotAutoCommit) {
-            commitMove();
+            commitMove(piece);
         }
 
         if(isAITurn()) {
@@ -204,36 +204,6 @@ public class MovesManager {
 
         if(isHumanTurn(service.getGameService().getCurrentTurn())) {
             BooleanService.isTurnLocked = false;
-        }
-
-        if(GameService.getGame() == Games.CHESS) {
-            if(isCheckmate()) {
-                eventBus.fire(new CheckmateEvent(piece,
-                        service.getPieceService().getKing(Turn.DARK)));
-                eventBus.fire(new TotalMovesEvent(piece));
-            }
-
-            if(isCheckmate() && BooleanService.canDoHard) {
-                eventBus.fire(new HardEvent(piece));
-            }
-
-            if(isStalemate()) {
-                eventBus.fire(new StalemateEvent(piece));
-            }
-        }
-
-        if(GameService.getGame() == Games.CHECKERS) {
-            if(isVictory()) {
-                eventBus.fire(new VictoryEvent(piece));
-            }
-
-            if(isVictory() && noLoses()) {
-                eventBus.fire(new StrategistEvent(piece, piece.getColor()));
-            }
-
-            if(isStalemate()) {
-                eventBus.fire(new StalemateEvent(piece));
-            }
         }
     }
 
@@ -269,12 +239,13 @@ public class MovesManager {
             }
 
             if(!hasEscapeMoves) {
+                log.debug("Checkmate");
                 BooleanService.isCheckmate = true;
                 service.getTimerService().stop();
                 BooleanService.canPlayMusic = false;
                 service.getSound().playFX(6);
-                Timer timer = new Timer(30000, (e)
-                        -> service.getGameService().setState(GameState.CHECKMATE));
+                new Timer(3000, (e)
+                        -> service.getGameService().setState(GameState.CHECKMATE)).start();
                 return true;
             }
         }
@@ -288,9 +259,10 @@ public class MovesManager {
                 kingCounter++;
                 if(kingCounter == 2 && service.getPieceService().getPieces().size() == 2) {
                     BooleanService.isStalemate = true;
+                    log.debug("Stalemate");
                     service.getTimerService().stop();
+                    BooleanService.canPlayMusic = false;
                     service.getGameService().setState(GameState.STALEMATE);
-                    log.info("Stalemate. Both sides hold just the King");
                 }
             }
         }
@@ -316,12 +288,13 @@ public class MovesManager {
             }
         }
         if(!hasLegalMove) {
+            log.debug("Victory");
             BooleanService.isCheckmate = true;
             service.getTimerService().stop();
             BooleanService.canPlayMusic = false;
             service.getSound().playFX(6);
-            Timer timer = new Timer(30000, (e)
-                    -> service.getGameService().setState(GameState.VICTORY));
+            new Timer(3000, (e)
+                    -> service.getGameService().setState(GameState.VICTORY)).start();
             return true;
         }
         service.getAchievementService().setOpponentPieces(opponentPieces);
@@ -435,10 +408,37 @@ public class MovesManager {
         return service.getAchievementService().getPiecesCounter() == 12;
     }
 
-    public void commitMove() {
+    public void commitMove(Piece piece) {
         if(isCommiting) { return; }
         isCommiting = true;
         BooleanService.cannotAutoCommit = true;
+        service.getSound().playFX(0);
+
+        if(GameService.getGame() == Games.CHESS) {
+            if(isCheckmate()) {
+                eventBus.fire(new CheckmateEvent(piece,
+                        service.getPieceService().getKing(piece.getColor())));
+                eventBus.fire(new TotalMovesEvent(piece));
+
+                if(BooleanService.canDoHard) {
+                    eventBus.fire(new HardEvent(piece));
+                }
+            } else if(isStalemate()) {
+                eventBus.fire(new StalemateEvent(piece));
+            }
+        }
+
+        if(GameService.getGame() == Games.CHECKERS) {
+            if(isVictory()) {
+                eventBus.fire(new VictoryEvent(piece));
+            }
+            if(isVictory() && noLoses()) {
+                eventBus.fire(new StrategistEvent(piece, piece.getColor()));
+            }
+            if(isStalemate()) {
+                eventBus.fire(new StalemateEvent(piece));
+            }
+        }
 
         Turn.nextTurn(service.getGameService());
         BooleanService.isTurnLocked = true;
@@ -446,8 +446,6 @@ public class MovesManager {
         if(service.getGameService().getCurrentTurn() == Turn.DARK) {
             service.getModelService().triggerAIMove();
         }
-
-        service.getSound().playFX(0);
         isCommiting = false;
         BooleanService.cannotAutoCommit = false;
     }
