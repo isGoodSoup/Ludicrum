@@ -18,7 +18,7 @@ public class ToastAnimation implements Animation {
     private static final double SLIDE_TIME = 0.3;
     private static final double STAY_TIME = 2.0;
     private static final int SLIDE_DISTANCE = 400;
-    private static final int WIDTH = 800;
+    private static final int WIDTH = 1000;
     private static final int HEIGHT = 150;
     private static final int ARC = 25;
     private int baseY;
