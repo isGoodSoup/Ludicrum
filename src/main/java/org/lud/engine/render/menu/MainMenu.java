@@ -99,7 +99,7 @@ public class MainMenu implements UI {
         int x = getCenterX(getTotalWidth(), width);
         int y = render.getOffsetY() + render.scale(RenderContext.BASE_HEIGHT) / 3;
         g2.drawImage(img, x, y, width, height, null);
-        g2.setFont(UIService.getFont(UIService.fontSize()[2]));
+        g2.setFont(UIService.getFont(UIService.fontSize()[3]));
         g2.setColor(Color.YELLOW);
         g2.drawString(Version.LATEST.toUpperCase(), x + width
                 - g2.getFontMetrics().stringWidth(Version.LATEST.toUpperCase()), y + height);

@@ -69,10 +69,6 @@ public class AchievementsMenu implements UI {
 
     @Override
     public void drawMenu(Graphics2D g2) {
-        if (!BooleanService.haveButtonsInit || render.getMenuRender().getButtons().isEmpty()) {
-            initButtons();
-            BooleanService.haveButtonsInit = true;
-        }
         draw(g2);
     }
 
@@ -155,6 +151,10 @@ public class AchievementsMenu implements UI {
             }
 
             startY += height + spacing;
+        }
+        if (!BooleanService.areButtonsInit || render.getMenuRender().getButtons().isEmpty()) {
+            initButtons();
+            BooleanService.areButtonsInit = true;
         }
         drawButtons(g2);
 

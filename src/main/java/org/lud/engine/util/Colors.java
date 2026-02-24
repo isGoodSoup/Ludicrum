@@ -3,12 +3,15 @@ package org.lud.engine.util;
 import org.lud.engine.enums.Theme;
 import org.lud.engine.service.PieceService;
 import org.lud.engine.service.ServiceFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.awt.*;
 
 public class Colors {
     public static final Color BUTTON = new Color(198, 114, 11);
     public static final Color SETTINGS = new Color(0 ,0 , 0, 180);
+    private static final Logger log = LoggerFactory.getLogger(Colors.class);
     private static Theme currentTheme = Theme.DEFAULT;
     private static ServiceFactory service;
 
@@ -34,6 +37,7 @@ public class Colors {
         setTheme(themes[nextIndex]);
         service.getRender().getMenuRender().reloadButtons();
         PieceService.clearCache();
+        log.debug("Theme changed to {}", Colors.getTheme());
     }
 
     public static void previousTheme() {

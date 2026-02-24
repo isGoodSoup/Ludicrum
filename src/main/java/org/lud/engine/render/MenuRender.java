@@ -185,6 +185,6 @@ public class MenuRender {
 
     public void onClose() {
         clearButtons();
-        BooleanService.haveButtonsInit = false;
+        BooleanService.areButtonsInit = false;
     }
 }
