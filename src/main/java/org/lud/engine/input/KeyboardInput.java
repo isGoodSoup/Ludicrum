@@ -1,6 +1,7 @@
 package org.lud.engine.input;
 
 import org.lud.engine.core.GameFrame;
+import org.lud.engine.entities.Achievement;
 import org.lud.engine.entities.Piece;
 import org.lud.engine.enums.*;
 import org.lud.engine.events.ToggleEvent;
@@ -28,7 +29,6 @@ public class KeyboardInput {
     private long lastLeftTime = 0;
     private long lastRightTime = 0;
     private final long repeatDelay = 150;
-    private static final int ITEMS_PER_PAGE = 6;
 
     private ServiceFactory service;
     private GameFrame gameFrame;
@@ -95,10 +95,6 @@ public class KeyboardInput {
         this.currentPage = currentPage;
     }
 
-    public static int getITEMS_PER_PAGE() {
-        return ITEMS_PER_PAGE;
-    }
-
     public BoardService getBoardService() {
         return boardService;
     }
@@ -127,7 +123,7 @@ public class KeyboardInput {
 
         switch(service.getGameService().getState()) {
             case MENU -> menuInput(keyboard, now);
-            case SETTINGS -> rulesInput(keyboard, now);
+            case SETTINGS -> settingsInput(keyboard, now);
             case ACHIEVEMENTS -> achievementsInput(keyboard, now);
             case BOARD -> boardInput(keyboard, now, move);
         }
@@ -213,41 +209,50 @@ public class KeyboardInput {
         updateKeyboardHover();
     }
 
-    private <T> void moveUp(List<T> items) {
+    private <T> void moveUp(List<T> items, int itemsPerPage) {
         if(items.isEmpty()) return;
-        int start = currentPage * ITEMS_PER_PAGE;
-        int end = Math.min(start + ITEMS_PER_PAGE, items.size());
+        int start = currentPage * itemsPerPage;
+        int end = Math.min(start + itemsPerPage, items.size());
 
         selectedIndexY--;
-        if(selectedIndexY < start) selectedIndexY = end - 1;
+        if(selectedIndexY < start) { selectedIndexY = end - 1; }
     }
 
-    private <T> void moveDown(List<T> items) {
+    private <T> void moveDown(List<T> items, int itemsPerPage) {
         if(items.isEmpty()) return;
-        int start = currentPage * ITEMS_PER_PAGE;
-        int end = Math.min(start + ITEMS_PER_PAGE, items.size());
+        int start = currentPage * itemsPerPage;
+        int end = Math.min(start + itemsPerPage, items.size());
 
         selectedIndexY++;
-        if(selectedIndexY >= end) selectedIndexY = start;
+        if(selectedIndexY >= end) { selectedIndexY = start; }
     }
 
-    public void previousPage() {
+    private void capIndex(int itemsPerPage) {
+        int start = currentPage * itemsPerPage;
+        int end = Math.min(start + itemsPerPage, MenuRender.SETTINGS_MENU.length);
+        if(selectedIndexY < start) selectedIndexY = start;
+        if(selectedIndexY >= end) selectedIndexY = end - 1;
+    }
+
+    public void previousPage(int itemsPerPage) {
         currentPage = Math.max(0, currentPage - 1);
+        capIndex(itemsPerPage);
     }
 
-    public void nextPage(int totalItems) {
-        int totalPages = (totalItems + ITEMS_PER_PAGE - 1) / ITEMS_PER_PAGE;
+    public void nextPage(int totalItems, int itemsPerPage) {
+        int totalPages = (totalItems + itemsPerPage - 1)/itemsPerPage;
         if(currentPage < totalPages - 1) currentPage++;
+        capIndex(itemsPerPage);
     }
 
-    public void nextPage(Object[] options) {
-        nextPage(options.length);
+    public void nextPage(Object[] options, int itemsPerPage) {
+        nextPage(options.length, itemsPerPage);
     }
 
     public void activate(GameState state) {
         switch (state) {
             case MENU -> activateMenu();
-            case SETTINGS -> activateRules();
+            case SETTINGS -> activateSettings();
             case BOARD -> keyboardMove();
         }
     }
@@ -259,8 +264,8 @@ public class KeyboardInput {
         }
     }
 
-    private void activateRules() {
-        int absIndex = currentPage * ITEMS_PER_PAGE + selectedIndexY;
+    private void activateSettings() {
+        int absIndex = currentPage * 8 + selectedIndexY;
         if(absIndex < MenuRender.SETTINGS_MENU.length) {
             MenuRender.SETTINGS_MENU[absIndex].toggle();
         }
@@ -310,8 +315,8 @@ public class KeyboardInput {
             activate(GameState.MENU);
             service.getSound().playFX(3);
         }
-        repeatKeyCheck(keyboard.wasUpPressed(), () -> moveUp(Arrays.asList(MenuRender.MENU)), now, lastUpTime, () -> lastUpTime = now);
-        repeatKeyCheck(keyboard.wasDownPressed(), () -> moveDown(Arrays.asList(MenuRender.MENU)), now, lastDownTime, () -> lastDownTime = now);
+        repeatKeyCheck(keyboard.wasUpPressed(), () -> moveUp(Arrays.asList(MenuRender.MENU), 8), now, lastUpTime, () -> lastUpTime = now);
+        repeatKeyCheck(keyboard.wasDownPressed(), () -> moveDown(Arrays.asList(MenuRender.MENU), 8), now, lastDownTime, () -> lastDownTime = now);
 
         if(keyboard.isComboPressed(KeyEvent.VK_CONTROL, KeyEvent.VK_G)) {
             service.getGameService().nextGame();
@@ -320,25 +325,23 @@ public class KeyboardInput {
         }
     }
 
-    private void rulesInput(Keyboard keyboard, long now) {
+    private void settingsInput(Keyboard keyboard, long now) {
         if(keyboard.wasSelectPressed()) { activate(GameState.SETTINGS); service.getSound().playFX(0); }
 
-        repeatKeyCheck(keyboard.wasUpPressed(), () -> moveUp(Arrays.asList(MenuRender.SETTINGS_MENU)), now, lastUpTime, () -> lastUpTime = now);
-        repeatKeyCheck(keyboard.wasDownPressed(), () -> moveDown(Arrays.asList(MenuRender.SETTINGS_MENU)), now, lastDownTime,  () -> lastDownTime = now);
+        repeatKeyCheck(keyboard.wasUpPressed(), () -> moveUp(Arrays.asList(MenuRender.SETTINGS_MENU), 8), now, lastUpTime, () -> lastUpTime = now);
+        repeatKeyCheck(keyboard.wasDownPressed(), () -> moveDown(Arrays.asList(MenuRender.SETTINGS_MENU), 8), now, lastDownTime,  () -> lastDownTime = now);
 
-        if(keyboard.wasLeftPressed()) { previousPage(); service.getSound().playFX(2); lastLeftTime = now; }
-        if(keyboard.wasRightPressed()) { nextPage(MenuRender.SETTINGS_MENU); service.getSound().playFX(2); lastRightTime = now; }
+        if(keyboard.wasLeftPressed()) { previousPage(8); service.getSound().playFX(2); lastLeftTime = now; }
+        if(keyboard.wasRightPressed()) { nextPage(MenuRender.SETTINGS_MENU, 8); service.getSound().playFX(2); lastRightTime = now; }
     }
 
     private void achievementsInput(Keyboard keyboard, long now) {
         if(keyboard.wasSelectPressed()) { activate(GameState.ACHIEVEMENTS); service.getSound().playFX(3); }
-
-        List<?> achievements = service.getAchievementService().getAchievementList();
-        repeatKeyCheck(keyboard.wasUpPressed(), () -> moveUp(achievements), now, lastUpTime, () -> lastUpTime = now);
-        repeatKeyCheck(keyboard.wasDownPressed(), () -> moveDown(achievements), now, lastDownTime, () -> lastDownTime = now);
-
-        if(keyboard.wasLeftPressed()) { previousPage(); selectedIndexY = 0; service.getSound().playFX(2); lastLeftTime = now; }
-        if(keyboard.wasRightPressed()) { nextPage(achievements.size()); selectedIndexY = 0; service.getSound().playFX(2); lastRightTime = now; }
+        List<Achievement> achievements = service.getAchievementService().getAchievementList();
+        repeatKeyCheck(keyboard.wasUpPressed(), () -> moveUp(achievements, 6), now, lastUpTime, () -> lastUpTime = now);
+        repeatKeyCheck(keyboard.wasDownPressed(), () -> moveDown(achievements, 6), now, lastDownTime, () -> lastDownTime = now);
+        if(keyboard.wasLeftPressed()) { previousPage(6); selectedIndexY = 0; service.getSound().playFX(2); lastLeftTime = now; }
+        if(keyboard.wasRightPressed()) { nextPage(achievements.size(), 6); selectedIndexY = 0; service.getSound().playFX(2); lastRightTime = now; }
     }
 
     @SuppressWarnings("StatementWithEmptyBody")

@@ -5,7 +5,6 @@ import org.lud.engine.entities.ButtonSprite;
 import org.lud.engine.enums.GameSettings;
 import org.lud.engine.enums.GameState;
 import org.lud.engine.enums.Theme;
-import org.lud.engine.util.Colors;
 import org.lud.engine.input.KeyboardInput;
 import org.lud.engine.input.Mouse;
 import org.lud.engine.input.MouseInput;
@@ -18,6 +17,7 @@ import org.lud.engine.render.RenderContext;
 import org.lud.engine.service.GameService;
 import org.lud.engine.service.Localization;
 import org.lud.engine.service.UIService;
+import org.lud.engine.util.Colors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -158,12 +158,10 @@ public class SettingsMenu implements UI {
             );
 
             render.getMenuRender().addButton(option, toggleHitbox);
-            boolean isEnabled = option.get();
-            boolean isHovered = toggleHitbox.contains(
-                    mouse.getX(), mouse.getY());
 
+            boolean isEnabled = option.get();
             BufferedImage toggleImage = drawToggle(
-                    option, isEnabled, render.isSelected(option), isHovered);
+                    option, isEnabled, render.isSelected(option), render.isHovered(option));
 
             uiService.drawToggle(g2,
                     toggleImage,
@@ -230,9 +228,7 @@ public class SettingsMenu implements UI {
         x = getTotalWidth()/2;
         nextButton = createButton(nextButton, x, y, getSprites()[0].getWidth(), getSprites()[0].getHeight(),
                 () -> {
-                    int totalPages = (MenuRender.SETTINGS_MENU.length + KeyboardInput.getITEMS_PER_PAGE() - 1)
-                            / KeyboardInput.getITEMS_PER_PAGE() - 1;
-
+                    int totalPages = MenuRender.SETTINGS_MENU.length;
                     int page = keyUI.getCurrentPage() + 1;
                     if(page > totalPages) {
                         page = totalPages;

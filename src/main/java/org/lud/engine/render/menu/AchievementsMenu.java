@@ -32,6 +32,7 @@ public class AchievementsMenu implements UI {
     private static final int ARC = 32;
     private static final int STROKE = 6;
     private static final int OPTION_Y = 160;
+    private static final int ITEMS_PER_PAGE = 6;
     private static final Logger log = LoggerFactory.getLogger(AchievementsMenu.class);
 
     private final Map<Clickable, Rectangle> achievementBoxes;
@@ -147,7 +148,7 @@ public class AchievementsMenu implements UI {
         UIService.drawBox(g2, STROKE, descX, descY, descWidth, descHeight,
                 ARC, hasBackground, false, 180);
 
-        int itemsPerPage = KeyboardInput.getITEMS_PER_PAGE();
+        int itemsPerPage = ITEMS_PER_PAGE;
         int start = keyUI.getCurrentPage() * itemsPerPage;
         int end = Math.min(start + itemsPerPage, total.size());
 
@@ -242,9 +243,7 @@ public class AchievementsMenu implements UI {
         nextButton = createButton(nextButton, x, y, getSprites()[0].getWidth(), getSprites()[0].getHeight(),
                 () -> {
                     log.debug("Next page");
-                    int totalPages = (achievementService.getAchievementList().size()
-                            + KeyboardInput.getITEMS_PER_PAGE() - 1)
-                            /KeyboardInput.getITEMS_PER_PAGE() - 1;
+                    int totalPages = achievementService.getAchievementList().size();
                     int page = keyUI.getCurrentPage() + 1;
                     if(page > totalPages) {
                         page = totalPages;

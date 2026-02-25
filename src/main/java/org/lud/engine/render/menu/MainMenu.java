@@ -155,7 +155,6 @@ public class MainMenu implements UI {
         int startY = render.scale(RenderContext.BASE_Y);
         int x = startX;
         int y = startY;
-        int spacing = 2;
 
         for(GameMenu option : options) {
             BufferedImage baseImg = getSprites(option.name().toLowerCase())[0];
@@ -176,7 +175,7 @@ public class MainMenu implements UI {
                             : render.getMenuRender().getColorblindSprite(baseImg);
                     drawButtonLayers(g2, smallYellowButton, playButton, x, y);
                     g2.drawImage(img, x ,y, null);
-                    x += width + spacing;
+                    x += width;
 
                     if(render.isHovered(playButton)) {
                         drawTooltip(g2, showTooltip(option));
@@ -192,7 +191,7 @@ public class MainMenu implements UI {
                             : render.getMenuRender().getColorblindSprite(baseImg);
                     drawButtonLayers(g2, smallButton, gameButton, x, y);
                     g2.drawImage(img, x ,y, null);
-                    x += width + spacing;
+                    x += width;
 
                     if(render.isHovered(gameButton)) {
                         drawTooltip(g2, showTooltip(option));
@@ -210,7 +209,7 @@ public class MainMenu implements UI {
                             : render.getMenuRender().getColorblindSprite(baseImg);
                     drawButtonLayers(g2, smallButton, settingsButton, x, y);
                     g2.drawImage(img, x ,y, null);
-                    x += width + spacing;
+                    x += width;
 
                     if(render.isHovered(settingsButton)) {
                         drawTooltip(g2, showTooltip(option));
@@ -228,7 +227,7 @@ public class MainMenu implements UI {
                             : render.getMenuRender().getColorblindSprite(baseImg);
                     drawButtonLayers(g2, smallButton, achievementsButton, x, y);
                     g2.drawImage(img, x, y, null);
-                    x += width + spacing;
+                    x += width;
 
                     if(render.isHovered(achievementsButton)) {
                         drawTooltip(g2, showTooltip(option));
@@ -244,7 +243,7 @@ public class MainMenu implements UI {
                             : render.getMenuRender().getColorblindSprite(baseImg);
                     drawButtonLayers(g2, smallButton, langButton, x, y);
                     g2.drawImage(img, x, y, null);
-                    x += width + spacing;
+                    x += width;
 
                     if(render.isHovered(langButton)) {
                         drawTooltip(g2, showTooltip(option));
@@ -260,7 +259,7 @@ public class MainMenu implements UI {
                             : render.getMenuRender().getColorblindSprite(baseImg);
                     drawButtonLayers(g2, smallButton, exitButton, x, y);
                     g2.drawImage(img, x, y, null);
-                    x += width + spacing;
+                    x += width;
 
                     if(render.isHovered(exitButton)) {
                         drawTooltip(g2, showTooltip(option));
@@ -276,7 +275,7 @@ public class MainMenu implements UI {
                                 : render.getMenuRender().getColorblindSprite(baseImg);
                         drawButtonLayers(g2, smallButton, themeButton, x, y);
                         g2.drawImage(img, x, y, null);
-                        x += width + spacing;
+                        x += width;
 
                         if(render.isHovered(themeButton)) {
                             drawTooltip(g2, showTooltip(option));
