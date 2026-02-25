@@ -355,9 +355,6 @@ public class KeyboardInput {
         if(keyboard.isComboPressed(KeyEvent.VK_CONTROL, KeyEvent.VK_H)) {
             service.getRender().getMovesRender().toggleMoves();
             service.getSound().playFX(3);
-        } else if(keyboard.wasHPressed()) {
-            BooleanService.canToggleCursor ^= true;
-            service.getSound().playFX(3);
         }
         if(service.getGameService().getState() == GameState.BOARD) {
             if(keyboard.isComboPressed(KeyEvent.VK_CONTROL, KeyEvent.VK_R)) {

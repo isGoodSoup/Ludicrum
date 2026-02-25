@@ -41,7 +41,6 @@ public class BooleanService {
     public static boolean canTheme;
     public static boolean canShowTick;
     public static boolean canToggleHelp;
-    public static boolean canToggleCursor;
     public static boolean canDoAuto;
     public static boolean canAnimateLogo;
 
@@ -71,7 +70,6 @@ public class BooleanService {
         canType = false;
         canToggleHelp = false;
         isDragging = false;
-        canToggleCursor = true;
         canAnimateLogo = true;
     }
 
