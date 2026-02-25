@@ -6,7 +6,9 @@ import org.lud.engine.input.MouseInput;
 import org.lud.engine.interfaces.Clickable;
 import org.lud.engine.interfaces.UI;
 import org.lud.engine.manager.MovesManager;
+import org.lud.engine.render.menu.VolumeMenu;
 import org.lud.engine.service.BooleanService;
+import org.lud.engine.sound.Sound;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -15,6 +17,7 @@ import java.util.List;
 public class RenderContext {
     public static final int BASE_WIDTH = 1920;
     public static final int BASE_HEIGHT = 1080;
+    public static final int BASE_Y = BASE_HEIGHT - 115;
     private final List<UI> menus;
     private double scale = 1.0;
     private int offsetX = 0;
@@ -24,11 +27,13 @@ public class RenderContext {
     private MenuRender menuRender;
     private MovesRender movesRender;
     private ControlsRender controlsRender;
+    private VolumeMenu volumeMenu;
 
     private MovesManager movesManager;
     private KeyboardInput keyUI;
     private Mouse mouse;
     private MouseInput mouseInput;
+    private Sound sound;
 
     public RenderContext() {
         this.boardRender = new BoardRender(this);
@@ -76,6 +81,14 @@ public class RenderContext {
 
     public void setControlsRender(ControlsRender controlsRender) {
         this.controlsRender = controlsRender;
+    }
+
+    public Sound getSound() {
+        return sound;
+    }
+
+    public void setSound(Sound sound) {
+        this.sound = sound;
     }
 
     public Mouse getMouse() {

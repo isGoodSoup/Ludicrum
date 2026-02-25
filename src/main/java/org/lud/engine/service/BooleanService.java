@@ -22,6 +22,7 @@ public class BooleanService {
     public static boolean canType;
     public static boolean canPlayFX;
     public static boolean canPlayMusic;
+    public static boolean isMovingVolume;
     public static boolean cannotAutoCommit;
 
     public static boolean canUseMouse;
@@ -54,6 +55,7 @@ public class BooleanService {
         isTurnLocked = false;
         canDoAuto = true;
         cannotAutoCommit = false;
+        isMovingVolume = false;
         canPlayFX = true;
         canPlayMusic = false;
         canUndoMoves = true;

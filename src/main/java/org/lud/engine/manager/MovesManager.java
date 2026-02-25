@@ -245,7 +245,7 @@ public class MovesManager {
         Timer t = new Timer(3000, (e) ->
                 service.getGameService().setState(GameState.CHECKMATE));
         t.start();
-        t.stop();
+        t.setRepeats(false);
         return true;
     }
 
@@ -293,7 +293,7 @@ public class MovesManager {
             Timer t = new Timer(3000, (e)
                     -> service.getGameService().setState(GameState.VICTORY));
             t.start();
-            t.stop();
+            t.setRepeats(false);
             return true;
         }
         service.getAchievementService().setOpponentPieces(opponentPieces);

@@ -35,7 +35,15 @@ public class ServiceFactory {
     private final TimerService timer;
     private final AchievementService achievement;
     private final EventBus eventBus;
+
     private final MainMenu mainMenu;
+    private final SettingsMenu settingsMenu;
+    private final AchievementsMenu achievementsMenu;
+    private final Checkmate checkmate;
+    private final PromotionMenu promotionMenu;
+    private final SandboxMenu sandboxMenu;
+    private final TooltipMenu tooltipMenu;
+    private final VolumeMenu volumeMenu;
 
     public ServiceFactory(RenderContext render, GameFrame gameFrame,
                           Intro intro) {
@@ -88,13 +96,21 @@ public class ServiceFactory {
 
         List<UI> menus = render.getMenuRender().getMenus();
         this.mainMenu = new MainMenu(render, gs, ui, key, mouse);
+        this.settingsMenu = new SettingsMenu(render, ui, gs, key, mouse, mouseInput, MenuRender.OPTION_BUTTONS);
+        this.achievementsMenu = new AchievementsMenu(render, ui, key, achievement, gs, mouse);
+        this.checkmate = new Checkmate(ui, gs, render, RenderContext.BASE_WIDTH);
+        this.promotionMenu = new PromotionMenu(render, piece, promotion, ui);
+        this.sandboxMenu = new SandboxMenu(render, board, ui);
+        this.tooltipMenu = new TooltipMenu(render, piece, board, ui, mouse);
+        this.volumeMenu = new VolumeMenu(render, sound);
         menus.add(mainMenu);
-        menus.add(new SettingsMenu(render, ui, gs, key, mouse, mouseInput, MenuRender.OPTION_BUTTONS));
-        menus.add(new AchievementsMenu(render, ui, key, achievement, gs, mouse));
-        menus.add(new Checkmate(ui, gs, render, RenderContext.BASE_WIDTH));
-        menus.add(new PromotionMenu(render, piece, promotion, ui));
-        menus.add(new SandboxMenu(render, board, ui));
-        menus.add(new TooltipMenu(render, piece, board, ui, mouse));
+        menus.add(settingsMenu);
+        menus.add(achievementsMenu);
+        menus.add(checkmate);
+        menus.add(promotionMenu);
+        menus.add(sandboxMenu);
+        menus.add(tooltipMenu);
+        menus.add(volumeMenu);
 
         this.render.getBoardRender().setBoardService(board);
         this.render.getBoardRender().setPieceService(piece);
@@ -103,7 +119,6 @@ public class ServiceFactory {
         this.render.getBoardRender().setGameService(gs);
         this.render.getBoardRender().setMouse(mouse);
         this.render.getBoardRender().setMouseInput(mouseInput);
-
         this.render.getMovesRender().setBoardService(board);
         this.render.getMovesRender().setUIService(ui);
         this.render.getMovesRender().setMovesManager(movesManager);
@@ -194,5 +209,33 @@ public class ServiceFactory {
 
     public MainMenu getMainMenu() {
         return mainMenu;
+    }
+
+    public SettingsMenu getSettingsMenu() {
+        return settingsMenu;
+    }
+
+    public AchievementsMenu getAchievementsMenu() {
+        return achievementsMenu;
+    }
+
+    public Checkmate getCheckmate() {
+        return checkmate;
+    }
+
+    public PromotionMenu getPromotionMenu() {
+        return promotionMenu;
+    }
+
+    public SandboxMenu getSandboxMenu() {
+        return sandboxMenu;
+    }
+
+    public TooltipMenu getTooltipMenu() {
+        return tooltipMenu;
+    }
+
+    public VolumeMenu getVolumeMenu() {
+        return volumeMenu;
     }
 }

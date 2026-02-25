@@ -116,7 +116,7 @@ public class BoardRender {
         drawBaseBoard(g2);
         int buttonWidth = getSprites("previous_page")[0].getWidth();
         int buttonX = 50;
-        int buttonY = render.scale(RenderContext.BASE_HEIGHT - 115);
+        int buttonY = render.scale(RenderContext.BASE_Y);
         int offset = render.scale(buttonWidth);
 
         backButton = drawIconButton(g2, backButton, "previous_page",

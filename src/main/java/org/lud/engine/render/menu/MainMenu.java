@@ -128,7 +128,7 @@ public class MainMenu implements UI {
         int height = (int)(originalHeight * scale);
 
         int x = getCenterX(getTotalWidth(), width);
-        int y = render.getOffsetY() + render.scale(RenderContext.BASE_HEIGHT) / 3;
+        int y = render.getOffsetY() + render.scale(RenderContext.BASE_HEIGHT)/3;
         g2.drawImage(img, x, y, width, height, null);
         g2.setFont(UIService.getFont(UIService.fontSize()[3]));
         g2.setColor(Color.YELLOW);
@@ -152,10 +152,10 @@ public class MainMenu implements UI {
         smallYellowButton = render.getMenuRender().getButtonRegistry().get("button").normal;
 
         int startX = render.scale(50);
-        int startY = render.scale(RenderContext.BASE_HEIGHT - 115);
+        int startY = render.scale(RenderContext.BASE_Y);
         int x = startX;
         int y = startY;
-        int spacing = 4;
+        int spacing = 2;
 
         for(GameMenu option : options) {
             BufferedImage baseImg = getSprites(option.name().toLowerCase())[0];

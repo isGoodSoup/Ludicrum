@@ -390,10 +390,12 @@ public class KeyboardInput {
         }
         if(keyboard.isComboPressed(KeyEvent.VK_CONTROL, KeyEvent.VK_K)) {
             service.getSound().volumeUp();
+            service.getVolumeMenu().showVolumeSlider();
             service.getSound().playFX(2);
         }
         if(keyboard.isComboPressed(KeyEvent.VK_CONTROL, KeyEvent.VK_M)) {
             service.getSound().volumeDown();
+            service.getVolumeMenu().showVolumeSlider();
             service.getSound().playFX(1);
         }
         if(keyboard.isComboPressed(KeyEvent.VK_CONTROL, KeyEvent.VK_L)) {

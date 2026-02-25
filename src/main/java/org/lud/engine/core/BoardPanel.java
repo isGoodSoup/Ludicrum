@@ -43,6 +43,7 @@ public class BoardPanel extends JPanel implements Runnable {
         this.render = new RenderContext();
         this.intro = new Intro();
         service = new ServiceFactory(render, gameFrame, intro);
+        service.getRender().setSound(service.getSound());
         service.getGameService().setState(GameState.INTRO);
         Colors.setTheme(Theme.LEGACY);
         BooleanService.defaultToggles();

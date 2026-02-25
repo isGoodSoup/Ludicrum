@@ -11,13 +11,12 @@ import javax.sound.sampled.FloatControl;
 import java.net.URL;
 
 public class Sound {
+    private static final Logger log = LoggerFactory.getLogger(Sound.class);
     private final transient Clip[] clips = new Clip[30];
     private final transient URL[] soundURL = new URL[30];
     private final transient FloatControl[] controls = new FloatControl[30];
     private static final float[] VOLUME_LEVELS = {-80f, -40f, -32f, -24f, -18f, -12f, -8f, -4f, -2f, 0f};
     private int volumeScale = 2;
-
-    private static final Logger log = LoggerFactory.getLogger(Sound.class);
 
     public Sound() {
         setSound(0, "piece-fx");
@@ -45,6 +44,10 @@ public class Sound {
         return controls;
     }
 
+    public static float[] getVOLUME_LEVELS() {
+        return VOLUME_LEVELS;
+    }
+
     private void setSound(int i, String name) {
         String path = "/fx/";
         soundURL[i] = getClass().getResource(path + name + ".wav");
@@ -65,6 +68,10 @@ public class Sound {
                 log.error(e.getMessage());
             }
         }
+    }
+
+    public int getVolumeScale() {
+        return volumeScale;
     }
 
     public void play(int i) {

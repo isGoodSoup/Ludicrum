@@ -202,7 +202,7 @@ public class SettingsMenu implements UI {
     }
 
     private void initButtons() {
-        int baseY = render.scale(RenderContext.BASE_HEIGHT - 115);
+        int baseY = render.scale(RenderContext.BASE_Y);
         int x = 0, y = baseY;
         Map<Clickable, Rectangle> buttons = render.getMenuRender().getButtons();
 
