@@ -17,10 +17,10 @@ import java.util.*;
 import java.util.List;
 
 public class MenuRender {
-    public static final Games[] GAMES = Games.values();
-    public static final GameSettings[] SETTINGS_MENU = GameSettings.values();
-    private static final Logger log = LoggerFactory.getLogger(MenuRender.class);
     private static final Map<Button, GameMenu> buttonMap = new LinkedHashMap<>();
+    private static final Map<Button, GameSettings> settingsMap = new LinkedHashMap<>();
+    public static final Games[] GAMES = Games.values();
+    private static final Logger log = LoggerFactory.getLogger(MenuRender.class);
     public static BufferedImage[] OPTION_BUTTONS;
     private static final int ARC = 32;
     private static final int STROKE = 6;
@@ -29,7 +29,6 @@ public class MenuRender {
 
     private final Map<String, ButtonSprite> buttonRegistry;
     private final LinkedHashMap<Clickable, Rectangle> buttons;
-    private final LinkedHashMap<GameSettings, Rectangle> toggles;
     private final List<UI> menus;
     private final Set<Clickable> activeButtons;
     private final Set<Clickable> hoveredButtons;
@@ -49,7 +48,6 @@ public class MenuRender {
     public MenuRender(RenderContext render, UI... menus) {
         this.render = render;
         this.buttons = new LinkedHashMap<>();
-        this.toggles = new LinkedHashMap<>();
         this.buttonRegistry = new HashMap<>();
         this.activeButtons = new HashSet<>();
         this.hoveredButtons = new HashSet<>();
@@ -62,11 +60,25 @@ public class MenuRender {
         return buttons;
     }
 
-    public Map<GameSettings, Rectangle> getToggles() {
-        return toggles;
+    public static Map<Button, GameMenu> getButtonMap() { return buttonMap; }
+
+    public List<Map.Entry<Button, GameMenu>> getMenuEntries() {
+        return new ArrayList<>(MenuRender.getButtonMap().entrySet());
     }
 
-    public static Map<Button, GameMenu> getButtonMap() { return buttonMap; }
+    public static void put(Button button, GameMenu gameMenu) {
+        buttonMap.put(button, gameMenu);
+    }
+
+    public static Map<Button, GameSettings> getSettingsMap() { return settingsMap; }
+
+    public List<Map.Entry<Button, GameSettings>> getSettingsEntries() {
+        return new ArrayList<>(MenuRender.getSettingsMap().entrySet());
+    }
+
+    public static void put(Button button, GameSettings gameSettings) {
+        settingsMap.put(button, gameSettings);
+    }
 
     public Set<Clickable> getActiveButtons() {
         return activeButtons;
@@ -214,12 +226,6 @@ public class MenuRender {
     }
 
     public void addButton(Clickable button, Rectangle hitbox) {
-        buttons.put(button, hitbox);
-        activeButtons.add(button);
-    }
-
-    public void addToggle(GameSettings button, Rectangle hitbox) {
-        toggles.put(button, hitbox);
         buttons.put(button, hitbox);
         activeButtons.add(button);
     }

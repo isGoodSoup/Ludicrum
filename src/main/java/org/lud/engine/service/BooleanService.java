@@ -23,7 +23,6 @@ public class BooleanService {
     public static boolean canPlayFX;
     public static boolean canPlayMusic;
     public static boolean isMovingVolume;
-    public static boolean cannotAutoCommit;
 
     public static boolean canUseMouse;
     public static boolean canUseKeyboard;
@@ -43,6 +42,7 @@ public class BooleanService {
     public static boolean canShowTick;
     public static boolean canToggleHelp;
     public static boolean canDoAuto;
+    public static boolean cannotAutoCommit;
     public static boolean canAnimateLogo;
 
     private static final Random random = new Random();
