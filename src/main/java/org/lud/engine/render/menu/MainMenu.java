@@ -149,6 +149,7 @@ public class MainMenu implements UI {
         int y = render.scale(RenderContext.BASE_Y);
 
         for(GameMenu option : GameMenu.values()) {
+            if(option == GameMenu.THEME && !BooleanService.canTheme) { continue; }
             BufferedImage[] sprites = getSprites(option.name().toLowerCase());
             BufferedImage baseImg = sprites[0];
             BufferedImage altImg = sprites[1];
