@@ -114,8 +114,9 @@ public class MouseInput {
         Set<Clickable> buttons = service.getRender().getMenuRender().getActiveButtons();
         for(Clickable button : Set.copyOf(buttons)) {
             Rectangle hitbox = service.getRender().getMenuRender().getButtons().get(button);
-            if(hitbox == null) continue;
+            if(hitbox == null) { continue; }
             boolean hover = hitbox.contains(mouse.getX(), mouse.getY());
+            service.getRender().getMenuRender().setHovered(button, hover);
             if(hover && wasMousePressed && !wasPressedLastFrame) {
                 service.getSound().playFX(0);
                 button.onClick(service.getGameService());

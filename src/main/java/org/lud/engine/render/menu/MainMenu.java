@@ -80,6 +80,7 @@ public class MainMenu implements UI {
         initButtons();
         draw(g2);
         fadeFrom(g2);
+        mouse.reset();
     }
 
     @Override
@@ -142,13 +143,14 @@ public class MainMenu implements UI {
     }
 
     private void initButtons() {
-        if(!MenuRender.getButtonMap().isEmpty()) { return; }
+        MenuRender.getButtonMap().clear();
         smallButton = render.getMenuRender().getButtonRegistry().get("button_small").normal;
         smallYellowButton = render.getMenuRender().getButtonRegistry().get("button").normal;
         int x = render.scale(50);
         int y = render.scale(RenderContext.BASE_Y);
 
         for(GameMenu option : GameMenu.values()) {
+            option.reset();
             if(option == GameMenu.THEME && !BooleanService.canTheme) { continue; }
             BufferedImage[] sprites = getSprites(option.name().toLowerCase());
             BufferedImage baseImg = sprites[0];
@@ -160,7 +162,9 @@ public class MainMenu implements UI {
                 render.getMenuRender().deactivateAll();
             });
 
-            MenuRender.getButtonMap().put(button, option);
+            if(button != null && option != null) {
+                MenuRender.put(button, option);
+            }
             x += baseImg.getWidth();
         }
     }
