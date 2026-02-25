@@ -3,7 +3,8 @@ package org.lud.engine.render.menu;
 import org.lud.engine.core.Version;
 import org.lud.engine.entities.Button;
 import org.lud.engine.entities.ButtonSprite;
-import org.lud.engine.enums.*;
+import org.lud.engine.enums.GameMenu;
+import org.lud.engine.enums.GameState;
 import org.lud.engine.input.KeyboardInput;
 import org.lud.engine.input.Mouse;
 import org.lud.engine.interfaces.State;
@@ -20,6 +21,7 @@ import org.slf4j.LoggerFactory;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.Map;
 
 public class MainMenu implements UI {
     private static final int ARC = 32;
@@ -50,6 +52,7 @@ public class MainMenu implements UI {
     private final float FADE_SPEED = 0.15f;
     private float fadeAlpha = 1f;
 
+    private boolean isMenuInit;
     private boolean isFadingIn;
 
     public MainMenu(RenderContext render, GameService gameService,
@@ -61,6 +64,7 @@ public class MainMenu implements UI {
         this.keyUI = keyUI;
         this.mouse = mouse;
         this.isFadingIn = true;
+        this.isMenuInit = true;
     }
 
     private int getTotalWidth() {
@@ -73,7 +77,8 @@ public class MainMenu implements UI {
 
     @Override
     public void drawMenu(Graphics2D g2) {
-        draw(g2, MenuRender.MENU);
+        initButtons();
+        draw(g2);
         fadeFrom(g2);
     }
 
@@ -85,7 +90,7 @@ public class MainMenu implements UI {
     private void fadeFrom(Graphics2D g2) {
         if(isFadingIn) {
             fadeAlpha -= FADE_SPEED;
-            if (fadeAlpha <= 0f) {
+            if(fadeAlpha <= 0f) {
                 fadeAlpha = 0f;
                 isFadingIn = false;
             }
@@ -117,7 +122,7 @@ public class MainMenu implements UI {
             if(logoSize > MAX_SIZE) {
                 logoSize = MAX_SIZE;
                 logoDelta = -logoDelta;
-            } else if (logoSize < 0) {
+            } else if(logoSize < 0) {
                 logoSize = 0;
                 logoDelta = -logoDelta;
             }
@@ -136,153 +141,65 @@ public class MainMenu implements UI {
                 - g2.getFontMetrics().stringWidth(Version.LATEST.toUpperCase()), y + height);
     }
 
-    public void draw(Graphics2D g2, GameMenu[] options) {
-        render.getMenuRender().clearButtons();
-        playButton = settingsButton = achievementsButton = langButton
-                = exitButton = themeButton = gameButton = null;
+    private void initButtons() {
+        if(!MenuRender.getButtonMap().isEmpty()) { return; }
+        smallButton = render.getMenuRender().getButtonRegistry().get("button_small").normal;
+        smallYellowButton = render.getMenuRender().getButtonRegistry().get("button").normal;
+        int x = render.scale(50);
+        int y = render.scale(RenderContext.BASE_Y);
 
+        for(GameMenu option : GameMenu.values()) {
+            BufferedImage[] sprites = getSprites(option.name().toLowerCase());
+            BufferedImage baseImg = sprites[0];
+            BufferedImage altImg = sprites[1];
+            BufferedImage layerImg = (option == GameMenu.PLAY) ? smallYellowButton : smallButton;
+
+            Button button = createButton(x, y, baseImg.getWidth(), baseImg.getHeight(), () -> {
+                option.run(gameService);
+                render.getMenuRender().deactivateAll();
+            });
+
+            MenuRender.getButtonMap().put(button, option);
+            x += baseImg.getWidth();
+        }
+    }
+
+    private void draw(Graphics2D g2) {
         int totalWidth = getTotalWidth();
         g2.setColor(Colorblindness.filter(Colors.getBackground()));
-        g2.fillRect(0, 0, totalWidth,
-                render.scale(RenderContext.BASE_HEIGHT));
+        g2.fillRect(0, 0, totalWidth, render.scale(RenderContext.BASE_HEIGHT));
 
         drawLogo(g2);
 
-        smallButton = render.getMenuRender().getButtonRegistry().get("button_small").normal;
-        smallYellowButton = render.getMenuRender().getButtonRegistry().get("button").normal;
+        int x = render.scale(50);
+        int y = render.scale(RenderContext.BASE_Y);
 
-        int startX = render.scale(50);
-        int startY = render.scale(RenderContext.BASE_Y);
-        int x = startX;
-        int y = startY;
+        for(Map.Entry<Button, GameMenu> entry : MenuRender.getButtonMap().entrySet()) {
+            Button button = entry.getKey();
+            GameMenu option = entry.getValue();
 
-        for(GameMenu option : options) {
-            BufferedImage baseImg = getSprites(option.name().toLowerCase())[0];
-            BufferedImage altImg = getSprites(option.name().toLowerCase())[1];
-            int width = baseImg.getWidth();
-            int height = baseImg.getHeight();
+            BufferedImage[] sprites = getSprites(option.name().toLowerCase());
+            BufferedImage baseImg = sprites[0];
+            BufferedImage altImg = sprites[1];
+            BufferedImage layerImg = (option == GameMenu.PLAY) ? smallYellowButton : smallButton;
 
-            switch(option) {
-                case PLAY -> {
-                    if(playButton == null) {
-                        playButton = createButton(x, y, width, height, () -> {
-                            option.run(gameService);
-                            render.getMenuRender().deactivateAll();
-                        });
-                    }
-                    BufferedImage img = render.isHovered(playButton) || render.isSelected(playButton)
-                            ? render.getMenuRender().getColorblindSprite(altImg)
-                            : render.getMenuRender().getColorblindSprite(baseImg);
-                    drawButtonLayers(g2, smallYellowButton, playButton, x, y);
-                    g2.drawImage(img, x ,y, null);
-                    x += width;
+            drawMenuButton(g2, button, x, y, baseImg, altImg, option, layerImg);
+            x += baseImg.getWidth();
+        }
+    }
 
-                    if(render.isHovered(playButton)) {
-                        drawTooltip(g2, showTooltip(option));
-                    }
-                }
-                case GAMES -> {
-                    if(gameButton == null) {
-                        gameButton = createButton(x, y, width, height, () ->
-                                option.run(gameService));
-                    }
-                    BufferedImage img = render.isHovered(gameButton) || render.isSelected(gameButton)
-                            ? render.getMenuRender().getColorblindSprite(altImg)
-                            : render.getMenuRender().getColorblindSprite(baseImg);
-                    drawButtonLayers(g2, smallButton, gameButton, x, y);
-                    g2.drawImage(img, x ,y, null);
-                    x += width;
+    private void drawMenuButton(Graphics2D g2, Button button, int x, int y,
+                                BufferedImage baseImg, BufferedImage altImg,
+                                GameMenu option, BufferedImage layerImg) {
+        BufferedImage img = render.isHovered(button) || render.isSelected(button)
+                ? render.getMenuRender().getColorblindSprite(altImg)
+                : render.getMenuRender().getColorblindSprite(baseImg);
 
-                    if(render.isHovered(gameButton)) {
-                        drawTooltip(g2, showTooltip(option));
-                    }
-                }
-                case SETTINGS -> {
-                    if(settingsButton == null) {
-                        settingsButton = createButton(x, y, width, height, () -> {
-                            option.run(gameService);
-                            render.getMenuRender().onClose();
-                        });
-                    }
-                    BufferedImage img = render.isHovered(settingsButton) || render.isSelected(settingsButton)
-                            ? render.getMenuRender().getColorblindSprite(altImg)
-                            : render.getMenuRender().getColorblindSprite(baseImg);
-                    drawButtonLayers(g2, smallButton, settingsButton, x, y);
-                    g2.drawImage(img, x ,y, null);
-                    x += width;
+        drawButtonLayers(g2, layerImg, button, x, y);
+        g2.drawImage(img, x, y, null);
 
-                    if(render.isHovered(settingsButton)) {
-                        drawTooltip(g2, showTooltip(option));
-                    }
-                }
-                case ACHIEVEMENTS -> {
-                    if(achievementsButton == null) {
-                        achievementsButton = createButton(x, y, width, height, () -> {
-                            option.run(gameService);
-                            render.getMenuRender().onClose();
-                        });
-                    }
-                    BufferedImage img = render.isHovered(achievementsButton) || render.isSelected(achievementsButton)
-                            ? render.getMenuRender().getColorblindSprite(altImg)
-                            : render.getMenuRender().getColorblindSprite(baseImg);
-                    drawButtonLayers(g2, smallButton, achievementsButton, x, y);
-                    g2.drawImage(img, x, y, null);
-                    x += width;
-
-                    if(render.isHovered(achievementsButton)) {
-                        drawTooltip(g2, showTooltip(option));
-                    }
-                }
-                case LANG -> {
-                    if(langButton == null) {
-                        langButton = createButton(x, y, width, height, () ->
-                                option.run(gameService));
-                    }
-                    BufferedImage img = render.isHovered(langButton) || render.isSelected(langButton)
-                            ? render.getMenuRender().getColorblindSprite(altImg)
-                            : render.getMenuRender().getColorblindSprite(baseImg);
-                    drawButtonLayers(g2, smallButton, langButton, x, y);
-                    g2.drawImage(img, x, y, null);
-                    x += width;
-
-                    if(render.isHovered(langButton)) {
-                        drawTooltip(g2, showTooltip(option));
-                    }
-                }
-                case EXIT -> {
-                    if(exitButton == null) {
-                        exitButton = createButton(x, y, width, height, () ->
-                                option.run(gameService));
-                    }
-                    BufferedImage img = render.isHovered(exitButton) || render.isSelected(exitButton)
-                            ? render.getMenuRender().getColorblindSprite(altImg)
-                            : render.getMenuRender().getColorblindSprite(baseImg);
-                    drawButtonLayers(g2, smallButton, exitButton, x, y);
-                    g2.drawImage(img, x, y, null);
-                    x += width;
-
-                    if(render.isHovered(exitButton)) {
-                        drawTooltip(g2, showTooltip(option));
-                    }
-                }
-                case THEME -> {
-                    if(BooleanService.canTheme) {
-                        if(themeButton == null) {
-                            themeButton = createButton(x, y, width, height, Colors::nextTheme);
-                        }
-                        BufferedImage img = render.isHovered(themeButton) || render.isSelected(themeButton)
-                                ? render.getMenuRender().getColorblindSprite(altImg)
-                                : render.getMenuRender().getColorblindSprite(baseImg);
-                        drawButtonLayers(g2, smallButton, themeButton, x, y);
-                        g2.drawImage(img, x, y, null);
-                        x += width;
-
-                        if(render.isHovered(themeButton)) {
-                            drawTooltip(g2, showTooltip(option));
-                        }
-                    }
-                }
-            }
+        if(render.isHovered(button)) {
+            drawTooltip(g2, option.getTooltip());
         }
     }
 
@@ -301,9 +218,7 @@ public class MainMenu implements UI {
     public void drawTooltip(Graphics2D g2, String text) {
         int padding = 16;
         g2.setFont(UIService.getFont(UIService.fontSize()[3]));
-        uiService.drawTooltip(g2, text, padding, ARC, true,
-                render.scale(RenderContext.BASE_WIDTH/2 - g2.getFontMetrics().stringWidth(text)/2 - 15),
-                render.scale(RenderContext.BASE_HEIGHT - 131));
+        uiService.drawTooltip(g2, text, padding, ARC, false, 0, 0);
     }
 
     @SuppressWarnings("StatementWithEmptyBody")

@@ -17,10 +17,10 @@ import java.util.*;
 import java.util.List;
 
 public class MenuRender {
-    public static final GameMenu[] MENU = GameMenu.values();
     public static final Games[] GAMES = Games.values();
     public static final GameSettings[] SETTINGS_MENU = GameSettings.values();
     private static final Logger log = LoggerFactory.getLogger(MenuRender.class);
+    private static final Map<Button, GameMenu> buttonMap = new LinkedHashMap<>();
     public static BufferedImage[] OPTION_BUTTONS;
     private static final int ARC = 32;
     private static final int STROKE = 6;
@@ -29,27 +29,30 @@ public class MenuRender {
 
     private final Map<String, ButtonSprite> buttonRegistry;
     private final LinkedHashMap<Clickable, Rectangle> buttons;
-    private final Map<Button, Boolean> buttonsClicked;
+    private final LinkedHashMap<GameSettings, Rectangle> toggles;
     private final List<UI> menus;
     private final Set<Clickable> activeButtons;
+    private final Set<Clickable> hoveredButtons;
     private Map<BufferedImage, BufferedImage> cache;
 
     private transient BufferedImage TOGGLE_ON, TOGGLE_OFF, TOGGLE_ON_HIGHLIGHTED, TOGGLE_OFF_HIGHLIGHTED;
     private transient BufferedImage HARD_MODE_ON, HARD_MODE_ON_HIGHLIGHTED;
 
     private int lastHoveredIndex = -1;
-    private int scrollOffset = 0;
 
     private RenderContext render;
     private GameService gameService;
     private AchievementSprites sprites;
 
+    private GameSettings selectedToggle;
+
     public MenuRender(RenderContext render, UI... menus) {
         this.render = render;
         this.buttons = new LinkedHashMap<>();
-        this.buttonsClicked = new HashMap<>();
+        this.toggles = new LinkedHashMap<>();
         this.buttonRegistry = new HashMap<>();
         this.activeButtons = new HashSet<>();
+        this.hoveredButtons = new HashSet<>();
         this.menus = new ArrayList<>();
         Collections.addAll(this.menus, menus);
         cb = ColorblindType.PROTANOPIA;
@@ -58,6 +61,12 @@ public class MenuRender {
     public Map<Clickable, Rectangle> getButtons() {
         return buttons;
     }
+
+    public Map<GameSettings, Rectangle> getToggles() {
+        return toggles;
+    }
+
+    public static Map<Button, GameMenu> getButtonMap() { return buttonMap; }
 
     public Set<Clickable> getActiveButtons() {
         return activeButtons;
@@ -89,6 +98,27 @@ public class MenuRender {
 
     public Map<String, ButtonSprite> getButtonRegistry() {
         return buttonRegistry;
+    }
+
+    public boolean isSelected(Clickable c) {
+        return c.equals(selectedToggle);
+    }
+
+    public boolean isHovered(Clickable c) {
+        return hoveredButtons.contains(c);
+    }
+
+    public void setHovered(Clickable c, boolean isHovered) {
+        if(isHovered) { hoveredButtons.add(c); }
+        else { hoveredButtons.remove(c); }
+    }
+
+    public GameSettings getSelectedToggle() {
+        return selectedToggle;
+    }
+
+    public void setSelectedToggle(GameSettings selectedToggle) {
+        this.selectedToggle = selectedToggle;
     }
 
     public void draw(Graphics2D g2) {
@@ -184,6 +214,12 @@ public class MenuRender {
     }
 
     public void addButton(Clickable button, Rectangle hitbox) {
+        buttons.put(button, hitbox);
+        activeButtons.add(button);
+    }
+
+    public void addToggle(GameSettings button, Rectangle hitbox) {
+        toggles.put(button, hitbox);
         buttons.put(button, hitbox);
         activeButtons.add(button);
     }
