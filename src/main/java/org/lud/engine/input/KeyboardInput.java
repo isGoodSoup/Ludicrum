@@ -109,6 +109,7 @@ public class KeyboardInput {
 
     public void update() {
         updateKeyboardInput();
+        if(!BooleanService.canUseKeyboard) { return; }
         long now = System.currentTimeMillis();
         Keyboard keyboard = service.getKeyboard();
         MovesManager move = service.getMovesManager();
@@ -140,8 +141,11 @@ public class KeyboardInput {
 
     private void updateKeyboardInput() {
         Keyboard keyboard = service.getKeyboard();
-        if(keyboard.wasPressed()) {
-            service.getCoordinator().setLastInput(LastInput.KEYBOARD);
+        LastInput lastInput = service.getCoordinator().getLastInput();
+        if(keyboard.wasPressed()) { service.getCoordinator().setLastInput(LastInput.KEYBOARD); }
+        if(lastInput == LastInput.MOUSE) {
+            BooleanService.canUseKeyboard = false;
+            BooleanService.canUseMouse = true;
         }
     }
 

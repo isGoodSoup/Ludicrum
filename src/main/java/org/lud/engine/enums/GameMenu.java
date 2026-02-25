@@ -14,10 +14,11 @@ public enum GameMenu implements Clickable {
             GameService.getGame().setup(gameService);
         }
     },
-    GAMES("menu.games", "tooltip.games", "tooltip.games_continue") {
+    ACHIEVEMENTS("menu.achievements", "tooltip.achievements", "tooltip.achievements_continue") {
         @Override
         public void run(GameService gameService) {
-            gameService.nextGame();
+            gameService.setState(GameState.ACHIEVEMENTS);
+            log.debug("Achievements menu");
         }
     },
     SETTINGS("menu.settings", "tooltip.settings", "tooltip.settings_continue") {
@@ -27,11 +28,10 @@ public enum GameMenu implements Clickable {
             log.debug("Settings menu");
         }
     },
-    ACHIEVEMENTS("menu.achievements", "tooltip.achievements", "tooltip.achievements_continue") {
+    GAMES("menu.games", "tooltip.games", "tooltip.games_continue") {
         @Override
         public void run(GameService gameService) {
-            gameService.setState(GameState.ACHIEVEMENTS);
-            log.debug("Achievements menu");
+            gameService.nextGame();
         }
     },
     LANG("menu.lang", "tooltip.lang", "tooltip.lang_continue") {

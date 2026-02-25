@@ -145,7 +145,7 @@ public class BoardRender {
 
         if(hoverX >= 0 && hoverY >= 0) {
             int squareSize = render.scale(Board.getSquare());
-            if(BooleanService.canToggleCursor) {
+            if(BooleanService.canUseKeyboard) {
                 UIService.drawBox(g2, 4, getBoardOriginX() + hoverX * squareSize,
                         getBoardOriginY() + hoverY * squareSize, squareSize,
                         squareSize, MenuRender.getARC()/4,

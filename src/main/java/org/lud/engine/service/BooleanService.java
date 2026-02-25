@@ -24,6 +24,9 @@ public class BooleanService {
     public static boolean canPlayMusic;
     public static boolean cannotAutoCommit;
 
+    public static boolean canUseMouse;
+    public static boolean canUseKeyboard;
+
     public static boolean canDoMoves;
     public static boolean canUndoMoves;
     public static boolean canDoAchievements;
@@ -45,6 +48,8 @@ public class BooleanService {
     private static final Random random = new Random();
 
     public static void defaultToggles() {
+        canUseMouse = true;
+        canUseKeyboard = false;
         canDoAchievements = true;
         canSave = false;
         isTurnLocked = false;

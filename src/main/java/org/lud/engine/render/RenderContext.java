@@ -6,6 +6,7 @@ import org.lud.engine.input.MouseInput;
 import org.lud.engine.interfaces.Clickable;
 import org.lud.engine.interfaces.UI;
 import org.lud.engine.manager.MovesManager;
+import org.lud.engine.service.BooleanService;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -126,6 +127,7 @@ public class RenderContext {
     }
 
     public boolean isSelected(Clickable param) {
+        if(!BooleanService.canUseKeyboard) { return false; }
         List<Clickable> buttons = new ArrayList<>(menuRender.getButtons().keySet());
         int index = buttons.indexOf(param);
         return index == keyUI.getSelectedIndexY();

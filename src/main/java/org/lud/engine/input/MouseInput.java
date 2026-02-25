@@ -80,6 +80,7 @@ public class MouseInput {
 
     public void update() {
         updateMouse();
+        if(!BooleanService.canUseMouse) { return; }
         switch(service.getGameService().getState()) {
             case MENU, SETTINGS, ACHIEVEMENTS -> updateMenus();
             case BOARD -> {
@@ -90,10 +91,15 @@ public class MouseInput {
     }
 
     private void updateMouse() {
+        LastInput lastInput = service.getCoordinator().getLastInput();
         if(mouse.getX() != lastMouseX || mouse.getY() != lastMouseY) {
             lastMouseX = mouse.getX();
             lastMouseY = mouse.getY();
             service.getCoordinator().setLastInput(LastInput.MOUSE);
+        }
+        if(lastInput == LastInput.KEYBOARD) {
+            BooleanService.canUseKeyboard = true;
+            BooleanService.canUseMouse = false;
         }
     }
 
