@@ -242,8 +242,10 @@ public class MovesManager {
         service.getTimerService().stop();
         BooleanService.canPlayMusic = false;
         service.getSound().playFX(6);
-        new Timer(3000, (e) ->
-                service.getGameService().setState(GameState.CHECKMATE)).start();
+        Timer t = new Timer(3000, (e) ->
+                service.getGameService().setState(GameState.CHECKMATE));
+        t.start();
+        t.stop();
         return true;
     }
 
@@ -288,8 +290,10 @@ public class MovesManager {
             service.getTimerService().stop();
             BooleanService.canPlayMusic = false;
             service.getSound().playFX(6);
-            new Timer(3000, (e)
-                    -> service.getGameService().setState(GameState.VICTORY)).start();
+            Timer t = new Timer(3000, (e)
+                    -> service.getGameService().setState(GameState.VICTORY));
+            t.start();
+            t.stop();
             return true;
         }
         service.getAchievementService().setOpponentPieces(opponentPieces);
