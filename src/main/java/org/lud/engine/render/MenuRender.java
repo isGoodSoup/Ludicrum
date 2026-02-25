@@ -24,6 +24,8 @@ public class MenuRender {
     public static BufferedImage[] OPTION_BUTTONS;
     private static final int ARC = 32;
     private static final int STROKE = 6;
+    private static int totalWidth;
+    private static ColorblindType cb;
 
     private final Map<String, ButtonSprite> buttonRegistry;
     private final LinkedHashMap<Clickable, Rectangle> buttons;
@@ -35,10 +37,8 @@ public class MenuRender {
     private transient BufferedImage TOGGLE_ON, TOGGLE_OFF, TOGGLE_ON_HIGHLIGHTED, TOGGLE_OFF_HIGHLIGHTED;
     private transient BufferedImage HARD_MODE_ON, HARD_MODE_ON_HIGHLIGHTED;
 
-    private static ColorblindType cb;
     private int lastHoveredIndex = -1;
     private int scrollOffset = 0;
-    private static int totalWidth;
 
     private RenderContext render;
     private GameService gameService;
@@ -168,18 +168,13 @@ public class MenuRender {
         for(Button b : buttons) {
             ButtonSprite sprite = buttonRegistry.get("button_small");
             g2.drawImage(sprite.normal, b.getX(), b.getY(), null);
-            BufferedImage frame = render.getMenuRender().defineButton(b, ButtonSize.L);
+            BufferedImage frame = render.getMenuRender().defineButton(b);
             g2.drawImage(frame, b.getX(), b.getY(), null);
         }
     }
 
-    public BufferedImage defineButton(Clickable c, ButtonSize size) {
-        String key = "";
-        switch(size) {
-            case XXL -> key = "button_big";
-            case XL -> key = "button";
-            case L -> key = "button_small";
-        }
+    public BufferedImage defineButton(Clickable c) {
+        String key = "button_small";
         ButtonSprite sprite = buttonRegistry.get(key);
         return render.isHovered(c) || render.isSelected(c) ? sprite.highlighted : null;
     }

@@ -1,15 +1,15 @@
 package org.lud.engine.input;
 
-import org.lud.engine.enums.*;
-import org.lud.engine.service.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.lud.engine.entities.Piece;
-import org.lud.engine.events.ToggleEvent;
-import org.lud.engine.util.Colors;
 import org.lud.engine.core.GameFrame;
+import org.lud.engine.entities.Piece;
+import org.lud.engine.enums.*;
+import org.lud.engine.events.ToggleEvent;
 import org.lud.engine.manager.MovesManager;
 import org.lud.engine.render.MenuRender;
+import org.lud.engine.service.*;
+import org.lud.engine.util.Colors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.awt.event.KeyEvent;
 import java.util.Arrays;

@@ -3,7 +3,7 @@ package org.lud.engine.enums;
 public enum UIButton {
     BUTTON(""),
     BUTTON_SMALL("small"),
-    BUTTON_BIG("big"),
+    PLAY("play"),
     UNDO("undo"),
     RESET("reset"),
     ACHIEVEMENTS("achievements"),

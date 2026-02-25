@@ -2,13 +2,12 @@ package org.lud.engine.render;
 
 import org.lud.engine.entities.*;
 import org.lud.engine.entities.Button;
-import org.lud.engine.enums.ButtonSize;
 import org.lud.engine.enums.GameState;
 import org.lud.engine.enums.Games;
-import org.lud.engine.util.Colors;
 import org.lud.engine.input.Mouse;
 import org.lud.engine.input.MouseInput;
 import org.lud.engine.service.*;
+import org.lud.engine.util.Colors;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -276,7 +275,7 @@ public class BoardRender {
         BufferedImage img = render.isHovered(button) ? highlighted : base;
 
         g2.drawImage(img, x, y, null);
-        BufferedImage frame = render.getMenuRender().defineButton(button, ButtonSize.L);
+        BufferedImage frame = render.getMenuRender().defineButton(button);
         if(frame != null) {
             g2.drawImage(frame, x, y, null);
         }

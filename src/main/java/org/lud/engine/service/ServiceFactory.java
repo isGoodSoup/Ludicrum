@@ -35,6 +35,7 @@ public class ServiceFactory {
     private final TimerService timer;
     private final AchievementService achievement;
     private final EventBus eventBus;
+    private final MainMenu mainMenu;
 
     public ServiceFactory(RenderContext render, GameFrame gameFrame,
                           Intro intro) {
@@ -86,7 +87,8 @@ public class ServiceFactory {
         this.render.getMenuRender().init();
 
         List<UI> menus = render.getMenuRender().getMenus();
-        menus.add(new MainMenu(render, gs, ui, key, mouse));
+        this.mainMenu = new MainMenu(render, gs, ui, key, mouse);
+        menus.add(mainMenu);
         menus.add(new SettingsMenu(render, ui, gs, key, mouse, mouseInput, MenuRender.OPTION_BUTTONS));
         menus.add(new AchievementsMenu(render, ui, key, achievement, gs, mouse));
         menus.add(new Checkmate(ui, gs, render, RenderContext.BASE_WIDTH));
@@ -188,5 +190,9 @@ public class ServiceFactory {
 
     public EventBus getEventBus() {
         return eventBus;
+    }
+
+    public MainMenu getMainMenu() {
+        return mainMenu;
     }
 }

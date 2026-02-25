@@ -4,7 +4,6 @@ import org.lud.engine.core.Version;
 import org.lud.engine.entities.Button;
 import org.lud.engine.entities.ButtonSprite;
 import org.lud.engine.enums.*;
-import org.lud.engine.util.Colors;
 import org.lud.engine.input.KeyboardInput;
 import org.lud.engine.input.Mouse;
 import org.lud.engine.interfaces.State;
@@ -15,6 +14,7 @@ import org.lud.engine.render.RenderContext;
 import org.lud.engine.service.BooleanService;
 import org.lud.engine.service.GameService;
 import org.lud.engine.service.UIService;
+import org.lud.engine.util.Colors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,8 +35,7 @@ public class MainMenu implements UI {
     private final Mouse mouse;
 
     private BufferedImage smallButton;
-    private BufferedImage bigButton;
-    private BufferedImage extraBigButton;
+    private BufferedImage smallYellowButton;
 
     private Button playButton;
     private Button gameButton;
@@ -150,208 +149,138 @@ public class MainMenu implements UI {
         drawLogo(g2);
 
         smallButton = render.getMenuRender().getButtonRegistry().get("button_small").normal;
-        bigButton = render.getMenuRender().getButtonRegistry().get("button").normal;
-        extraBigButton = render.getMenuRender().getButtonRegistry().get("button_big").normal;
+        smallYellowButton = render.getMenuRender().getButtonRegistry().get("button").normal;
 
-        int startX = getTotalWidth()/2 + render.scale(60);
-        int startY = render.scale(RenderContext.BASE_HEIGHT - 300);
-        int x = startX, y = startY;
-        int padding = 100;
+        int startX = render.scale(50);
+        int startY = render.scale(RenderContext.BASE_HEIGHT - 115);
+        int x = startX;
+        int y = startY;
+        int spacing = 4;
 
         for(GameMenu option : options) {
-            if(option == GameMenu.PLAY) {
-                String key = "button";
-                BufferedImage baseImg = getSprites(key)[0];
-                BufferedImage altImg = getSprites(key)[1];
-                int width = baseImg.getWidth();
-                int height = baseImg.getHeight();
-                x = startX; y = startY;
-                x -= width; y -= height/2;
+            BufferedImage baseImg = getSprites(option.name().toLowerCase())[0];
+            BufferedImage altImg = getSprites(option.name().toLowerCase())[1];
+            int width = baseImg.getWidth();
+            int height = baseImg.getHeight();
 
-                if(playButton == null) {
-                    playButton = createButton(x, y, width, height, () -> {
-                        option.run(gameService);
-                        render.getMenuRender().deactivateAll();
-                    });
-                }
-
-                Color textColor = render.isHovered(playButton) || render.isSelected(playButton)
-                        ? Color.WHITE : Colors.BUTTON;
-
-                BufferedImage img = render.isHovered(playButton) || render.isSelected(playButton)
-                        ? render.getMenuRender().getColorblindSprite(altImg)
-                        : render.getMenuRender().getColorblindSprite(baseImg);
-
-                g2.setFont(UIService.getFont(UIService.fontSize()[5]));
-                FontMetrics fm = g2.getFontMetrics();
-                Games game = GameService.getGame();
-                int textX = x + (width - fm.stringWidth(game.getLabel()))/2;
-                int textY = y + (height - fm.getHeight())/2 + fm.getAscent();
-                drawButtonLayers(g2, bigButton, playButton, ButtonSize.XL, x, y);
-                g2.setColor(textColor);
-                g2.drawString(game.getLabel(), textX, textY);
-
-                if(render.isHovered(playButton)) {
-                    drawTooltip(g2, showTooltip(option));
-                }
-            }
-
-            if(option == GameMenu.GAMES) {
-                BufferedImage baseImg = getSprites(option.name().toLowerCase())[0];
-                BufferedImage altImg = getSprites(option.name().toLowerCase())[1];
-                int width = baseImg.getWidth();
-                int height = baseImg.getHeight();
-                x = startX; y = startY;
-
-                y -= height/2;
-                x += width/2;
-
-                if(gameButton == null) {
-                    gameButton = createButton(x, y, width, height, () ->
-                            option.run(gameService));
-                }
-
-                BufferedImage img = render.isHovered(gameButton) || render.isSelected(gameButton)
-                        ? render.getMenuRender().getColorblindSprite(altImg)
-                        : render.getMenuRender().getColorblindSprite(baseImg);
-
-                drawButtonLayers(g2, extraBigButton, gameButton, ButtonSize.XXL, x, y);
-                g2.drawImage(img, x, y, null);
-
-                if(render.isHovered(gameButton)) {
-                    drawTooltip(g2, showTooltip(option));
-                }
-            }
-
-            if(option == GameMenu.SETTINGS) {
-                BufferedImage baseImg = getSprites(option.name().toLowerCase())[0];
-                BufferedImage altImg = getSprites(option.name().toLowerCase())[1];
-                int width = baseImg.getWidth();
-                int height = baseImg.getHeight();
-                x = startX; y = startY;
-                x -= 2;
-
-                if(settingsButton == null) {
-                    settingsButton = createButton(x, y, width, height, () -> {
-                        option.run(gameService);
-                        render.getMenuRender().onClose();
-                    });
-                }
-
-                BufferedImage img = render.isHovered(settingsButton) || render.isSelected(settingsButton)
-                        ? render.getMenuRender().getColorblindSprite(altImg)
-                        : render.getMenuRender().getColorblindSprite(baseImg);
-
-                drawButtonLayers(g2, smallButton, settingsButton, ButtonSize.L, x, y);
-                g2.drawImage(img, x, y, null);
-
-                if(render.isHovered(settingsButton)) {
-                    drawTooltip(g2, showTooltip(option));
-                }
-            }
-
-            if(option == GameMenu.ACHIEVEMENTS) {
-                BufferedImage baseImg = getSprites(option.name().toLowerCase())[0];
-                BufferedImage altImg = getSprites(option.name().toLowerCase())[1];
-                int width = baseImg.getWidth();
-                int height = baseImg.getHeight();
-                x = startX; y = startY;
-                x -= 2; y -= height;
-
-                if(achievementsButton == null) {
-                    achievementsButton = createButton(x, y, width, height, () -> {
-                        option.run(gameService);
-                        render.getMenuRender().onClose();
-                    });
-                }
-
-                BufferedImage img = render.isHovered(achievementsButton) || render.isSelected(achievementsButton)
-                        ? render.getMenuRender().getColorblindSprite(altImg)
-                        : render.getMenuRender().getColorblindSprite(baseImg);
-
-                drawButtonLayers(g2, smallButton, achievementsButton, ButtonSize.L, x, y);
-                g2.drawImage(img, x, y, null);
-
-                if(render.isHovered(achievementsButton)) {
-                    drawTooltip(g2, showTooltip(option));
-                }
-            }
-
-            if(option == GameMenu.LANG) {
-                BufferedImage baseImg = getSprites(option.name().toLowerCase())[0];
-                BufferedImage altImg = getSprites(option.name().toLowerCase())[1];
-                int width = baseImg.getWidth();
-                int height = baseImg.getHeight();
-                x = startX; y = startY;
-                x = 50; y = render.scale(RenderContext.BASE_HEIGHT - 115);
-
-                if(langButton == null) {
-                    langButton = createButton(x, y, width, height, () ->
-                            option.run(gameService));
-                }
-
-                BufferedImage img = render.isHovered(langButton) || render.isSelected(langButton)
-                        ? render.getMenuRender().getColorblindSprite(altImg)
-                        : render.getMenuRender().getColorblindSprite(baseImg);
-
-                drawButtonLayers(g2, smallButton, langButton, ButtonSize.L, x, y);
-                g2.drawImage(img, x, y, null);
-
-                if(render.isHovered(langButton)) {
-                    drawTooltip(g2, showTooltip(option));
-                }
-            }
-
-            if(option == GameMenu.EXIT) {
-                BufferedImage baseImg = getSprites(option.name().toLowerCase())[0];
-                BufferedImage altImg = getSprites(option.name().toLowerCase())[1];
-                int width = baseImg.getWidth();
-                int height = baseImg.getHeight();
-
-                x = render.scale((int) (RenderContext.BASE_WIDTH - width * 1.75f));
-                y = render.scale(RenderContext.BASE_HEIGHT - 115);
-
-                if(exitButton == null) {
-                    exitButton = createButton(x, y, width, height, () ->
-                            option.run(gameService));
-                }
-
-                BufferedImage img = render.isHovered(exitButton) || render.isSelected(exitButton)
-                        ? render.getMenuRender().getColorblindSprite(altImg)
-                        : render.getMenuRender().getColorblindSprite(baseImg);
-
-                drawButtonLayers(g2, smallButton, exitButton, ButtonSize.L, x, y);
-                g2.drawImage(img, x, y, null);
-
-                if(render.isHovered(exitButton)) {
-                    drawTooltip(g2, showTooltip(option));
-                }
-            }
-
-            if(option == GameMenu.THEME) {
-                if(BooleanService.canTheme) {
-                    BufferedImage baseImg = getSprites(option.name().toLowerCase())[0];
-                    BufferedImage altImg = getSprites(option.name().toLowerCase())[1];
-
-                    int width = baseImg.getWidth();
-                    int height = baseImg.getHeight();
-
-                    x = render.scale((int) (RenderContext.BASE_WIDTH - width * 1.75f) - width);
-                    y = render.scale(RenderContext.BASE_HEIGHT - 115);
-
-                    if(themeButton == null) {
-                        themeButton = createButton(x, y, width, height, Colors::nextTheme);
+            switch(option) {
+                case PLAY -> {
+                    if(playButton == null) {
+                        playButton = createButton(x, y, width, height, () -> {
+                            option.run(gameService);
+                            render.getMenuRender().deactivateAll();
+                        });
                     }
-
-                    BufferedImage img = render.isHovered(themeButton) || render.isSelected(themeButton)
+                    BufferedImage img = render.isHovered(playButton) || render.isSelected(playButton)
                             ? render.getMenuRender().getColorblindSprite(altImg)
                             : render.getMenuRender().getColorblindSprite(baseImg);
+                    drawButtonLayers(g2, smallYellowButton, playButton, x, y);
+                    g2.drawImage(img, x ,y, null);
+                    x += width + spacing;
 
-                    drawButtonLayers(g2, smallButton, themeButton, ButtonSize.L, x, y);
-                    g2.drawImage(img, x, y, null);
-
-                    if(render.isHovered(themeButton)) {
+                    if(render.isHovered(playButton)) {
                         drawTooltip(g2, showTooltip(option));
+                    }
+                }
+                case GAMES -> {
+                    if(gameButton == null) {
+                        gameButton = createButton(x, y, width, height, () ->
+                                option.run(gameService));
+                    }
+                    BufferedImage img = render.isHovered(gameButton) || render.isSelected(gameButton)
+                            ? render.getMenuRender().getColorblindSprite(altImg)
+                            : render.getMenuRender().getColorblindSprite(baseImg);
+                    drawButtonLayers(g2, smallButton, gameButton, x, y);
+                    g2.drawImage(img, x ,y, null);
+                    x += width + spacing;
+
+                    if(render.isHovered(gameButton)) {
+                        drawTooltip(g2, showTooltip(option));
+                    }
+                }
+                case SETTINGS -> {
+                    if(settingsButton == null) {
+                        settingsButton = createButton(x, y, width, height, () -> {
+                            option.run(gameService);
+                            render.getMenuRender().onClose();
+                        });
+                    }
+                    BufferedImage img = render.isHovered(settingsButton) || render.isSelected(settingsButton)
+                            ? render.getMenuRender().getColorblindSprite(altImg)
+                            : render.getMenuRender().getColorblindSprite(baseImg);
+                    drawButtonLayers(g2, smallButton, settingsButton, x, y);
+                    g2.drawImage(img, x ,y, null);
+                    x += width + spacing;
+
+                    if(render.isHovered(settingsButton)) {
+                        drawTooltip(g2, showTooltip(option));
+                    }
+                }
+                case ACHIEVEMENTS -> {
+                    if(achievementsButton == null) {
+                        achievementsButton = createButton(x, y, width, height, () -> {
+                            option.run(gameService);
+                            render.getMenuRender().onClose();
+                        });
+                    }
+                    BufferedImage img = render.isHovered(achievementsButton) || render.isSelected(achievementsButton)
+                            ? render.getMenuRender().getColorblindSprite(altImg)
+                            : render.getMenuRender().getColorblindSprite(baseImg);
+                    drawButtonLayers(g2, smallButton, achievementsButton, x, y);
+                    g2.drawImage(img, x, y, null);
+                    x += width + spacing;
+
+                    if(render.isHovered(achievementsButton)) {
+                        drawTooltip(g2, showTooltip(option));
+                    }
+                }
+                case LANG -> {
+                    if(langButton == null) {
+                        langButton = createButton(x, y, width, height, () ->
+                                option.run(gameService));
+                    }
+                    BufferedImage img = render.isHovered(langButton) || render.isSelected(langButton)
+                            ? render.getMenuRender().getColorblindSprite(altImg)
+                            : render.getMenuRender().getColorblindSprite(baseImg);
+                    drawButtonLayers(g2, smallButton, langButton, x, y);
+                    g2.drawImage(img, x, y, null);
+                    x += width + spacing;
+
+                    if(render.isHovered(langButton)) {
+                        drawTooltip(g2, showTooltip(option));
+                    }
+                }
+                case EXIT -> {
+                    if(exitButton == null) {
+                        exitButton = createButton(x, y, width, height, () ->
+                                option.run(gameService));
+                    }
+                    BufferedImage img = render.isHovered(exitButton) || render.isSelected(exitButton)
+                            ? render.getMenuRender().getColorblindSprite(altImg)
+                            : render.getMenuRender().getColorblindSprite(baseImg);
+                    drawButtonLayers(g2, smallButton, exitButton, x, y);
+                    g2.drawImage(img, x, y, null);
+                    x += width + spacing;
+
+                    if(render.isHovered(exitButton)) {
+                        drawTooltip(g2, showTooltip(option));
+                    }
+                }
+                case THEME -> {
+                    if(BooleanService.canTheme) {
+                        if(themeButton == null) {
+                            themeButton = createButton(x, y, width, height, Colors::nextTheme);
+                        }
+                        BufferedImage img = render.isHovered(themeButton) || render.isSelected(themeButton)
+                                ? render.getMenuRender().getColorblindSprite(altImg)
+                                : render.getMenuRender().getColorblindSprite(baseImg);
+                        drawButtonLayers(g2, smallButton, themeButton, x, y);
+                        g2.drawImage(img, x, y, null);
+                        x += width + spacing;
+
+                        if(render.isHovered(themeButton)) {
+                            drawTooltip(g2, showTooltip(option));
+                        }
                     }
                 }
             }
@@ -364,9 +293,9 @@ public class MainMenu implements UI {
         return b;
     }
 
-    private void drawButtonLayers(Graphics2D g2, BufferedImage img, Button b, ButtonSize size, int x, int y) {
+    private void drawButtonLayers(Graphics2D g2, BufferedImage img, Button b, int x, int y) {
         g2.drawImage(Colorblindness.filter(img), x, y, null);
-        BufferedImage frame = render.getMenuRender().defineButton(b, size);
+        BufferedImage frame = render.getMenuRender().defineButton(b);
         g2.drawImage(frame, x, y, null);
     }
 
