@@ -3,6 +3,7 @@ package org.lud.engine.input;
 import org.lud.engine.entities.Board;
 import org.lud.engine.entities.Piece;
 import org.lud.engine.enums.Games;
+import org.lud.engine.enums.LastInput;
 import org.lud.engine.interfaces.Clickable;
 import org.lud.engine.render.RenderContext;
 import org.lud.engine.service.BooleanService;
@@ -17,8 +18,11 @@ public class MouseInput {
     private final Mouse mouse;
     private final ServiceFactory service;
     private Piece piece;
+
     private int offsetX;
     private int offsetY;
+    private int lastMouseX;
+    private int lastMouseY;
 
     public boolean isClicking = false;
     private boolean wasPressedLastFrame = false;
@@ -58,13 +62,38 @@ public class MouseInput {
         this.click = click;
     }
 
+    public int getLastMouseX() {
+        return lastMouseX;
+    }
+
+    public void setLastMouseX(int lastMouseX) {
+        this.lastMouseX = lastMouseX;
+    }
+
+    public int getLastMouseY() {
+        return lastMouseY;
+    }
+
+    public void setLastMouseY(int lastMouseY) {
+        this.lastMouseY = lastMouseY;
+    }
+
     public void update() {
+        updateMouse();
         switch(service.getGameService().getState()) {
             case MENU, SETTINGS, ACHIEVEMENTS -> updateMenus();
             case BOARD -> {
                 updateBoard();
                 updateMenus();
             }
+        }
+    }
+
+    private void updateMouse() {
+        if(mouse.getX() != lastMouseX || mouse.getY() != lastMouseY) {
+            lastMouseX = mouse.getX();
+            lastMouseY = mouse.getY();
+            service.getCoordinator().setLastInput(LastInput.MOUSE);
         }
     }
 

@@ -108,6 +108,7 @@ public class KeyboardInput {
     }
 
     public void update() {
+        updateKeyboardInput();
         long now = System.currentTimeMillis();
         Keyboard keyboard = service.getKeyboard();
         MovesManager move = service.getMovesManager();
@@ -134,6 +135,13 @@ public class KeyboardInput {
 
         if(keyboard.wasF11Pressed()) {
             gameFrame.toggleFullscreen();
+        }
+    }
+
+    private void updateKeyboardInput() {
+        Keyboard keyboard = service.getKeyboard();
+        if(keyboard.wasPressed()) {
+            service.getCoordinator().setLastInput(LastInput.KEYBOARD);
         }
     }
 

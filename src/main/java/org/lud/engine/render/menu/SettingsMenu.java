@@ -138,8 +138,6 @@ public class SettingsMenu implements UI {
         for(int i = startIndex; i < endIndex; i++) {
             GameSettings option = options[i];
             int relativeIndex = i - startIndex;
-            boolean isSelected =
-                    relativeIndex == keyUI.getSelectedIndexY();
             String label = ENABLE + " " + option.getLabel();
             int textWidth = g2.getFontMetrics().stringWidth(label.toUpperCase());
             int toggleWidth = render.scale(toggleOn.getWidth());
@@ -165,7 +163,7 @@ public class SettingsMenu implements UI {
                     mouse.getX(), mouse.getY());
 
             BufferedImage toggleImage = drawToggle(
-                    option, isEnabled, isSelected, isHovered);
+                    option, isEnabled, render.isSelected(option), isHovered);
 
             uiService.drawToggle(g2,
                     toggleImage,

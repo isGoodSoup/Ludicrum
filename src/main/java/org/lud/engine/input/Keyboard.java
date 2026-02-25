@@ -13,6 +13,8 @@ public class Keyboard implements KeyListener {
     private final Map<Integer, Boolean> keyProcessedCombo;
     private StringBuilder textBuffer = new StringBuilder();
 
+    private boolean anyKeyPressedThisFrame = false;
+
     public Keyboard() {
         this.keyStates = new HashMap<>();
         this.keyProcessed = new HashMap<>();
@@ -47,12 +49,19 @@ public class Keyboard implements KeyListener {
                 textBuffer.deleteCharAt(textBuffer.length() - 1);
             }
         }
+        anyKeyPressedThisFrame = true;
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
         keyStates.put(e.getKeyCode(), false);
         keyProcessed.put(e.getKeyCode(), false);
+    }
+
+    public boolean wasPressed() {
+        boolean result = anyKeyPressedThisFrame;
+        anyKeyPressedThisFrame = false;
+        return result;
     }
 
     private boolean wasKeyPressed(int keyCode) {

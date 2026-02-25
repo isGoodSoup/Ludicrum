@@ -26,7 +26,7 @@ public class MenuRender {
     private static final int STROKE = 6;
 
     private final Map<String, ButtonSprite> buttonRegistry;
-    private final Map<Clickable, Rectangle> buttons;
+    private final LinkedHashMap<Clickable, Rectangle> buttons;
     private final Map<Button, Boolean> buttonsClicked;
     private final List<UI> menus;
     private final Set<Clickable> activeButtons;
@@ -46,7 +46,7 @@ public class MenuRender {
 
     public MenuRender(RenderContext render, UI... menus) {
         this.render = render;
-        this.buttons = new HashMap<>();
+        this.buttons = new LinkedHashMap<>();
         this.buttonsClicked = new HashMap<>();
         this.buttonRegistry = new HashMap<>();
         this.activeButtons = new HashSet<>();
@@ -181,15 +181,15 @@ public class MenuRender {
             case L -> key = "button_small";
         }
         ButtonSprite sprite = buttonRegistry.get(key);
-        return render.isHovered(c) ? sprite.highlighted : null;
+        return render.isHovered(c) || render.isSelected(c) ? sprite.highlighted : null;
     }
 
     public void clearButtons() {
         buttons.clear();
     }
 
-    public void addButton(Clickable button, Rectangle rect) {
-        buttons.put(button, rect);
+    public void addButton(Clickable button, Rectangle hitbox) {
+        buttons.put(button, hitbox);
         activeButtons.add(button);
     }
 

@@ -156,7 +156,7 @@ public class AchievementsMenu implements UI {
             BufferedImage sprite = AchievementSprites.getSprite(a);
             achievementBoxes.put(a, new Rectangle(boxX, startY, boxWidth, boxHeight));
 
-            if(isHovered(a)) {
+            if(isHovered(a) || render.isSelected(a)) {
                 UIService.drawBox(g2, STROKE, boxX, startY, boxWidth, boxHeight,
                         ARC, hasBackground, true, 180);
 
@@ -193,7 +193,7 @@ public class AchievementsMenu implements UI {
                         ARC, hasBackground, false, 180);
             }
 
-            if(isHovered(a)) {
+            if(isHovered(a) || render.isSelected(a)) {
                 g2.setColor(Colors.getHighlight());
             }
             g2.setFont(UIService.getFont(UIService.fontSize()[4]));

@@ -175,10 +175,10 @@ public class MainMenu implements UI {
                     });
                 }
 
-                Color textColor = render.isHovered(playButton)
+                Color textColor = render.isHovered(playButton) || render.isSelected(playButton)
                         ? Color.WHITE : Colors.BUTTON;
 
-                BufferedImage img = render.isHovered(playButton)
+                BufferedImage img = render.isHovered(playButton) || render.isSelected(playButton)
                         ? render.getMenuRender().getColorblindSprite(altImg)
                         : render.getMenuRender().getColorblindSprite(baseImg);
 
@@ -211,9 +211,10 @@ public class MainMenu implements UI {
                             option.run(gameService));
                 }
 
-                BufferedImage img = render.isHovered(gameButton)
+                BufferedImage img = render.isHovered(gameButton) || render.isSelected(gameButton)
                         ? render.getMenuRender().getColorblindSprite(altImg)
                         : render.getMenuRender().getColorblindSprite(baseImg);
+
                 drawButtonLayers(g2, extraBigButton, gameButton, ButtonSize.XXL, x, y);
                 g2.drawImage(img, x, y, null);
 
@@ -237,9 +238,10 @@ public class MainMenu implements UI {
                     });
                 }
 
-                BufferedImage img = render.isHovered(settingsButton)
+                BufferedImage img = render.isHovered(settingsButton) || render.isSelected(settingsButton)
                         ? render.getMenuRender().getColorblindSprite(altImg)
                         : render.getMenuRender().getColorblindSprite(baseImg);
+
                 drawButtonLayers(g2, smallButton, settingsButton, ButtonSize.L, x, y);
                 g2.drawImage(img, x, y, null);
 
@@ -263,9 +265,10 @@ public class MainMenu implements UI {
                     });
                 }
 
-                BufferedImage img = render.isHovered(achievementsButton)
+                BufferedImage img = render.isHovered(achievementsButton) || render.isSelected(achievementsButton)
                         ? render.getMenuRender().getColorblindSprite(altImg)
                         : render.getMenuRender().getColorblindSprite(baseImg);
+
                 drawButtonLayers(g2, smallButton, achievementsButton, ButtonSize.L, x, y);
                 g2.drawImage(img, x, y, null);
 
@@ -287,9 +290,10 @@ public class MainMenu implements UI {
                             option.run(gameService));
                 }
 
-                BufferedImage img = render.isHovered(langButton)
+                BufferedImage img = render.isHovered(langButton) || render.isSelected(langButton)
                         ? render.getMenuRender().getColorblindSprite(altImg)
                         : render.getMenuRender().getColorblindSprite(baseImg);
+
                 drawButtonLayers(g2, smallButton, langButton, ButtonSize.L, x, y);
                 g2.drawImage(img, x, y, null);
 
@@ -312,9 +316,10 @@ public class MainMenu implements UI {
                             option.run(gameService));
                 }
 
-                BufferedImage img = render.isHovered(exitButton)
+                BufferedImage img = render.isHovered(exitButton) || render.isSelected(exitButton)
                         ? render.getMenuRender().getColorblindSprite(altImg)
                         : render.getMenuRender().getColorblindSprite(baseImg);
+
                 drawButtonLayers(g2, smallButton, exitButton, ButtonSize.L, x, y);
                 g2.drawImage(img, x, y, null);
 
@@ -338,9 +343,10 @@ public class MainMenu implements UI {
                         themeButton = createButton(x, y, width, height, Colors::nextTheme);
                     }
 
-                    BufferedImage img = render.isHovered(themeButton)
+                    BufferedImage img = render.isHovered(themeButton) || render.isSelected(themeButton)
                             ? render.getMenuRender().getColorblindSprite(altImg)
                             : render.getMenuRender().getColorblindSprite(baseImg);
+
                     drawButtonLayers(g2, smallButton, themeButton, ButtonSize.L, x, y);
                     g2.drawImage(img, x, y, null);
 

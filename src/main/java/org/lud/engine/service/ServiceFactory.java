@@ -1,11 +1,8 @@
 package org.lud.engine.service;
 
+import org.lud.engine.input.*;
 import org.lud.engine.util.Colors;
 import org.lud.engine.core.GameFrame;
-import org.lud.engine.input.Keyboard;
-import org.lud.engine.input.KeyboardInput;
-import org.lud.engine.input.Mouse;
-import org.lud.engine.input.MouseInput;
 import org.lud.engine.interfaces.UI;
 import org.lud.engine.manager.EventBus;
 import org.lud.engine.manager.MovesManager;
@@ -22,6 +19,7 @@ public class ServiceFactory {
     private final RenderContext render;
     private final PieceService piece;
     private final BoardService board;
+    private final Coordinator coordinator;
     private final Keyboard keyboard;
     private final KeyboardInput key;
     private final Mouse mouse;
@@ -43,6 +41,7 @@ public class ServiceFactory {
         this.render = render;
         this.intro = intro;
         this.eventBus = new EventBus();
+        this.coordinator = new Coordinator();
         this.keyboard = new Keyboard();
         this.key = new KeyboardInput();
         this.key.setGameFrame(gameFrame);
@@ -127,6 +126,10 @@ public class ServiceFactory {
 
     public BoardService getBoardService() {
         return board;
+    }
+
+    public Coordinator getCoordinator() {
+        return coordinator;
     }
 
     public Keyboard getKeyboard() {
