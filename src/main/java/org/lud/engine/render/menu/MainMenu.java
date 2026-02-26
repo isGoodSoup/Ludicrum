@@ -67,7 +67,8 @@ public class MainMenu implements UI {
 
     @Override
     public void drawMenu(Graphics2D g2) {
-        if(MenuRender.getButtonMap().isEmpty()) {
+        MenuRender.getStartMap().clear();
+        if(MenuRender.getStartMap().isEmpty()) {
             initButtons();
         }
         draw(g2);
@@ -135,7 +136,7 @@ public class MainMenu implements UI {
     }
 
     private void initButtons() {
-        MenuRender.getButtonMap().clear();
+        MenuRender.getStartMap().clear();
         smallButton = render.getMenuRender().getButtonRegistry().get("button_small").normal;
         smallYellowButton = render.getMenuRender().getButtonRegistry().get("button").normal;
         int x = render.scale(50);
@@ -152,7 +153,7 @@ public class MainMenu implements UI {
             Button button = createButton(x, y, baseImg.getWidth(), baseImg.getHeight(), () -> {
                 option.run(gameService);
                 render.getMenuRender().deactivateAll();
-                MenuRender.getButtonMap().clear();
+                MenuRender.getStartMap().clear();
             });
 
             if(button != null && option != null) {
@@ -172,7 +173,7 @@ public class MainMenu implements UI {
         int x = render.scale(50);
         int y = render.scale(RenderContext.BASE_Y);
 
-        for(Map.Entry<Button, GameMenu> entry : MenuRender.getButtonMap().entrySet()) {
+        for(Map.Entry<Button, GameMenu> entry : MenuRender.getStartMap().entrySet()) {
             Button button = entry.getKey();
             GameMenu option = entry.getValue();
 
@@ -197,7 +198,7 @@ public class MainMenu implements UI {
         g2.drawImage(img, x, y, null);
 
         if(render.isHovered(button)) {
-            drawTooltip(g2, option.getTooltip());
+            drawTooltip(g2, showTooltip(option));
         }
     }
 
@@ -216,7 +217,9 @@ public class MainMenu implements UI {
     public void drawTooltip(Graphics2D g2, String text) {
         int padding = 16;
         g2.setFont(UIService.getFont(UIService.fontSize()[3]));
-        uiService.drawTooltip(g2, text, padding, ARC, false, 0, 0);
+        uiService.drawTooltip(g2, text, padding, ARC, true,
+                RenderContext.BASE_WIDTH/2 - g2.getFontMetrics().stringWidth(text)/2 - 15,
+                RenderContext.BASE_Y - 100);
     }
 
     @SuppressWarnings("StatementWithEmptyBody")

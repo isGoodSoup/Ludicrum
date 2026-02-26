@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import java.awt.*;
 
 public class Colors {
-    public static final Color BUTTON = new Color(198, 114, 11);
     public static final Color PROGRESS_BAR = new Color(61, 187, 47);
     public static final Color SETTINGS = new Color(0 ,0 , 0, 180);
     private static final Logger log = LoggerFactory.getLogger(Colors.class);

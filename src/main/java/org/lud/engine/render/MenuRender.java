@@ -18,7 +18,7 @@ import java.util.List;
 
 @SuppressWarnings("ALL")
 public class MenuRender {
-    private static final Map<Button, GameMenu> buttonMap = new LinkedHashMap<>();
+    private static final Map<Button, GameMenu> startMap = new LinkedHashMap<>();
     private static final Map<Button, GameSettings> settingsMap = new LinkedHashMap<>();
     public static final Games[] GAMES = Games.values();
     private static final Logger log = LoggerFactory.getLogger(MenuRender.class);
@@ -61,14 +61,14 @@ public class MenuRender {
         return buttons;
     }
 
-    public static Map<Button, GameMenu> getButtonMap() { return buttonMap; }
+    public static Map<Button, GameMenu> getStartMap() { return startMap; }
 
     public List<Map.Entry<Button, GameMenu>> getMenuEntries() {
-        return new ArrayList<>(MenuRender.getButtonMap().entrySet());
+        return new ArrayList<>(MenuRender.getStartMap().entrySet());
     }
 
     public static void put(Button button, GameMenu gameMenu) {
-        buttonMap.put(button, gameMenu);
+        startMap.put(button, gameMenu);
     }
 
     public static Map<Button, GameSettings> getSettingsMap() { return settingsMap; }

@@ -149,7 +149,9 @@ public class BoardService {
 
     public void resetBoard() {
         if(BooleanService.canResetTable) {
-            getService().getGameService().startNewGame();
+            service.getBoardService().clearBoardState();
+            service.getGameService().startNewGame(GameService.getGame());
+            service.getSound().playFX(0);
         }
     }
 
@@ -212,6 +214,7 @@ public class BoardService {
                     p.setY(p.getRow() * squareSize);
                 }
 
+                board.setPieces(boardState);
                 service.getGameService().setCurrentTurn(Turn.LIGHT);
                 PieceService.nullThisPiece();
             }
@@ -245,6 +248,8 @@ public class BoardService {
                     p.setX(p.getCol() * squareSize);
                     p.setY(p.getRow() * squareSize);
                 }
+
+                board.setPieces(boardState);
                 service.getGameService().setCurrentTurn(Turn.LIGHT);
                 PieceService.nullThisPiece();
             }
@@ -297,6 +302,7 @@ public class BoardService {
                     p.setY(p.getRow() * squareSize);
                 }
 
+                board.setPieces(boardState);
                 service.getGameService().setCurrentTurn(Turn.LIGHT);
                 PieceService.nullThisPiece();
             }

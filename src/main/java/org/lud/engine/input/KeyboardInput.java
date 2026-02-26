@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import java.awt.event.KeyEvent;
 import java.util.*;
 
+@SuppressWarnings("ALL")
 public class KeyboardInput {
     private static final Logger log = LoggerFactory.getLogger(KeyboardInput.class);
     private int moveX = 4;
@@ -254,8 +255,8 @@ public class KeyboardInput {
     }
 
     private void activateMenu() {
-        if(selectedIndexY >= 0 && selectedIndexY < MenuRender.getButtonMap().size()) {
-            List<Map.Entry<Button, GameMenu>> entries = new ArrayList<>(MenuRender.getButtonMap().entrySet());
+        if(selectedIndexY >= 0 && selectedIndexY < MenuRender.getStartMap().size()) {
+            List<Map.Entry<Button, GameMenu>> entries = new ArrayList<>(MenuRender.getStartMap().entrySet());
             entries.get(selectedIndexY).getValue().run(service.getGameService());
         }
     }

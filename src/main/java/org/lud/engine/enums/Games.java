@@ -14,7 +14,7 @@ public enum Games implements State {
             gameService.setGame(this);
             gameService.setState(GameState.BOARD);
             if(!gameService.getSaveManager().autosaveExists()) {
-                gameService.startNewGame();
+                gameService.startNewGame(this);
             } else {
                 gameService.continueGame();
             }
@@ -34,7 +34,7 @@ public enum Games implements State {
             gameService.setGame(this);
             gameService.setState(GameState.BOARD);
             if(!gameService.getSaveManager().autosaveExists()) {
-                gameService.startNewGame();
+                gameService.startNewGame(this);
             } else {
                 gameService.continueGame();
             }
@@ -54,7 +54,7 @@ public enum Games implements State {
             gameService.setGame(this);
             gameService.setState(GameState.BOARD);
             if(!gameService.getSaveManager().autosaveExists()) {
-                gameService.startNewGame();
+                gameService.startNewGame(this);
             } else {
                 gameService.continueGame();
             }
@@ -77,7 +77,7 @@ public enum Games implements State {
             gameService.setState(GameState.BOARD);
 
             if(!gameService.getSaveManager().autosaveExists()) {
-                gameService.startNewGame();
+                gameService.startNewGame(this);
             } else {
                 gameService.continueGame();
             }
@@ -99,7 +99,7 @@ public enum Games implements State {
             gameService.setState(GameState.BOARD);
 
             if(!gameService.getSaveManager().autosaveExists()) {
-                gameService.startNewGame();
+                gameService.startNewGame(this);
             } else {
                 gameService.continueGame();
             }

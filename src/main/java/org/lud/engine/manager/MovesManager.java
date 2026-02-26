@@ -14,6 +14,7 @@ import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("ALL")
 public class MovesManager {
     private Piece selectedPiece;
     private ServiceFactory service;
@@ -493,6 +494,7 @@ public class MovesManager {
                     service.getBoardService().getSquareNameAt(lastMove.targetCol(), lastMove.targetRow()),
                     service.getBoardService().getSquareNameAt(lastMove.fromCol(), lastMove.fromRow()),
                     p.getTypeID(), captured != null ? " capturing " + captured.getTypeID() : "");
+            service.getSound().playFX(0);
             moves.removeLast();
         }
     }

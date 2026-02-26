@@ -12,10 +12,10 @@ import java.util.ArrayList;
 
 @SuppressWarnings("ALL")
 public class GameService {
+    private static Games games = Games.CHESS;
     private GameMenu gameMenu;
     private GameState state;
     private PlayState mode;
-    private static Games games;
     private Games previousGame;
     private Turn currentTurn;
     private BoardService boardService;
@@ -27,7 +27,6 @@ public class GameService {
     public GameService(BoardService boardService, SaveManager saveManager) {
         this.boardService = boardService;
         this.saveManager = saveManager;
-        games = Games.CHESS;
     }
 
     public GameMenu getGameMenu() { return gameMenu; }
@@ -35,6 +34,7 @@ public class GameService {
 
     public void setGame(Games games) { GameService.games = games; }
     public static Games getGame() { return games; }
+    public static Games getSelectedGame() { return getGame(); }
 
     public Games getPreviousGame() { return previousGame; }
     public void setPreviousGame(Games previousGame) { this.previousGame = previousGame; }
@@ -55,28 +55,24 @@ public class GameService {
     public BoardService getBoardService() { return boardService; }
     public void setBoardService(BoardService boardService) { this.boardService = boardService; }
 
-    public String getTooltip(Games game, boolean hasSave) {
-        String base = hasSave
-                ? GameMenu.PLAY.getContinueTooltip()
-                : GameMenu.PLAY.getTooltip();
-        return base + game.getLabel();
-    }
-
-    public void startNewGame() {
+    public void startNewGame(Games selectedGame) {
+        if(selectedGame != null) setGame(selectedGame);
         setCurrentTurn(Turn.LIGHT);
         service.getMovesManager().setMoves(new ArrayList<>());
         BooleanService.isCheckmate = false;
         BooleanService.isPromotionActive = false;
         boardService.prepBoard();
         boardService.startBoard();
-        Save newSave = new Save(
-                getGame(),
-                LocalDate.now().toString(),
-                getCurrentTurn(),
-                service.getPieceService().getPieces(),
-                service.getAchievementService().getUnlockedAchievements()
-        );
-        saveManager.saveGame(newSave);
+        if(BooleanService.canSave) {
+            Save newSave = new Save(
+                    getGame(),
+                    LocalDate.now().toString(),
+                    getCurrentTurn(),
+                    service.getPieceService().getPieces(),
+                    service.getAchievementService().getUnlockedAchievements()
+            );
+            saveManager.saveGame(newSave);
+        }
         if(!(GameService.getGame() == Games.SANDBOX)) {
             Ruleset rule = service.getModelService().createRuleSet(games);
             service.getModelService().setRule(rule);
@@ -87,13 +83,13 @@ public class GameService {
     public void continueGame() {
         if (!saveManager.autosaveExists()) {
             log.warn("No autosave found. Starting new game.");
-            startNewGame();
+            startNewGame(getGame());
             return;
         }
         Save loaded = saveManager.loadGame();
         if (loaded == null || loaded.pieces() == null) {
             log.warn("Autosave invalid or empty. Starting new game.");
-            startNewGame();
+            startNewGame(loaded.game());
             return;
         }
         if(loaded.game() != getGame()) {
@@ -143,14 +139,16 @@ public class GameService {
         boardService.prepBoard();
         boardService.startBoard();
         setCurrentTurn(Turn.LIGHT);
-        Save newSave = new Save(
-                getGame(),
-                LocalDate.now().toString(),
-                getCurrentTurn(),
-                service.getPieceService().getPieces(),
-                service.getAchievementService().getUnlockedAchievements()
-        );
-        saveManager.saveGame(newSave);
+        if(BooleanService.canSave) {
+            Save newSave = new Save(
+                    getGame(),
+                    LocalDate.now().toString(),
+                    getCurrentTurn(),
+                    service.getPieceService().getPieces(),
+                    service.getAchievementService().getUnlockedAchievements()
+            );
+            saveManager.saveGame(newSave);
+        }
 
         if(!(getGame() == Games.SANDBOX)) {
             Ruleset rule = service.getModelService().createRuleSet(newGame);
