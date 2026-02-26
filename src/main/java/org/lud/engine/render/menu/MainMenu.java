@@ -26,9 +26,6 @@ import java.util.Map;
 @SuppressWarnings("ALL")
 public class MainMenu implements UI {
     private static final int ARC = 32;
-    private static final int CENTER_Y = 800;
-    private static final int PADDING_X = 25;
-    private static final int PADDING_Y = 25;
     private static final Logger log = LoggerFactory.getLogger(MainMenu.class);
 
     private final RenderContext render;
@@ -163,6 +160,7 @@ public class MainMenu implements UI {
             Button button = createButton(x, y, baseImg.getWidth(), baseImg.getHeight(), () -> {
                 option.run(gameService);
                 render.getMenuRender().deactivateAll();
+                MenuRender.getButtonMap().clear();
             });
 
             if(button != null && option != null) {
