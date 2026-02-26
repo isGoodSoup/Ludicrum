@@ -77,7 +77,9 @@ public class MainMenu implements UI {
 
     @Override
     public void drawMenu(Graphics2D g2) {
-        initButtons();
+        if(MenuRender.getButtonMap().isEmpty()) {
+            initButtons();
+        }
         draw(g2);
         fadeFrom(g2);
         mouse.reset();
@@ -196,7 +198,7 @@ public class MainMenu implements UI {
     private void drawMenuButton(Graphics2D g2, Button button, int x, int y,
                                 BufferedImage baseImg, BufferedImage altImg,
                                 GameMenu option, BufferedImage layerImg) {
-        BufferedImage img = render.isHovered(button) || render.isSelected(button)
+        BufferedImage img = render.isHovered(button) || render.isSelected(option)
                 ? render.getMenuRender().getColorblindSprite(altImg)
                 : render.getMenuRender().getColorblindSprite(baseImg);
 

@@ -1,5 +1,6 @@
 package org.lud.engine.render;
 
+import org.lud.engine.enums.GameMenu;
 import org.lud.engine.input.KeyboardInput;
 import org.lud.engine.input.Mouse;
 import org.lud.engine.input.MouseInput;
@@ -144,6 +145,11 @@ public class RenderContext {
         List<Clickable> buttons = new ArrayList<>(menuRender.getButtons().keySet());
         int index = buttons.indexOf(param);
         return index == keyUI.getSelectedIndexY();
+    }
+
+    public boolean isSelected(GameMenu menuEntry) {
+        return BooleanService.canUseKeyboard
+                && keyUI.getSelectedIndexY() == menuEntry.ordinal();
     }
 
     public double getScale() {
