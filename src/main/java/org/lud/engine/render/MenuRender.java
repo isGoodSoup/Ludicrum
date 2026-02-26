@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.List;
 
+@SuppressWarnings("ALL")
 public class MenuRender {
     private static final Map<Button, GameMenu> buttonMap = new LinkedHashMap<>();
     private static final Map<Button, GameSettings> settingsMap = new LinkedHashMap<>();

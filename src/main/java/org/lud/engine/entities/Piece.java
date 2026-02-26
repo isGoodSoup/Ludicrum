@@ -8,6 +8,7 @@ import org.lud.engine.service.PieceService;
 
 import java.util.List;
 
+@SuppressWarnings("ALL")
 public abstract class Piece {
 	protected final long id;
 	private static long NEXT_ID = 1;

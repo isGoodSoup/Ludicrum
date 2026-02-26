@@ -11,6 +11,7 @@ import org.lud.engine.service.UIService;
 import java.awt.*;
 import java.util.List;
 
+@SuppressWarnings("ALL")
 public class MovesRender {
     private RenderContext render;
     private BoardService boardService;

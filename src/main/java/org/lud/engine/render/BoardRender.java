@@ -12,6 +12,7 @@ import org.lud.engine.util.Colors;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
+@SuppressWarnings("ALL")
 public class BoardRender {
     private Button backButton;
     private Button undoButton;

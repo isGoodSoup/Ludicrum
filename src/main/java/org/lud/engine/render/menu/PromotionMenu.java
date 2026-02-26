@@ -14,6 +14,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.List;
 
+@SuppressWarnings("ALL")
 public class PromotionMenu implements UI {
     private static final int ARC = 32;
     private static final int STROKE = 6;
@@ -21,16 +22,13 @@ public class PromotionMenu implements UI {
     private final RenderContext render;
     private final PieceService pieceService;
     private final PromotionService promotionService;
-    private final UIService uiService;
 
     public PromotionMenu(RenderContext render,
                          PieceService pieceService,
-                         PromotionService promotionService,
-                         UIService uiService) {
+                         PromotionService promotionService) {
         this.render = render;
         this.pieceService = pieceService;
         this.promotionService = promotionService;
-        this.uiService = uiService;
     }
 
     @Override

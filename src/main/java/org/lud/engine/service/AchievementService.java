@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
+@SuppressWarnings("ALL")
 public class AchievementService {
     private static final Logger log = LoggerFactory.getLogger(AchievementService.class);
     private Map<Achievements, Achievement> achievements;

@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 public class AchievementsMenu implements UI {
     private static final int ARC = 32;
     private static final int STROKE = 6;
@@ -38,7 +39,6 @@ public class AchievementsMenu implements UI {
     private final Map<Clickable, Rectangle> achievementBoxes;
 
     private final RenderContext render;
-    private final UIService uiService;
     private final KeyboardInput keyUI;
     private final AchievementService achievementService;
     private final GameService gameService;
@@ -48,10 +48,9 @@ public class AchievementsMenu implements UI {
     private Button prevButton;
     private Button backButton;
 
-    public AchievementsMenu(RenderContext render, UIService uiService, KeyboardInput keyUI,
+    public AchievementsMenu(RenderContext render, KeyboardInput keyUI,
                             AchievementService achievementService, GameService gameService, Mouse mouse) {
         this.render = render;
-        this.uiService = uiService;
         this.keyUI = keyUI;
         this.achievementService = achievementService;
         this.gameService = gameService;
@@ -61,14 +60,6 @@ public class AchievementsMenu implements UI {
 
     private int getTotalWidth() {
         return render.scale(RenderContext.BASE_WIDTH);
-    }
-
-    private int getCenterX(int containerWidth, int elementWidth) {
-        return render.getOffsetX() + (containerWidth - elementWidth)/2;
-    }
-
-    private int getCenterY(int containerHeight, int elementHeight) {
-        return render.getOffsetY() + (containerHeight - elementHeight)/2;
     }
 
     @Override
@@ -217,11 +208,10 @@ public class AchievementsMenu implements UI {
 
     private void initButtons() {
         int baseY = render.scale(RenderContext.BASE_Y);
-        int x = 0, y = baseY;
-        Map<Clickable, Rectangle> buttons = render.getMenuRender().getButtons();
+        int x = 0;
 
         x = render.scale(50);
-        backButton = createButton(backButton, x, y, getSprites()[0].getWidth(), getSprites()[0].getHeight(),
+        backButton = createButton(backButton, x, baseY, getSprites()[0].getWidth(), getSprites()[0].getHeight(),
                 () -> {
                     log.debug("Back to Menu");
                     gameService.setState(GameState.MENU);
@@ -229,7 +219,7 @@ public class AchievementsMenu implements UI {
                 });
 
         x = getTotalWidth()/2 - 80;
-        prevButton = createButton(prevButton, x, y, getSprites()[0].getWidth(), getSprites()[0].getHeight(),
+        prevButton = createButton(prevButton, x, baseY, getSprites()[0].getWidth(), getSprites()[0].getHeight(),
                 () -> {
                     log.debug("Previous page");
                     int page = keyUI.getCurrentPage() - 1;
@@ -240,7 +230,7 @@ public class AchievementsMenu implements UI {
                 });
 
         x = getTotalWidth()/2;
-        nextButton = createButton(nextButton, x, y, getSprites()[0].getWidth(), getSprites()[0].getHeight(),
+        nextButton = createButton(nextButton, x, baseY, getSprites()[0].getWidth(), getSprites()[0].getHeight(),
                 () -> {
                     log.debug("Next page");
                     int totalPages = achievementService.getAchievementList().size();

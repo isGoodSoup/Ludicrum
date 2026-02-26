@@ -14,20 +14,18 @@ import org.lud.engine.service.UIService;
 
 import java.awt.*;
 
+@SuppressWarnings("ALL")
 public class SandboxMenu implements UI {
     private static final int ARC = 32;
     private static final int STROKE = 6;
 
     private final RenderContext render;
     private final BoardService boardService;
-    private final UIService uiService;
 
     public SandboxMenu(RenderContext render,
-                       BoardService boardService,
-                       UIService uiService) {
+                       BoardService boardService) {
         this.render = render;
         this.boardService = boardService;
-        this.uiService = uiService;
     }
 
     @Override

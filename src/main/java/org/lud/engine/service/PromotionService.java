@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("ALL")
 public class PromotionService {
     private Turn promotionColor;
     private Piece promotingPawn;

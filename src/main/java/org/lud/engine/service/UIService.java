@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
 
+@SuppressWarnings("ALL")
 public class UIService {
     private static Font font;
     private static BufferedImage logo;

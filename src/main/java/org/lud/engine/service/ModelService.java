@@ -16,20 +16,13 @@ import java.util.List;
 public class ModelService {
     private final PieceService pieceService;
     private final AnimationService animationService;
-    private final PromotionService promotionService;
     private BoardService boardService;
     private Ruleset rule;
 
     public ModelService(PieceService pieceService,
-                        AnimationService animationService,
-                        PromotionService promotionService) {
+                        AnimationService animationService) {
         this.pieceService = pieceService;
         this.animationService = animationService;
-        this.promotionService = promotionService;
-    }
-
-    public Ruleset getRule() {
-        return rule;
     }
 
     public void setRule(Ruleset rule) {
@@ -42,9 +35,9 @@ public class ModelService {
 
     public Ruleset createRuleSet(Games type) {
         return switch(type) {
-            case CHESS, CHAOS -> new ChessRuleset(pieceService, boardService);
-            case CHECKERS -> new CheckersRuleset(pieceService, boardService);
-            case SHOGI -> new ShogiRuleset(pieceService, boardService);
+            case CHESS, CHAOS -> new ChessRuleset(pieceService);
+            case CHECKERS -> new CheckersRuleset(pieceService);
+            case SHOGI -> new ShogiRuleset(pieceService);
             default -> throw new IllegalStateException("No ruleset?");
         };
     }

@@ -8,11 +8,11 @@ import org.lud.engine.enums.Games;
 import org.lud.engine.enums.Time;
 import org.lud.engine.enums.Turn;
 import org.lud.engine.manager.MovesManager;
-import org.lud.engine.manager.SaveManager;
 import org.lud.engine.records.Save;
 
 import java.util.*;
 
+@SuppressWarnings("ALL")
 public class BoardService {
     private static Piece[][] boardState;
     private Board board;
@@ -20,25 +20,15 @@ public class BoardService {
     private final Map<List<Integer>, List<Integer>> columns;
 
     private final PieceService pieceService;
-    private final PromotionService promotionService;
-    private final ModelService modelService;
     private GameService gameService;
     private static MovesManager movesManager;
-    private static SaveManager saveManager;
 
     private ServiceFactory service;
     private static final Logger log = LoggerFactory.getLogger(BoardService.class);
 
-    private Games lastLoggedGame = null;
-
-    public BoardService(PieceService pieceService,
-                        PromotionService promotionService,
-                        ModelService modelService,
-                        MovesManager movesManager) {
+    public BoardService(PieceService pieceService, MovesManager movesManager) {
         this.board = new Board();
         this.pieceService = pieceService;
-        this.promotionService = promotionService;
-        this.modelService = modelService;
         BoardService.movesManager = movesManager;
         this.columns = new HashMap<>();
     }
@@ -75,10 +65,6 @@ public class BoardService {
         return movesManager;
     }
 
-    public Map<List<Integer>, List<Integer>> getColumns() {
-        return columns;
-    }
-
     public void prepBoard() {
         Games game = GameService.getGame();
         if (game == null) {
@@ -103,7 +89,7 @@ public class BoardService {
         }
     }
 
-    public void restoreSprites(Save save, UIService UIService) {
+    public void restoreSprites(Save save) {
         List<Piece> loadedPieces = save.pieces();
         Piece[][] boardArray = new Piece[board.getRow()][board.getCol()];
         for(Piece p : loadedPieces) {
@@ -131,10 +117,6 @@ public class BoardService {
     private void clearBoardState() {
         boardState = new Piece[board.getRow()][board.getCol()];
         pieceService.getPieces().clear();
-    }
-
-    public String[][] getSquares() {
-        return squares;
     }
 
     public String getSquareNameAt(int col, int row) {
@@ -176,7 +158,6 @@ public class BoardService {
 
         if(game != GameService.getGame()) {
             log.debug("Current game: {}", GameService.getGame());
-            lastLoggedGame = game;
         }
 
         if(game == null) {

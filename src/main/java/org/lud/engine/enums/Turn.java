@@ -4,6 +4,7 @@ import org.lud.engine.service.GameService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@SuppressWarnings("ALL")
 public enum Turn {
 	LIGHT,
 	DARK;

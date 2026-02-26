@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+@SuppressWarnings("ALL")
 public class AnimationService {
     private final List<Animation> animations = new ArrayList<>();
     private static final int MAX_TOASTS = 4;

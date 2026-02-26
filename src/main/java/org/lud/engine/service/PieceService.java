@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
+@SuppressWarnings("ALL")
 public class PieceService {
     private static Map<String, BufferedImage> cache;
     private final List<Piece> pieces;
@@ -25,8 +26,6 @@ public class PieceService {
     private Piece hoveredPieceKeyboard;
     private Piece hoveredPiece;
     private Piece lastPiece;
-    private int dragOffsetX;
-    private int dragOffsetY;
     private int hoveredSquareX = -1;
     private int hoveredSquareY = -1;
 
@@ -214,8 +213,7 @@ public class PieceService {
             case PAWN -> 10;
             case LANCE, KNIGHT_SHOGI -> 4;
             case SILVER -> 5;
-            case TOKIN -> 6;
-            case GOLD -> 6;
+            case TOKIN, GOLD -> 6;
             case BISHOP_SHOGI, ROOK_SHOGI -> 8;
             case CHECKER -> 20;
             case KNIGHT, BISHOP -> 30;

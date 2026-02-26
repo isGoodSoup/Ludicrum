@@ -12,14 +12,12 @@ import org.lud.engine.service.UIService;
 import java.awt.*;
 
 public class Checkmate implements UI {
-    private final UIService uiService;
     private final GameService gameService;
     private final RenderContext render;
     private final int totalWidth;
 
-    public Checkmate(UIService uiService, GameService gameService,
+    public Checkmate(GameService gameService,
                      RenderContext render, int totalWidth) {
-        this.uiService = uiService;
         this.gameService = gameService;
         this.render = render;
         this.totalWidth = totalWidth;

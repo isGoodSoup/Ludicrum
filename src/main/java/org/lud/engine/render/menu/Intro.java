@@ -7,6 +7,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
+@SuppressWarnings("ALL")
 public class Intro {
     private int logoSize = 0;
     private int logoDelta = 2;

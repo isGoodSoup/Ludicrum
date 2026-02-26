@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.Serial;
 import java.util.Locale;
 
+@SuppressWarnings("ALL")
 public class BoardPanel extends JPanel implements Runnable {
 	@Serial
     private static final long serialVersionUID = -5189356863277669172L;

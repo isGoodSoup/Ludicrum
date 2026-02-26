@@ -12,6 +12,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
+@SuppressWarnings("ALL")
 public class ControlsRender {
     private ServiceFactory service;
 

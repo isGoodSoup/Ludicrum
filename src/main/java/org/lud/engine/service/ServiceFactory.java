@@ -14,6 +14,7 @@ import org.lud.engine.sound.Sound;
 
 import java.util.List;
 
+@SuppressWarnings("ALL")
 public class ServiceFactory {
     private final Intro intro;
     private final RenderContext render;
@@ -64,15 +65,14 @@ public class ServiceFactory {
         this.animation = new AnimationService();
         this.piece = new PieceService(eventBus);
         this.promotion = new PromotionService(piece, eventBus);
-        this.model = new ModelService(piece, animation, promotion);
+        this.model = new ModelService(piece, animation);
         this.movesManager = new MovesManager();
         this.promotion.setMovesManager(movesManager);
         this.piece.setMoveManager(movesManager);
         this.render.setMovesManager(movesManager);
         this.saveManager = new SaveManager();
-        this.gs = new GameService(render, null, saveManager);
-        this.board = new BoardService(piece, promotion,
-                model, movesManager);
+        this.gs = new GameService(null, saveManager);
+        this.board = new BoardService(piece, movesManager);
         this.piece.setGameService(gs);
         this.board.setGameService(gs);
         this.promotion.setGameService(gs);
@@ -97,10 +97,10 @@ public class ServiceFactory {
         List<UI> menus = render.getMenuRender().getMenus();
         this.mainMenu = new MainMenu(render, gs, ui, key, mouse);
         this.settingsMenu = new SettingsMenu(render, ui, gs, key, mouse, mouseInput, MenuRender.OPTION_BUTTONS);
-        this.achievementsMenu = new AchievementsMenu(render, ui, key, achievement, gs, mouse);
-        this.checkmate = new Checkmate(ui, gs, render, RenderContext.BASE_WIDTH);
-        this.promotionMenu = new PromotionMenu(render, piece, promotion, ui);
-        this.sandboxMenu = new SandboxMenu(render, board, ui);
+        this.achievementsMenu = new AchievementsMenu(render, key, achievement, gs, mouse);
+        this.checkmate = new Checkmate(gs, render, RenderContext.BASE_WIDTH);
+        this.promotionMenu = new PromotionMenu(render, piece, promotion);
+        this.sandboxMenu = new SandboxMenu(render, board);
         this.tooltipMenu = new TooltipMenu(render, piece, board, ui, mouse);
         this.volumeMenu = new VolumeMenu(render, sound);
         menus.add(mainMenu);

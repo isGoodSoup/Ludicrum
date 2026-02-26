@@ -24,6 +24,7 @@ import java.awt.image.BufferedImage;
 import java.util.*;
 import java.util.List;
 
+@SuppressWarnings("ALL")
 public class SettingsMenu implements UI {
     private static final Logger log = LoggerFactory.getLogger(SettingsMenu.class);
     private static final int OPTION_Y = 160;

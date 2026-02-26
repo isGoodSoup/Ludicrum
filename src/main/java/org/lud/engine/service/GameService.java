@@ -1,16 +1,16 @@
 package org.lud.engine.service;
 
 import org.lud.engine.enums.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.lud.engine.interfaces.Ruleset;
 import org.lud.engine.manager.SaveManager;
 import org.lud.engine.records.Save;
-import org.lud.engine.render.RenderContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 
+@SuppressWarnings("ALL")
 public class GameService {
     private GameMenu gameMenu;
     private GameState state;
@@ -18,15 +18,13 @@ public class GameService {
     private static Games games;
     private Games previousGame;
     private Turn currentTurn;
-    private RenderContext render;
     private BoardService boardService;
     private ServiceFactory service;
     private SaveManager saveManager;
     private final Logger log = LoggerFactory.getLogger(GameService.class);
 
 
-    public GameService(RenderContext render, BoardService boardService, SaveManager saveManager) {
-        this.render = render;
+    public GameService(BoardService boardService, SaveManager saveManager) {
         this.boardService = boardService;
         this.saveManager = saveManager;
         games = Games.CHESS;
@@ -104,7 +102,7 @@ public class GameService {
         setGame(loaded.game());
         boardService.getBoard().setSize(loaded.game());
         boardService.prepBoard();
-        boardService.restoreSprites(loaded, service.getUIService());
+        boardService.restoreSprites(loaded);
         service.getPieceService().getPieces().clear();
         service.getPieceService().getPieces().addAll(loaded.pieces());
         service.getAchievementService().setUnlockedAchievements(loaded.achievements());

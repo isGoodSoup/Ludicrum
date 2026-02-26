@@ -5,7 +5,6 @@ import org.lud.engine.enums.Turn;
 import org.lud.engine.interfaces.Ruleset;
 import org.lud.engine.records.Move;
 import org.lud.engine.records.MoveScore;
-import org.lud.engine.service.BoardService;
 import org.lud.engine.service.PieceService;
 
 import java.util.ArrayList;
@@ -13,11 +12,9 @@ import java.util.List;
 
 public class ChessRuleset implements Ruleset {
     private final PieceService pieceService;
-    private final BoardService boardService;
 
-    public ChessRuleset(PieceService pieceService, BoardService boardService) {
+    public ChessRuleset(PieceService pieceService) {
         this.pieceService = pieceService;
-        this.boardService = boardService;
     }
 
     @Override

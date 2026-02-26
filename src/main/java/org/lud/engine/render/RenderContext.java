@@ -15,6 +15,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("ALL")
 public class RenderContext {
     public static final int BASE_WIDTH = 1920;
     public static final int BASE_HEIGHT = 1080;

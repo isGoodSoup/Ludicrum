@@ -1,13 +1,11 @@
 package org.lud.engine.rulesets;
 
-import org.lud.engine.entities.Board;
 import org.lud.engine.entities.Checker;
 import org.lud.engine.entities.Piece;
 import org.lud.engine.enums.Turn;
 import org.lud.engine.interfaces.Ruleset;
 import org.lud.engine.records.Move;
 import org.lud.engine.records.MoveScore;
-import org.lud.engine.service.BoardService;
 import org.lud.engine.service.PieceService;
 
 import java.util.ArrayList;
@@ -15,16 +13,14 @@ import java.util.List;
 
 public class CheckersRuleset implements Ruleset {
     private final PieceService pieceService;
-    private final BoardService boardService;
 
     private static final int[][] OFFSETS = {
             {1, 1}, {1, -1}, {-1, 1}, {-1, -1},
             {2, 2}, {2, -2}, {-2, 2}, {-2, -2}
     };
 
-    public CheckersRuleset(PieceService pieceService, BoardService boardService) {
+    public CheckersRuleset(PieceService pieceService) {
         this.pieceService = pieceService;
-        this.boardService = boardService;
     }
 
     @Override
@@ -80,29 +76,5 @@ public class CheckersRuleset implements Ruleset {
             }
         }
         return captureMoves.isEmpty() ? allMoves : captureMoves;
-    }
-
-    public void executeMove(Move move) {
-        Piece p = move.piece();
-        int dRow = move.targetRow() - p.getRow();
-        int dCol = move.targetCol() - p.getCol();
-
-        if(Math.abs(dRow) == 2 && Math.abs(dCol) == 2) {
-            int capturedRow = p.getRow() + dRow / 2;
-            int capturedCol = p.getCol() + dCol / 2;
-            Piece captured = PieceService.getPieceAt(capturedCol, capturedRow, pieceService.getPieces());
-            if(captured != null) pieceService.removePiece(captured);
-        }
-
-        p.setRow(move.targetRow());
-        p.setCol(move.targetCol());
-        p.setX(move.targetCol() * Board.getSquare());
-        p.setY(move.targetRow() * Board.getSquare());
-
-        if(p instanceof Checker c) {
-            if((c.getColor() == Turn.LIGHT && c.getRow() == 0) || (c.getColor() == Turn.DARK && c.getRow() == 7)) {
-                c.promoteToKing();
-            }
-        }
     }
 }

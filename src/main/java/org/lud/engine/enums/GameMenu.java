@@ -7,6 +7,7 @@ import org.lud.engine.service.Localization;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@SuppressWarnings("ALL")
 public enum GameMenu implements Clickable {
     PLAY("menu.play", "tooltip.play", "tooltip.play_continue") {
         @Override

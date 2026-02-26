@@ -6,6 +6,7 @@ import org.lud.engine.service.BooleanService;
 import org.lud.engine.service.GameService;
 import org.lud.engine.service.Localization;
 
+@SuppressWarnings("ALL")
 public enum Games implements State {
     CHESS("game.chess", "checker_", "tooltip.chess") {
         @Override

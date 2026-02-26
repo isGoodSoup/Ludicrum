@@ -23,6 +23,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.Map;
 
+@SuppressWarnings("ALL")
 public class MainMenu implements UI {
     private static final int ARC = 32;
     private static final int CENTER_Y = 800;

@@ -16,6 +16,7 @@ import org.lud.engine.service.UIService;
 
 import java.awt.*;
 
+@SuppressWarnings("ALL")
 public class TooltipMenu implements UI {
     private static final int ARC = 32;
     private static final int STROKE = 6;
@@ -33,10 +34,6 @@ public class TooltipMenu implements UI {
         this.boardService = boardService;
         this.uiService = uiService;
         this.mouse = mouse;
-    }
-
-    private int getCenterX(int containerWidth, int elementWidth) {
-        return render.getOffsetX() + (containerWidth - elementWidth)/2;
     }
 
     @Override

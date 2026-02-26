@@ -30,10 +30,6 @@ public class ToastAnimation implements Animation {
         this.icon = icon;
     }
 
-    public ToastAnimation(String title) {
-        this(title, null, null);
-    }
-
     @Override
     public void update(double delta) {
         time += delta;
