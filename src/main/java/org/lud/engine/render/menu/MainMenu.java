@@ -37,14 +37,6 @@ public class MainMenu implements UI {
     private BufferedImage smallButton;
     private BufferedImage smallYellowButton;
 
-    private Button playButton;
-    private Button gameButton;
-    private Button achievementsButton;
-    private Button settingsButton;
-    private Button langButton;
-    private Button exitButton;
-    private Button themeButton;
-
     private int logoSize = 0;
     private int logoDelta = 1;
     private final float FADE_SPEED = 0.15f;
