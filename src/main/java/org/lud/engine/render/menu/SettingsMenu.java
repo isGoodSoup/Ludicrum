@@ -5,8 +5,6 @@ import org.lud.engine.enums.GameSettings;
 import org.lud.engine.enums.GameState;
 import org.lud.engine.enums.Theme;
 import org.lud.engine.input.KeyboardInput;
-import org.lud.engine.input.Mouse;
-import org.lud.engine.input.MouseInput;
 import org.lud.engine.interfaces.State;
 import org.lud.engine.interfaces.UI;
 import org.lud.engine.render.Colorblindness;
@@ -21,8 +19,8 @@ import org.slf4j.LoggerFactory;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.*;
 import java.util.List;
+import java.util.Map;
 
 @SuppressWarnings("ALL")
 public class SettingsMenu implements UI {
@@ -33,8 +31,6 @@ public class SettingsMenu implements UI {
     private final UIService uiService;
     private final GameService gameService;
     private final KeyboardInput keyUI;
-    private final Mouse mouse;
-    private final MouseInput mouseInput;
 
     private final BufferedImage toggleOn;
     private final BufferedImage toggleOff;
@@ -48,14 +44,11 @@ public class SettingsMenu implements UI {
     private Button backButton;
 
     public SettingsMenu(RenderContext render, UIService uiService, GameService gs,
-                        KeyboardInput keyUI, Mouse mouse, MouseInput mouseInput,
-                        BufferedImage... images) {
+                        KeyboardInput keyUI, BufferedImage... images) {
         this.render = render;
         this.uiService = uiService;
         this.gameService = gs;
         this.keyUI = keyUI;
-        this.mouse = mouse;
-        this.mouseInput = mouseInput;
 
         this.toggleOn = images[0];
         this.toggleOff = images[1];
@@ -72,10 +65,14 @@ public class SettingsMenu implements UI {
 
     @Override
     public void drawMenu(Graphics2D g2) {
-        clearMap();
-        initSettingsMap(g2);
+        if(MenuRender.getSettingsMap().isEmpty()) {
+            initSettingsMap(g2);
+        }
         initButtons();
+        draw(g2);
+    }
 
+    private void draw(Graphics2D g2) {
         final String SETTINGS = Localization.lang.t("settings.header");
         final String ENABLE = Localization.lang.t("settings.enable");
         int totalWidth = render.scale(RenderContext.BASE_WIDTH);
@@ -106,12 +103,11 @@ public class SettingsMenu implements UI {
         for(int i = startIndex; i < endIndex; i++) {
             Map.Entry<Button, GameSettings> entry = entries.get(i);
             Button button = entry.getKey();
-            GameSettings option = entry.getValue();
 
             boolean isSelected = (i - startIndex) == keyUI.getSelectedIndexY();
-            if(isSelected) render.getMenuRender().setSelectedToggle(option);
+            if(isSelected) { render.getMenuRender().setSelectedToggle(entry.getValue()); }
 
-            String label = ENABLE + " " + option.getLabel();
+            String label = ENABLE + " " + entry.getValue().getLabel();
             int textWidth = g2.getFontMetrics().stringWidth(label.toUpperCase());
             int toggleWidth = render.scale(toggleOn.getWidth());
             int toggleHeight = render.scale(toggleOn.getHeight());
@@ -122,8 +118,8 @@ public class SettingsMenu implements UI {
 
             g2.drawString(label.toUpperCase(), textX, render.getOffsetY() + startY);
 
-            BufferedImage toggleImage = drawToggle(option, option.get(),
-                    render.isSelected(option), render.isHovered(button));
+            BufferedImage toggleImage = drawToggle(entry.getValue(), entry.getValue().get(),
+                    isSelected, render.isHovered(button));
 
             uiService.drawToggle(g2, toggleImage,
                     toggleX + render.getOffsetX(),
@@ -244,10 +240,6 @@ public class SettingsMenu implements UI {
                 sprite1.normal, sprite1.highlighted,
                 sprite2.normal, sprite2.highlighted
         };
-    }
-
-    public void clearMap() {
-        MenuRender.getSettingsMap().clear();
     }
 
     private int getTotalWidth() { return render.scale(RenderContext.BASE_WIDTH); }

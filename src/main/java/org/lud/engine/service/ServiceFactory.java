@@ -96,7 +96,7 @@ public class ServiceFactory {
 
         List<UI> menus = render.getMenuRender().getMenus();
         this.mainMenu = new MainMenu(render, gs, ui, key, mouse);
-        this.settingsMenu = new SettingsMenu(render, ui, gs, key, mouse, mouseInput, MenuRender.OPTION_BUTTONS);
+        this.settingsMenu = new SettingsMenu(render, ui, gs, key, MenuRender.OPTION_BUTTONS);
         this.achievementsMenu = new AchievementsMenu(render, key, achievement, gs, mouse);
         this.checkmate = new Checkmate(gs, render, RenderContext.BASE_WIDTH);
         this.promotionMenu = new PromotionMenu(render, piece, promotion);
